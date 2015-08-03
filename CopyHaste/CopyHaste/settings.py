@@ -58,10 +58,17 @@ WSGI_APPLICATION = 'CopyHaste.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'NAME': os.path.join(BASE_DIR, 'db.postgresql_psycopg2'),
+        'NAME': 'CopyHasteDB',
+        #was imager_databse
+        'USER': 'administrator',
+        'PASSWORD': 'password123',
+        'HOST': '127.0.0.1',
+        'PORT': '5432',
     }
 }
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
