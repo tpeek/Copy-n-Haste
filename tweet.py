@@ -3,10 +3,10 @@
 import tweepy
 from tweepy.api import API
 
-API_KEY = 'your_info_here'
-API_SECRET = 'your_info_here'
-ACCESS_TOKEN = 'your_info_here'
-ACCESS_TOKEN_SECRET = 'your_info_here'
+API_KEY = 'OxU59qSyfMzlseWHFBFiv2Hgq'
+API_SECRET = '<hidden for ovbious reasons>'
+ACCESS_TOKEN = '51948357-DAgrNVcLoZGW9SONcLYEoOwGd3lsoCdPSppEV3azw'
+ACCESS_TOKEN_SECRET = 'rfWikqA5ZronG8hNHzFKsaZiiQzwyvs9YqCjoxfRJHK1L'
 key = tweepy.OAuthHandler(API_KEY, API_SECRET)
 key.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
