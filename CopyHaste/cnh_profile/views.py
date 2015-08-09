@@ -17,7 +17,7 @@ def edit_profile_view(request):
         if profile_form.is_valid() and user_form.is_valid():
             profile_form.save()
             user_form.save()
-            return HttpResponseRedirect('/accounts/profile')
+            return HttpResponseRedirect('/profile')
         else:
             return render(request, 'edit_profile.html',
                           {'profile_form': profile_form.as_p,
