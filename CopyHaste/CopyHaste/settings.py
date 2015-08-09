@@ -63,8 +63,6 @@ TEMPLATES = [
     },
 ]
 
-ACCOUNT_ACTIVATION_DAYS = 7
-REGISTRATION_AUTO_LOGIN = True
 
 ROOT_URLCONF = 'CopyHaste.urls'
 
@@ -100,3 +98,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Email
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_PORT = 587
+if os.environ.get('EMAIL_BACKEND', None):
+    EMAIL_BACKEND = os.environ['EMAIL_BACKEND']
+
+# For django-registration-redux
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
+LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_URL = '/login/'
