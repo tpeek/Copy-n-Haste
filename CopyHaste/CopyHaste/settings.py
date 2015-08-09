@@ -32,6 +32,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'registration',
+    'cnh_profile',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -60,6 +62,9 @@ TEMPLATES = [
         },
     },
 ]
+
+ACCOUNT_ACTIVATION_DAYS = 7
+REGISTRATION_AUTO_LOGIN = True
 
 ROOT_URLCONF = 'CopyHaste.urls'
 
