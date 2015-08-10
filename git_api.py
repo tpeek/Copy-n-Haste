@@ -26,6 +26,7 @@ X-RateLimit-Remaining: 4999
 #steps
 in term by proj > curl -i https://api.github.com/users/octocat/orgs
 
+
 HTTP/1.1 200 OK
 Server: GitHub.com
 Date: Mon, 10 Aug 2015 17:19:14 GMT
@@ -51,3 +52,9 @@ X-Content-Type-Options: nosniff
 Vary: Accept-Encoding
 X-Served-By: 2d7a5e35115884240089368322196939
 
+gist id : b3f9f3bf0c4428e5bfaf
+
+>>  pip install --pre github3.py
+2 dependencies:
+ pip install requests
+pip install uritemplate.py
