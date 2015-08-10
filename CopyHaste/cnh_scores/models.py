@@ -5,7 +5,7 @@ from django.utils.encoding import python_2_unicode_compatible
 
 @python_2_unicode_compatible
 class UserScores(models.Model):
-    user = models.OneToOneField(User, related_name="scores", null=False)
+    user = models.ManyToManyField(User, related_name="scores", blank=True)
     score_date = models.DateField(
         auto_now_add=True
     )
@@ -18,4 +18,4 @@ class UserScores(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return self.user.username
+        return 'temp_str'

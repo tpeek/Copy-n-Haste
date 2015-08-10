@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+    {% for score in scores.all %}
+
+        <li>{{score.cpm}}</li>
+        <li>{{score.mistakes}}</li>
+
+    {% empty %}
+        <p>No scores yet!</p>
+    {% endfor %}
+    </div>
+
+{% endblock %}
