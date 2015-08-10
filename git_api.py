@@ -92,6 +92,15 @@ contents = repo.file_contents('/close_far.py')
 print(contents.name)
 print(contents.decoded)
 
+repo = github3.repository('fogleman', 'Minecraft')
+contents = repo.file_contents('/main.py')
+
+print(contents.name)
+print(contents.decoded)
+
+# list of repostiories linked to files > randomly pull from list
+# create a list of reputable repositories or users
+# from that list > radnomly get a ptyhon file
 
 ....
 for the contents
