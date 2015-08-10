@@ -30,6 +30,10 @@ ALLOWED_HOSTS = []
 # SwampDragon settings
 SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubscriberConnection', '/data')
 
+# Temp settings
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+DRAGON_URL = 'http://localhost:9999/'
 # Application definition
 
 INSTALLED_APPS = (
@@ -40,6 +44,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'swampdragon',
+    'todo',
+    'tohdoh'
 )
 
 MIDDLEWARE_CLASSES = (
