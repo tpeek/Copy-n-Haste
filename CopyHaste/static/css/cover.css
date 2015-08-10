@@ -2,8 +2,26 @@
  * Globals
  */
 
+h1, h2, h3, label, li, {
+    font-family: Courier;
+}
+
+ {
+    font-family: Courier;
+    font-size: 12px;
+
+}
+
+span {
+    font-family: Courier;
+    font-size: 12px;
+
+}
+
+
 input, select, textarea{
     color: grey;
+    margin: 5;
 }
 
 textarea:focus, input:focus {
