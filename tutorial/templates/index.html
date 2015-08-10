@@ -6,7 +6,22 @@
     <title></title>
 </head>
 <body>
-Here be dragons!
+{% verbatim %}
+<div ng-controller="TodoListCtrl">
+    <h3>{{ todoList.name }}</h3>
+    <pre>{{ todoList.description }}</pre>
+
+    <ul>
+        <li ng-repeat="item in todoItems">
+            {{ item.text }}
+            <button type="button" ng-click="itemDone(item)">
+                check
+            </button>
+            <span ng-show="item.done">done!</span>
+        </li>
+    </ul>
+</div>
+{% endverbatim %}
 
 {% verbatim %}
 <div ng-controller="TodoListCtrl">
