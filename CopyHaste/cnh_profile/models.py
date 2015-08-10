@@ -11,14 +11,22 @@ class ActiveProfileManager(models.Manager):
 
 @python_2_unicode_compatible
 class CNHProfile(models.Model):
-    nickname = models.CharField(max_length=128, null=True, blank=True)
-    user = models.OneToOneField(User, related_name="profile")
-    website_url = models.URLField(null=True, blank=True)
+    user = models.OneToOneField(User, related_name="profile", null=False)
+    nickname = models.CharField(
+        max_length=16,
+        null=True,
+        blank=True,
+        help_text='What is your nickname'
+    )
+    website = models.URLField(
+        blank=True,
+        help_text='What is your website URL?'
+    )
     objects = models.Manager()
     active = ActiveProfileManager()
 
     def __str__(self):
-        return self.nickname or self.user.get_full_name() or self.user.username
+        return self.user.username
 
     @property
     def is_active(self):

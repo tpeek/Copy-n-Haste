@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'registration',
     'cnh_profile',
+    'cnh_scores',
 )
 
 MIDDLEWARE_CLASSES = (
