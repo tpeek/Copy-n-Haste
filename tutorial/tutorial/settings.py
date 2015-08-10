@@ -34,7 +34,7 @@ SWAMP_DRAGON_CONNECTION = ('swampdragon.connections.sockjs_connection.DjangoSubs
 TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 DRAGON_URL = 'http://localhost:9999/'
-# Application definition
+# Application definition, local port 9999 not 8000
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -44,8 +44,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'swampdragon',
-    'todo',
-    'tohdoh'
+    'tohdoh',
+    'debug_toolbar'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,7 +64,7 @@ ROOT_URLCONF = 'tutorial.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
