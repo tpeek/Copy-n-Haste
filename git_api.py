@@ -23,6 +23,14 @@ X-RateLimit-Remaining: 4999
   }
 }
 
+
+#do this before
+# Get the SHA of some branch. There must be a better way to do this.
+git log -1 --pretty=oneline origin/somebranch | sed -E "s/^([^[:space:]]+).*/\1/"
+
+to find the ssh of a gist, clone it and look a commit Key 
+git log
+
 #steps
 in term by proj > curl -i https://api.github.com/users/octocat/orgs
 
@@ -53,8 +61,40 @@ Vary: Accept-Encoding
 X-Served-By: 2d7a5e35115884240089368322196939
 
 gist id : b3f9f3bf0c4428e5bfaf
+GET /gists/b3f9f3bf0c4428e5bfaf/:sha
+
+:sha 
+a9252f2a25697b5e9079b0e421a78f1773580a79
+
+GET /gists/b3f9f3bf0c4428e5bfaf/a9252f2a25697b5e9079b0e421a78f1773580a79
 
 >>  pip install --pre github3.py
 2 dependencies:
  pip install requests
 pip install uritemplate.py
+
+--------------get all them repostories ----------
+
+import github3
+for repository in github3.all_repositories(number=50):
+    print('{0}, id: {0.id}, url: {0.html_url}'.format(repository))
+
+gh = github3.login('username', 'password')
+for repository in gh.all_repositories():
+    print('{0} - id: {0.id}, url: {0.html_url}'.format(repository))
+
+
+--------------get them contesnts of the repository ----------
+import github3
+repo = github3.repository('heyiamjames', 'CodingInterviewPractice')
+contents = repo.file_contents('/close_far.py')
+
+print(contents.name)
+print(contents.decoded)
+
+
+....
+for the contents
+
+mine
+https://github.com/HeyIamJames/CodingInterviewPractice/blob/master/close_far.py
