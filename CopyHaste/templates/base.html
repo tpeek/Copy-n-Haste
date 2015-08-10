@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CopyNHaste</title>
+    <link rel="shortcut icon" href="http://www.i2symbol.com/images/symbols/write/keyboard_u2328_icon_256x256.png" />
+</head>
+
+<h1>Copy N Haste</h1>
+<nav>
+Welcome, {% if user.is_authenticated %}{{ user }}{% else %}Guest{% endif %}!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="{% url 'homepage' %}">home</a>
+    {% if user.is_authenticated %}
+    <a href="{% url 'profile' %}">profile</a>
+    <a href="{% url 'auth_logout' %}?next=/">logout</a>
+    {% else %}
+    <a href="{% url 'auth_login' %}">login</a>
+    <a href="{% url 'registration_register' %}">register</a>
+    {% endif %}
+</nav><br><br>
+{% block content %}
+{% endblock %}
+<footer style="clear:both;" class="text-center">&copy; 2015 CopynHaste, inc.</footer>
+</html>
