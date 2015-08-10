@@ -3,7 +3,7 @@ import tweepy
 from tweepy.api import API
 
 API_KEY = 'OxU59qSyfMzlseWHFBFiv2Hgq'
-API_SECRET = 'hide'
+API_SECRET = 'rxaGNxx2F4Bq2f8fOGOy9av3i7BccYIJOVfZr1lLSwZdZBHLLB'
 ACCESS_TOKEN = '51948357-DAgrNVcLoZGW9SONcLYEoOwGd3lsoCdPSppEV3azw'
 ACCESS_TOKEN_SECRET = 'rfWikqA5ZronG8hNHzFKsaZiiQzwyvs9YqCjoxfRJHK1L'
 key = tweepy.OAuthHandler(API_KEY, API_SECRET)
