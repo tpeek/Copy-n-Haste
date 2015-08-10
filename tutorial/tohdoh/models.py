@@ -1,6 +1,4 @@
 from django.db import models
-
-from django.db import models
 from swampdragon.models import SelfPublishModel
 from tohdoh.serializers import TodoListSerializer, TodoItemSerializer
 

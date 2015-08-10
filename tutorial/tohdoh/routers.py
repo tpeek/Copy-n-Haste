@@ -1,7 +1,7 @@
 from swampdragon import route_handler
 from swampdragon.route_handler import ModelRouter
-from todo.models import TodoList, TodoItem
-from todo.serializers import TodoListSerializer, TodoItemSerializer
+from tohdoh.models import TodoList, TodoItem
+from tohdoh.serializers import TodoListSerializer, TodoItemSerializer
 
 
 class TodoListRouter(ModelRouter):
