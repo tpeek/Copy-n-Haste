@@ -1,14 +1,33 @@
 {% extends "base.html" %}
 {% block content %}
-
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
+$(document).delegate('#textbox', 'keydown', function(e) {
+  var keyCode = e.keyCode || e.which;
+
+  if (keyCode == 9) {
+    e.preventDefault();
+    var start = $(this).get(0).selectionStart;
+    var end = $(this).get(0).selectionEnd;
+
+    // set textarea value to: text before caret + tab + text after caret
+    $(this).val($(this).val().substring(0, start)
+                + "\t"
+                + $(this).val().substring(end));
+
+    // put caret at right position again
+    $(this).get(0).selectionStart =
+    $(this).get(0).selectionEnd = start + 1;
+  }
+});
+
 var hasStarted = false;
 
 //strToTest is an array object that holds various strings to be used as the base typing test
 // - If you update the array, be sure to update the intToTestCnt
 //   with the number of ACTIVE testing strings
-var intToTestCnt = 4;
-var strToTest = new Array("fish", "string")
+var intToTestCnt = 1;
+var strToTest = new Array("{{data2}}")
 var strToTestType = "";
 
 var checkStatusInt;
@@ -120,7 +139,7 @@ function endTest()
  var neededValues = Left(document.JobOp.given.value, 
          typedValues.length).replace(/  /g, " ").split(" ");
  typedValues = typedValues.split(" ");
-  
+
  //Disable the area where the user types the test input
  document.JobOp.typed.disabled=true;
  
@@ -133,7 +152,7 @@ function endTest()
  var tArea = document.getElementById("TypeArea");
  var aArea = document.getElementById("AfterAction");
  var eArea = document.getElementById("expectedArea");
-  
+
  //Initialize the counting variables for the good valid words and the bad valid words
  var goodWords = 0;
  var badWords = 0;
@@ -183,18 +202,18 @@ function endTest()
    //Update: We don't want to apply this penalty because they may have chosen to end the test
    //    and we only want to track what they DID type and score off of it.
    //badWords = badWords + 1;
-  } 
+  }
  }
- 
+
  //Finalize the after action report variable with the typing summary 
  //at the beginning (now that we have the final good and bad word counts)
  aftReport += "</font>";
  aftReport = "<b>Typing Summary:</b><br>You typed " + 
-            (document.JobOp.typed.value.replace(/  /g, " ").split(" ").length) + 
-            " words in " + totalTime + " seconds, a speed of about " + 
-            wpmType + " words per minute.\n\nYou also had " + badWords + 
-            " errors, and " + goodWords + " correct words, giving scoring of " + 
-            ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + 
+            (document.JobOp.typed.value.replace(/  /g, " ").split(" ").length) +
+            " words in " + totalTime + " seconds, a speed of about " +
+            wpmType + " words per minute.\n\nYou also had " + badWords +
+            " errors, and " + goodWords + " correct words, giving scoring of " +
+            ((goodWords / (goodWords+badWords)) * 100).toFixed(2) +
             "%.<br><br>" + aftReport;
  
  //Set the statistical label variables with what 
@@ -202,6 +221,10 @@ function endTest()
  tErr.innerText = badWords + " Errors";
  tStat.innerText= (wpmType-badWords) + " WPM / " + wpmType + " WPM";
  tTT.innerText = totalTime.toFixed(2) + " sec. elapsed";
+ document.getElementById("wpm_net").value = (wpmType-badWords);
+ document.getElementById("wpm_gross").value = wpmType;
+ document.getElementById("errors").value = badWords;
+ document.getElementById("score").value = ((goodWords / (goodWords+badWords)) * 100).toFixed(2);
  
  //Calculate the accuracy score based on good words typed 
  //versus total expected words -- and only show the percentage as ###.##
@@ -250,7 +273,7 @@ try {
  var tArea = document.getElementById("TypeArea");
  var aArea = document.getElementById("AfterAction");
  var eArea = document.getElementById("expectedArea");
-   
+
  //Refer to 1A (above) for details on why we are removing the double space
  var thisTyped = document.JobOp.typed.value.replace(/  /g, " ");
  
@@ -268,7 +291,7 @@ try {
  
  //The test has started apparantly, so disable the stop button
  document.JobOp.stop.disabled = false;
-  
+
  //Flip the stop and start button display status
  document.JobOp.stop.style.display="block";
  document.JobOp.start.style.display="none";
@@ -280,7 +303,7 @@ try {
  if (Number(60-totalTime) < 5)
  {
   tTT.innerHTML="<font color=\"Red\">" + String(totalTime.toFixed(2)) + 
-                " sec. / " + String(Number(60-totalTime).toFixed(2)) + 
+                " sec. / " + String(Number(60-totalTime).toFixed(2)) +
                 " sec.</font>";
  }
  else
@@ -288,7 +311,7 @@ try {
   if (Number(60-totalTime) < 15)
   {
    tTT.innerHTML="<font color=\"Orange\">" + 
-                 String(totalTime.toFixed(2)) + " sec. / " + 
+                 String(totalTime.toFixed(2)) + " sec. / " +
                  String(Number(60-totalTime).toFixed(2)) + " sec.</font>";
   }
   else
@@ -297,7 +320,7 @@ try {
                  String(Number(60-totalTime).toFixed(2)) + " sec.";
   }
  }
-  
+
  //Determine if the user has typed all of the words expected
  if ((((thisTyped.split(" ").length)/word)*100).toFixed(2) >= 100)
  {
@@ -312,27 +335,27 @@ try {
   
   tProgt.innerText = tProg.width;
  }
- 
+
  //Determine if the test is complete based on them
  //having typed everything exactly as expected
  if (thisTyped.value == document.JobOp.given.value)
  {
   endTest();
  }
- 
+
  //Determine if the test is complete based on whether or not they have 
  //typed exactly or exceeded the number of valid words (determined by a space)
  if (word <= (thisTyped.split(" ").length))
  {
   endTest();
  }
- 
+
  //Check the timer; stop the test if we are at or exceeded 60 seconds
  if (totalTime >= 60)
  {
   endTest();
  }
- 
+
 //Our handy error handling
 } catch(e){};
 }
@@ -352,7 +375,7 @@ function doCheck()
   <tbody>
   <tr>
    <td style="border-bottom: 2px solid #354562; padding: 4px" class="titlec">
-   <input disabled="" id="printB" onclick="window.print();" 
+   <input disabled="" id="printB" onclick="window.print();"
        type="button" value="Print Results" name="printB" 
        style="float: right; font-size: 8pt; font-family: Arial" />
    <input onclick="document.getElementById('AfterAction').style.display='none';
@@ -361,10 +384,10 @@ function doCheck()
               document.JobOp.typed.value='';document.JobOp.typed.disabled=false;
               randNum = Math.floor((Math.random() * 10)) % intToTestCnt;
               strToTestType = strToTest[randNum];
-              document.JobOp.given.value = strToTestType;" 
-         type="button" value="New Test" 
-         name="newtest" 
-         style="float: right; font-size: 8pt; font-family: Arial" />ITS 
+              document.JobOp.given.value = strToTestType;"
+         type="button" value="New Test"
+         name="newtest"
+         style="float: right; font-size: 8pt; font-family: Arial" />ITS
    Typing Test System</td>
   </tr>
  </tbody>
@@ -392,33 +415,33 @@ function doCheck()
      <table border="0" cellpadding="5" width="100%">
       <tbody>
       <tr>
-       <td align="center" 
-         style="border-left: 1px solid #344270; border-right: 2px solid #344270; 
-                border-top: 1px solid #344270; border-bottom: 2px solid #344270; 
-                padding: 5px; background-color: #CED3E8" 
+       <td align="center"
+         style="border-left: 1px solid #344270; border-right: 2px solid #344270;
+                border-top: 1px solid #344270; border-bottom: 2px solid #344270;
+                padding: 5px; background-color: #CED3E8"
          background="Images/Blue_Back.gif">
-       <b><font face="Arial" size="2" color="#FFFFFF">Net / 
+       <b><font face="Arial" size="2" color="#FFFFFF">Net /
        Gross WPM</font></b></td>
-       <td align="center" 
-          style="border-left: 1px solid #344270; 
+       <td align="center"
+          style="border-left: 1px solid #344270;
                  border-right: 2px solid #344270; border-top: 1px solid #344270; 
                  border-bottom: 2px solid #344270; padding: 5px; 
                  background-color: #CED3E8" 
           background="Images/Blue_Back.gif">
-       <b><font face="Arial" size="2" color="#FFFFFF">Entry 
+       <b><font face="Arial" size="2" color="#FFFFFF">Entry
        Errors</font></b></td>
-       <td align="center" 
-           style="border-left: 1px solid #344270; border-right: 2px solid #344270; 
-                  border-top: 1px solid #344270; border-bottom: 2px solid #344270; 
-                  padding: 5px; background-color: #CED3E8" 
+       <td align="center"
+           style="border-left: 1px solid #344270; border-right: 2px solid #344270;
+                  border-top: 1px solid #344270; border-bottom: 2px solid #344270;
+                  padding: 5px; background-color: #CED3E8"
            background="Images/Blue_Back.gif">
        <b><font face="Arial" size="2" color="#FFFFFF">Accuracy</font></b></td>
-       <td align="center" 
-          style="border-left: 1px solid #344270; border-right: 2px solid #344270; 
-                 border-top: 1px solid #344270; border-bottom: 2px solid #344270; 
-                 padding: 5px; background-color: #CED3E8" 
+       <td align="center"
+          style="border-left: 1px solid #344270; border-right: 2px solid #344270;
+                 border-top: 1px solid #344270; border-bottom: 2px solid #344270;
+                 padding: 5px; background-color: #CED3E8"
           background="Images/Blue_Back.gif">
-       <b><font face="Arial" size="2" color="#FFFFFF">Elapsed 
+       <b><font face="Arial" size="2" color="#FFFFFF">Elapsed
        / Remaining</font></b></td>
       </tr>
       <tr>
@@ -426,13 +449,13 @@ function doCheck()
        <div id="stat_wpm">
         Not Started</div>
        </font></td>
-       <td style="border-left: 1px dotted #8794C7; border-right: 1px dotted #8794C7; 
+       <td style="border-left: 1px dotted #8794C7; border-right: 1px dotted #8794C7;
                   border-top-width: 1px; border-bottom-width: 1px" align="center">
        <font size="2" face="Arial">
        <div id="stat_errors">
         Waiting...</div>
        </font></td>
-       <td style="border-left-width: 1px; border-right: 1px dotted #8794C7; 
+       <td style="border-left-width: 1px; border-right: 1px dotted #8794C7;
                   border-top-width: 1px; border-bottom-width: 1px" align="center">
        <font size="2" face="Arial">
        <div id="stat_score">
@@ -448,16 +471,16 @@ function doCheck()
      </td>
     </tr>
     <tr>
-     <td style="border-left-width: 1px; border-right-width: 1px; 
+     <td style="border-left-width: 1px; border-right-width: 1px;
                 border-top: 1px solid #344270; border-bottom-width: 1px">
      <div id="expectedArea" style="display:block">
       <p style="margin-top: 0; margin-bottom: 0">
       <font color="#7A88C0" face="Arial" size="1">
-      <textarea name="given" cols="53" rows="10" 
-        wrap="on" onfocus="deterCPProtect();" 
-        style="width: 100%; border: 1px solid #344270; padding: 2px; 
+      <textarea name="given" cols="53" rows="10"
+        wrap="on" onfocus="deterCPProtect();"
+        style="width: 100%; border: 1px solid #344270; padding: 2px;
                font-family:Arial; font-size:9pt">
-        Click on the button below to start the typing test. 
+        Click on the button below to start the typing test.
         What you will be expected to type will appear here.
       </textarea></font>
       </p>
@@ -467,20 +490,16 @@ function doCheck()
     <tr>
      <td>
      <p align="center" style="margin-top: 0; margin-bottom: 2px">
-     <input type="button" 
-        value="&gt;&gt; Start Typing Test &lt;&lt;" name="start" 
-        onclick="beginTest()" 
-        style="display:block; border-left:1px solid #293358; border-right:2px 
-           solid #293358; border-top:1px solid #293358; border-bottom:2px solid #293358; 
-           width: 100%; background-color: #9BB892; color:#FFFFFF; 
-           background-image:url('Images/Green_Back.gif')" /></p>
+     <input type="button"
+        value="&gt;&gt; Start Typing Test &lt;&lt;" name="start"
+        onclick="beginTest()"</p>
      <p align="center" style="margin-top: 0; margin-bottom: 0">
-     <input disabled="" type="button" 
-       value="&gt;&gt; End Typing Test &lt;&lt;" 
-       name="stop" onclick="endTest()" 
-       style="display:none; border-left:1px solid #293358; border-right:2px 
-                solid #293358; border-top:1px solid #293358; border-bottom:2px 
-                solid #293358; width: 100%; background-color: #F05959; 
+     <input disabled="" type="button"
+       value="&gt;&gt; End Typing Test &lt;&lt;"
+       name="stop" onclick="endTest()"
+       style="display:none; border-left:1px solid #293358; border-right:2px
+                solid #293358; border-top:1px solid #293358; border-bottom:2px
+                solid #293358; width: 100%; background-color: #F05959;
                 color:#FFFFFF; background-image:url('Images/Red_Back.gif')" /></p>
      </td>
     </tr>
@@ -492,12 +511,12 @@ function doCheck()
        <tr>
         <td style="border: 1px solid #9CA8D1; background-color: #EAECF4">
         <div align="left">
-         <table id="stProg" border="0" 
+         <table id="stProg" border="0"
                      width="0%" cellspacing="1">
           <tbody>
           <tr>
-           <td style="border: 1px solid #344270; background-color: #8F9BCB; 
-                       font-family:Arial; font-size:8pt; color:#FFFFFF" 
+           <td style="border: 1px solid #344270; background-color: #8F9BCB;
+                       font-family:Arial; font-size:8pt; color:#FFFFFF"
                        align="right" background="Images/Blue_Back.gif">
            <div id="thisProg">
             0%</div>
@@ -512,9 +531,9 @@ function doCheck()
       </table>
       <p style="margin-top: 0; margin-bottom: 0">
       <font color="#7A88C0" face="Arial" size="1">
-      <textarea onkeypress="doCheck();" onkeydown="//calcStat()" 
-         name="typed" cols="53" rows="10" wrap="on" 
-         style="width: 100%; border: 1px solid #344270; padding: 2px; font-family:Arial; 
+      <textarea id="textbox" onkeypress="doCheck();" onkeydown="//calcStat()"
+         name="typed" cols="53" rows="10" wrap="on"
+         style="width: 100%; border: 1px solid #344270; padding: 2px; font-family:Arial;
                  font-size:9pt"></textarea></font>
       </p>
      </div>
@@ -524,8 +543,8 @@ function doCheck()
     </tr>
     <script>
  randNum = Math.floor((Math.random() * 10)) % intToTestCnt;
- strToTestType = "butbutbut";
- 
+ strToTestType = strToTest[randNum];
+
  document.JobOp.given.value = strToTestType;
  document.JobOp.typed.focus();
  </script>
@@ -536,5 +555,13 @@ function doCheck()
  </tr>
 </tbody>
 </table>
+<form action="{% url 'homepage' %}" method="POST">
+{% csrf_token %}
+  <input type='hidden' id="wpm_net" name="wpm_net" value="default">
+  <input type='hidden' id="wpm_gross" name="wpm_gross" value="default">
+  <input type='hidden' id="errors" name="errors" value="default">
+  <input type='hidden' id="score" name="score" value="default">
+  <input type='submit' value='submit'>
+</form>
 
 {% endblock %}
