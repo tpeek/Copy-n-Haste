@@ -44,12 +44,12 @@
 
 {% swampdragon_settings %}
 <script type="text/javascript" src="{% static 'swampdragon/js/dist/swampdragon.min.js' %}"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}swampdragon/js/dist/datamapper.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}swampdragon/js/angular/services.js"></script>
+<script type="text/javascript" src="{% static 'swampdragon/js/dist/datamapper.js' %}"></script>
+<script type="text/javascript" src="{% static 'swampdragon/js/angular/services.js' %}"></script>
 
 <!-- To-do app -->
-<script type="text/javascript" src="{{ STATIC_URL }}app.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}controllers.js"></script>
+<script type="text/javascript" src="{% static 'app.js' %}"></script>
+<script type="text/javascript" src="{% static 'controllers.js' %}"></script>
 
 </body>
 </html>
