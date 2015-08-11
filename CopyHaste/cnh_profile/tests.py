@@ -1,16 +1,16 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-
-# from __future__ import unicode_literals
+from __future__ import unicode_literals
 from django.db import DataError
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-# from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TransactionTestCase
+from django.test.utils import override_settings
+from django.utils.http import urlencode
 import factory
 from faker import Faker
 from splinter import Browser
-# from time import sleep
 from .models import CNHProfile
 
 
@@ -21,9 +21,7 @@ class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = fake.user_name()
-    first_name = fake.first_name()
-    last_name = fake.last_name()
+    username = fake.username()
     email = fake.email()
 
 
@@ -32,7 +30,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 # # # # # # # # # # # # #
 
 
-class UserNProfileTest(TestCase):
+class UserNProfileTests(TransactionTestCase):
     def setUp(self):
         self.user1 = UserFactory()
         self.user1.set_password('abc')
@@ -56,11 +54,11 @@ class UserNProfileTest(TestCase):
         self.assertEqual(self.profile1.nickname, '')
 
     # Test 3
-    # Check that profile can accept empty string for website_url
-    def test_blank_website_url(self):
-        self.profile1.website_url = ''
+    # Check that profile can accept empty string for website
+    def test_blank_website(self):
+        self.profile1.website = ''
         self.profile1.save()
-        self.assertEqual(self.profile1.website_url, '')
+        self.assertEqual(self.profile1.website, '')
 
     # Test 4
     # Check that profile cannot accept string of length 129 for nickname
@@ -70,11 +68,11 @@ class UserNProfileTest(TestCase):
             self.profile1.save()
 
     # Test 5
-    # Check that profile can accept string of length 129 for website_url
-    def test_long_website_url(self):
-        self.profile1.website_url = 'a' * 129
+    # Check that profile can accept string of length 129 for website
+    def test_long_website(self):
+        self.profile1.website = 'a' * 129
         self.profile1.save()
-        self.assertEqual(self.profile1.website_url, 'a' * 129)
+        self.assertEqual(self.profile1.website, 'a' * 129)
 
     # Test 6
     # Check that is_active property works as expected
@@ -114,105 +112,86 @@ class UserNProfileTest(TestCase):
     # Test 11
     # Check string representation of profile
     def test_string_profile(self):
-        self.assertEqual(str(self.profile1), self.user1.get_full_name())
+        self.assertEqual(str(self.profile1), self.user1.username)
 
 
-class UserProfileTest(TestCase):
-    def setUp(self):
-        self.user1 = UserFactory()
-        self.user1.set_password('secret')
-        self.user1.save()
-        self.profile1 = self.user1.profile
-        self.client = Client()
-
-    def tearDown(self):
-        User.objects.all().delete()
-
-    def test_user1_profile_view_self(self):
-        self.client.login(
-            username=self.user1.username, password='secret'
-        )
-        response = self.client.get(reverse('profile:detail'))
-        self.assertContains(response, self.user1.email)
-        self.assertContains(response, self.user1.username)
-
-    def test_user1_profile_update_view_self(self):
-        self.client.login(
-            username=self.user1.username, password='secret'
-        )
-        response = self.client.get(reverse('profile:edit'))
-        self.assertContains(response, self.user1.username)
-        self.assertContains(response, self.user1.email)
-
-    def test_user1_profile_update_post_self(self):
-        self.client.login(
-            username=self.user1.username, password='secret'
-        )
-        new_data = {
-            'username': self.user1.username,
-            'first_name': '',
-            'last_name': '',
-            'email': 'new@example.com',
-            'camera': 'Super Nikon',
-            'address': '123 Anywhere Dr',
-            'web_url': 'http://www.example.com',
-            'type_photography': 'existential'
-        }
-        response = self.client.post(
-            reverse('profile:edit'), new_data, follow=True
-        )
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse('profile:detail'))
-        for key in new_data:
-            self.assertContains(response, new_data[key])
+# # # # # # # # # # # # #
+# Web Tests for Profile #
+# # # # # # # # # # # # #
 
 
-class LiveServerSplinterTest(StaticLiveServerTestCase):
-
+@override_settings(DEBUG=True)
+class UnAuthNWebTests(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
-        super(LiveServerSplinterTest, cls).setUpClass()
+        super(UnAuthNWebTests, cls).setUpClass()
         cls.browser = Browser()
 
     @classmethod
     def tearDownClass(cls):
         cls.browser.quit()
-        super(LiveServerSplinterTest, cls).tearDownClass()
-        sleep(3)
+        super(UnAuthNWebTests, cls).tearDownClass()
+
+    # Test 12
+    # Check anonymous get of /profile/
+    def test_unauthn_get_profile(self):
+        self.browser.visit('%s%s' % (self.live_server_url, '/profile/'))
+        self.assertEqual(
+            self.browser.url,
+            '%s%s' % (self.live_server_url, '/accounts/login?next=/profile/')
+        )
+
+    # Test 13
+    # Check anonymous get of /profile/edit/
+    def test_unauthn_get_edit(self):
+        self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
+        self.assertEqual(
+            self.browser.url,
+            '%s%s' % (self.live_server_url, '/accounts/login?next=/profile/edit/')
+        )
+
+
+@override_settings(DEBUG=True)
+class AuthNWebTests(StaticLiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        super(AuthNWebTests, cls).setUpClass()
+        cls.browser = Browser()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.browser.quit()
+        super(AuthNWebTests, cls).tearDownClass()
 
     def setUp(self):
-        self.user1 = UserFactory(
-            username='john',
-            email='john@example.com',
-            first_name='John',
-            last_name='Stephenson'
-        )
+        self.user1 = UserFactory()
         self.user1.set_password('abc')
         self.user1.save()
+        self.profile1 = self.user1.profile
 
-    def login_helper(self, username, password):
-        self.browser.visit('{}{}'.format(
-            self.live_server_url, '/accounts/login/')
-        )
-
-        self.browser.fill('username', username)
-        self.browser.fill('password', password)
+        self.browser.visit('%s%s' % (self.live_server_url, '/accounts/login/'))
+        self.browser.fill('username', self.user1.username)
+        self.browser.fill('password', 'abc')
         self.browser.find_by_value('Log in').first.click()
 
-    def test_non_auth_profile_redirect(self):
-        self.browser.visit('{}{}'.format(self.live_server_url, '/profile'))
+    def tearDown(self):
+        User.objects.all().delete()
+
+    # Test 12
+    # Check user get of /profile/
+    def test_authn_get_profile(self):
+        self.browser.visit('%s%s' % (self.live_server_url, '/profile/'))
         self.assertEqual(
-            self.browser.url, '{}{}'.format(
-                self.live_server_url, '/accounts/login/?next=/profile/'
-            )
+            self.browser.url,
+            '%s%s' % (self.live_server_url, '/profile/')
         )
 
-    def test_non_auth_edit_profile_redirect(self):
-        self.browser.visit('{}{}'.format(
-            self.live_server_url, '/profile/edit')
-        )
+    # Test 13
+    # Check user get of /profile/edit/ and post updates
+    def test_authn_edit(self):
+        self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
         self.assertEqual(
-            self.browser.url, '{}{}'.format(
-                self.live_server_url, '/accounts/login/?next=/profile/edit/'
-            )
+            self.browser.url,
+            '%s%s' % (self.live_server_url, '/profile/edit/')
         )
+        # import pdb; pdb.set_trace()
