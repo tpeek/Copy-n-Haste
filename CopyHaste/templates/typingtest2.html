@@ -2,21 +2,28 @@
 {% block content %}
 
 <style type="text/css">
-textarea {
-  width: 100%;
-  border: 1px solid #344270;
-  padding: 2px;
-  font-size:9pt
+
+  textarea {
+    position: absolute;
+    font-size: 20px;
+}
+#type {
+    color: red;
+    opacity: 0.5;
+}
+#typed {
+    background: none;
+    z-index: 10;
+    color: blue;
+    opacity: 0.5;
 }
 
 </style>
 
 
-
-
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
-$(document).delegate('#textbox', 'keydown', function(e) {
+$(document).delegate('#typed', 'keydown', function(e) {
   var keyCode = e.keyCode || e.which;
 
   if (keyCode == 9) {
@@ -490,14 +497,6 @@ function doCheck()
                 border-top: 1px solid #344270; border-bottom-width: 1px">
      <div id="expectedArea" style="display:block">
       <p style="margin-top: 0; margin-bottom: 0">
-      <font color="#7A88C0" face="Courier" size="1">
-      <textarea name="given" cols="53" rows="10"
-        wrap="on" onfocus="deterCPProtect();"
-        style="width: 100%; border: 1px solid #344270; padding: 2px;
-               font-family:Courier; font-size:9pt">
-        Click on the button below to start the typing test.
-        What you will be expected to type will appear here.
-      </textarea></font>
       </p>
      </div>
      </td>
@@ -534,7 +533,9 @@ function doCheck()
                      width="0%" cellspacing="1">
           <tbody>
           <tr>
-           <td>
+           <td style="border: 1px solid #344270; background-color: #8F9BCB;
+                       font-family:Courier; font-size:8pt; color:#FFFFFF"
+                       align="right" background="Images/Blue_Back.gif">
            <div id="thisProg">
             0%</div>
            </td>
@@ -547,8 +548,13 @@ function doCheck()
       </tbody>
       </table>
       <p style="margin-top: 0; margin-bottom: 0">
-      <textarea id="textbox" onkeypress="doCheck();" onkeydown="//calcStat()"
-         name="typed" cols="53" rows="10" wrap="on"></textarea>
+
+<div id='test' class="placeholder" style="display: block;">
+    <textarea onkeypress="doCheck();" onkeydown="//calcStat()" id="typed" name="typed" cols=50 rows=25></textarea>
+    <textarea id="type" name="given" value="{{data2}}" cols=50 rows=25 disabled>
+{{data2}}
+    </textarea>
+</div><br>
       </p>
      </div>
      <div id="afterAction" style="display:none">
