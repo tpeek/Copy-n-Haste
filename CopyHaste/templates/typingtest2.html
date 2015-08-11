@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}
+{% block content %}<br><br><br><br><br><br><br>
 
 <style type="text/css">
 
@@ -8,14 +8,14 @@
     font-size: 20px;
 }
 #type {
-    color: red;
-    opacity: 0.5;
+    color: gray;
+    background-color: black;
+    opacity: .9;
 }
 #typed {
     background: none;
     z-index: 10;
-    color: blue;
-    opacity: 0.5;
+    color: #00FF00;
 }
 
 </style>
@@ -409,8 +409,7 @@ function doCheck()
               document.JobOp.given.value = strToTestType;"
          type="button" value="New Test"
          name="newtest"
-         style="float: center; font-size: 6pt; font-family: Courier" />ITS
-   Typing Test System</td>
+         style="float: center; font-size: 6pt; font-family: Courier" /></td>
   </tr>
  </tbody>
  </table>
@@ -419,12 +418,6 @@ function doCheck()
            cellspacing="0" width="100%">
  <tbody>
  <tr>
-  <td style="border-bottom: 1px dotted #860E36; padding: 4px"
-     class="titlea" background="Images/Lt_Red_Back.gif" width="460">
-  Accurately and precisely evaluate your typing speed and accuracy.</td>
-  <td style="border-bottom: 1px dotted #860E36; padding: 4px"
-    class="titlea" background="Images/Lt_Red_Back.gif" width="190">
-  <p align="right">v1.0</p>
   </td>
  </tr>
  <tr>
@@ -440,29 +433,25 @@ function doCheck()
        <td align="center"
          style="border-left: 1px solid #344270; border-right: 2px solid #344270;
                 border-top: 1px solid #344270; border-bottom: 2px solid #344270;
-                padding: 5px; background-color: #CED3E8"
-         background="Images/Blue_Back.gif">
+                padding: 5px; background-color: #CED3E8">
        <b><font face="Courier" size="2" color="#FFFFFF">Net /
        Gross WPM</font></b></td>
        <td align="center"
           style="border-left: 1px solid #344270;
                  border-right: 2px solid #344270; border-top: 1px solid #344270;
                  border-bottom: 2px solid #344270; padding: 5px;
-                 background-color: #CED3E8"
-          background="Images/Blue_Back.gif">
+                 background-color: #CED3E8">
        <b><font face="Courier" size="2" color="#FFFFFF">Entry
        Errors</font></b></td>
        <td align="center"
            style="border-left: 1px solid #344270; border-right: 2px solid #344270;
                   border-top: 1px solid #344270; border-bottom: 2px solid #344270;
-                  padding: 5px; background-color: #CED3E8"
-           background="Images/Blue_Back.gif">
+                  padding: 5px; background-color: #CED3E8">
        <b><font face="Courier" size="2" color="#FFFFFF">Accuracy</font></b></td>
        <td align="center"
           style="border-left: 1px solid #344270; border-right: 2px solid #344270;
                  border-top: 1px solid #344270; border-bottom: 2px solid #344270;
-                 padding: 5px; background-color: #CED3E8"
-          background="Images/Blue_Back.gif">
+                 padding: 5px; background-color: #CED3E8">
        <b><font face="Courier" size="2" color="#FFFFFF">Elapsed
        / Remaining</font></b></td>
       </tr>
@@ -509,8 +498,7 @@ function doCheck()
         onclick="beginTest()"
         style="display:block; border-left:1px solid #293358; border-right:2px
            solid #293358; border-top:1px solid #293358; border-bottom:2px solid #293358;
-           width: 100%; background-color: #9BB892; color:#FFFFFF;
-           background-image:url('Images/Green_Back.gif')" /></p>
+           width: 100%; background-color: #9BB892; color:#FFFFFF;" /></p>
      <p align="center" style="margin-top: 0; margin-bottom: 0">
      <input disabled="" type="button"
        value="&gt;&gt; End Typing Test &lt;&lt;"
@@ -518,7 +506,7 @@ function doCheck()
        style="display:none; border-left:1px solid #293358; border-right:2px
                 solid #293358; border-top:1px solid #293358; border-bottom:2px
                 solid #293358; width: 100%; background-color: #F05959;
-                color:#FFFFFF; background-image:url('Images/Red_Back.gif')" /></p>
+                color:#FFFFFF;" /></p>
      </td>
     </tr>
     <tr>
@@ -535,7 +523,7 @@ function doCheck()
           <tr>
            <td style="border: 1px solid #344270; background-color: #8F9BCB;
                        font-family:Courier; font-size:8pt; color:#FFFFFF"
-                       align="right" background="Images/Blue_Back.gif">
+                       align="right">
            <div id="thisProg">
             0%</div>
            </td>
@@ -575,6 +563,7 @@ function doCheck()
  </tr>
 </tbody>
 </table>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <form action="{% url 'homepage' %}" method="POST">
 {% csrf_token %}
   <input type='hidden' id="wpm_net" name="wpm_net" value="default">
