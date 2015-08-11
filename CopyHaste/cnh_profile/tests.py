@@ -138,7 +138,7 @@ class UnAuthNWebTests(StaticLiveServerTestCase):
         self.browser.visit('%s%s' % (self.live_server_url, '/profile/'))
         self.assertEqual(
             self.browser.url,
-            '%s%s' % (self.live_server_url, '/accounts/login?next=/profile/')
+            '%s%s' % (self.live_server_url, '/accounts/login/?next=/profile/')
         )
 
     # Test 13
@@ -147,7 +147,7 @@ class UnAuthNWebTests(StaticLiveServerTestCase):
         self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
         self.assertEqual(
             self.browser.url,
-            '%s%s' % (self.live_server_url, '/accounts/login?next=/profile/edit/')
+            '%s%s' % (self.live_server_url, '/accounts/login/?next=/profile/edit/')
         )
 
 
