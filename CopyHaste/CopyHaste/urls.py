@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^profile/', include('cnh_profile.urls')),
     url(r'^scores/', include('cnh_scores.urls')),
+    url(r'^play/', include('typing_test.urls')),
 ]

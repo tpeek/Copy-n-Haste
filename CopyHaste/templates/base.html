@@ -40,6 +40,7 @@
                 <ul class="nav masthead-nav">
 
                   <li class="active"><a href="{% url 'homepage' %}">Home</a></li>
+                  <li><a href="{% url 'typing_test' %}">Play</a></li>
                     {% if user.is_authenticated %}
                   <li><a href="{% url 'profile' %}">Profile</a></li>
                   <li><a href="{% url 'auth_logout' %}?next=/">Logout</a></li>
