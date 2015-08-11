@@ -18,9 +18,12 @@ def create_user_profile(sender, **kwargs):
 
 
 @receiver(post_delete, sender=CNHProfile)
-def rm_user_profile(sender, **kwargs):
-    """If an CNHProfile is deleted, delete it's User too"""
+def delete_user(sender, **kwargs):
+    """If an ImagerProfile is deleted, also delete the User."""
     instance = kwargs.get('instance')
     if not instance:
         return
-    instance.user.delete()
+    try:
+        instance.user.delete()
+    except User.DoesNotExist:
+        pass
