@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^$', home_view, name='homepage'),
     url(r'^accounts/', include('registration.backends.default.urls')),
     url(r'^profile/', include('cnh_profile.urls')),
+    url(r'^scores/', include('cnh_scores.urls')),
 ]

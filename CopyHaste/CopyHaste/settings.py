@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'cnh_profile',
     'bootstrap3',
     'debug_toolbar',
+    'cnh_scores',
 )
 
 MIDDLEWARE_CLASSES = (
