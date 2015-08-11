@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 import dj_database_url
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 SECRET_KEY = os.environ['SECRET_KEY']
@@ -35,6 +35,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'registration',
     'cnh_profile',
+    'bootstrap3',
+    'debug_toolbar',
     'cnh_scores',
 )
 
@@ -71,7 +73,10 @@ ROOT_URLCONF = 'CopyHaste.urls'
 WSGI_APPLICATION = 'CopyHaste.wsgi.application'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 
 # Database
@@ -99,7 +104,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
 
 # Email
 EMAIL_USE_TLS = True
