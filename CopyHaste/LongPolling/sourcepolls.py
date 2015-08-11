@@ -17,3 +17,10 @@ server.listen(5)
 
 # Keep up with the queues of outgoing messages
 message_queues = {}
+
+# Do not block forever (milliseconds)
+TIMEOUT = 1000
+
+# Commonly used flag setes
+READ_ONLY = select.POLLIN | select.POLLPRI | select.POLLHUP | select.POLLERR
+READ_WRITE = READ_ONLY | select.POLLOUT
