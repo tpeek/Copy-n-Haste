@@ -564,11 +564,11 @@ function doCheck()
 </tbody>
 </table>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<form action="{% url 'homepage' %}" method="POST">
+<form action="{% url 'score_form' %}" method="POST">
 {% csrf_token %}
   <input type='hidden' id="wpm_net" name="wpm_net" value="default">
   <input type='hidden' id="wpm_gross" name="wpm_gross" value="default">
-  <input type='hidden' id="errors" name="errors" value="default">
+  <input type='hidden' id="errors" name="mistakes" value="default">
   <input type='hidden' id="score" name="score" value="default">
   <input type='submit' value='submit'>
 </form>
