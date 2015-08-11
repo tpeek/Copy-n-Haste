@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    {% for score in scores.all %}
-
-        <li>{{score.cpm}}</li>
-        <li>{{score.mistakes}}</li>
-
+    {% for user in users %}
+        {% for score in user.scores.all %}
+        <li>user: {{user}}, cpm: {{score.cpm}}, mistakes: {{score.mistakes}} </li>
+        {% endfor %}
     {% empty %}
         <p>No scores yet!</p>
     {% endfor %}
