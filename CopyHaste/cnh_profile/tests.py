@@ -7,7 +7,6 @@ from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TransactionTestCase
 from django.test.utils import override_settings
-from django.utils.http import urlencode
 import factory
 from faker import Faker
 from splinter import Browser
