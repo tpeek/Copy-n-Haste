@@ -42,7 +42,7 @@ while inputs:
 
             # Give the connection a queue for data we want to send
             message_queues[connection] = Queue.Queue()
-                    else:
+        else:
             data = s.recv(1024)
             if data:
                 # A readable client socket has data
