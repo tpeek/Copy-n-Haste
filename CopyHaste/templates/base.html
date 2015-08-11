@@ -1,24 +1,83 @@
+{# Load the tag library #}
+{% load bootstrap3 %}
+
+{# Load CSS and JavaScript #}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery=1 %}
+
+{% load staticfiles %}
+
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>CopyNHaste</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
     <link rel="shortcut icon" href="http://www.i2symbol.com/images/symbols/write/keyboard_u2328_icon_256x256.png" />
+    <title>CopyNHaste</title>
+    <link href='http://fonts.googleapis.com/css?family=Abel|Source+Code+Pro' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/cover.css" %}">
 </head>
 
-<h1>Copy N Haste</h1>
-<nav>
-Welcome, {% if user.is_authenticated %}{{ user }}{% else %}Guest{% endif %}!&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="{% url 'homepage' %}">home</a>
-    {% if user.is_authenticated %}
-    <a href="{% url 'profile' %}">profile</a>
-    <a href="{% url 'auth_logout' %}?next=/">logout</a>
-    {% else %}
-    <a href="{% url 'auth_login' %}">login</a>
-    <a href="{% url 'registration_register' %}">register</a>
-    {% endif %}
-</nav><br><br>
-{% block content %}
-{% endblock %}
-<footer style="clear:both;" class="text-center">&copy; 2015 CopynHaste, inc.</footer>
+  <body>
+
+    <div class="site-wrapper">
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+          <div style="position:relative;">
+            <img style="position:absolute;left:37%" src="{% static 'img/logo_white.png' %}" alt="My image"/>
+          </div>
+
+            <div class="inner">
+              <nav>
+                <ul class="nav masthead-nav">
+
+                  <li class="active"><a href="{% url 'homepage' %}">Home</a></li>
+                    {% if user.is_authenticated %}
+                  <li><a href="{% url 'profile' %}">Profile</a>/li>
+                  <li><a href="{% url 'auth_logout' %}?next=/">Logout</a></li>
+                     {% else %}
+                  <li><a href="{% url 'auth_login' %}">Login</a></li>
+                  <li><a href="{% url 'registration_register' %}">Register</a></li>
+                    {% endif %}
+
+                </ul>
+              </nav>
+            </div>
+          </div>
+
+        {% block content %}
+        {% endblock %}<br><br><br><br>
+          <div class="mastfoot">
+            <div class="inner">
+            <footer style="clear:both;" class="text-center">&copy; 2015 CopynHaste, inc.</footer>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
 </html>
+
+<!--
+ {% load staticfiles %}
+<img src="{% static 'img/logo_white.png' %}" alt="My image"/> -->
+
