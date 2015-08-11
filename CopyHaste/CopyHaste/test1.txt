@@ -2,27 +2,3 @@ class Node():
     def __init__(self, value):
         self.value = value
         self.next = None
-
-
-class LinkedList():
-    def __init__(self, itr):
-        self.head = None
-        self.length = 0
-        for value in itr:
-            self.insert(value)
-
-    def insert(self, value):
-        newNode = Node(value)
-        if self.head is None:
-            self.head = newNode
-        else:
-            newNode.next = self.head
-            self.head = newNode
-        self.length += 1
-
-    def pop(self):
-        if self.head is not None:
-            temp = self.head.value
-            self.head = self.head.next
-            self.length -= 1
-            return temp
