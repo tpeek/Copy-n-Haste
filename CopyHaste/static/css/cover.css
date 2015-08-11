@@ -2,31 +2,30 @@
  * Globals
  */
 
-h1, h2, h3, label, li, {
-    font-family: Courier;
-}
-
- {
-    font-family: Courier;
-    font-size: 12px;
-
+h1, h2, h3, li{
+    font-family: 'Courier';
+    font-size: 30px;
 }
 
 span {
-    font-family: Courier;
-    font-size: 12px;
-
+  font-size: 14px;
 }
 
+label{
+    font-family: 'Courier';
+    font-size: 18px;
+}
 
 input, select, textarea{
     color: grey;
-    margin: 5;
+    margin: 10;
 }
 
 textarea:focus, input:focus {
     color: grey;
 }
+
+
 
 
 /* Links */
@@ -119,7 +118,6 @@ body {
   padding-right: 0;
   padding-left: 0;
   font-size: 16px;
-  font-weight: bold;
   color: #fff; /* IE8 proofing */
   color: rgba(255,255,255,.75);
   border-bottom: 2px solid transparent;
