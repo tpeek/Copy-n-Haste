@@ -113,7 +113,7 @@ if os.environ.get('EMAIL_BACKEND', None):
 # For django-registration-redux
 ACCOUNT_ACTIVATION_DAYS = 7
 LOGIN_REDIRECT_URL = '/profile/'
-LOGIN_URL = '/login/'
+LOGIN_URL = '/accounts/login/'
 
 
 SITE_ID = 2
