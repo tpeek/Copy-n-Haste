@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'bootstrap3',
     'debug_toolbar',
     'cnh_scores',
+    'typing_test',
 )
 
 MIDDLEWARE_CLASSES = (
