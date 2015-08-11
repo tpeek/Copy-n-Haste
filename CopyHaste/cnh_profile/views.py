@@ -1,30 +1,28 @@
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect
-from .forms import *
+from django.views.generic import FormView
+from .models import CNHProfile
+from .forms import ProfileSettingsForm
 
 
-@login_required
-def profile_view(request):
-    return render(request, 'profile.html')
+class ProfileFormView(FormView):
+    template_name = 'edit_profile.html'
+    form_class = ProfileSettingsForm
+    success_url = '/profile/'
 
+    def get_form(self, form_class=ProfileSettingsForm):
+        try:
+            profile = CNHProfile.objects.get(user=self.request.user)
+            return ProfileSettingsForm(
+                instance=profile, **self.get_form_kwargs())
+        except (TypeError, CNHProfile.DoesNotExist):
+            return ProfileSettingsForm(**self.get_form_kwargs())
 
-@login_required
-def edit_profile_view(request):
-    if request.method == 'POST':
-        profile_form = ProfileForm(request.POST, instance=request.user.profile)
-        user_form = UserForm(request.POST, instance=request.user)
-        if profile_form.is_valid() and user_form.is_valid():
-            profile_form.save()
-            user_form.save()
-            return HttpResponseRedirect('/profile')
-        else:
-            return render(request, 'edit_profile.html',
-                          {'profile_form': profile_form.as_p,
-                           'user_form': user_form.as_p})
-    else:
-        profile_form = ProfileForm(instance=request.user.profile)
-        user_form = UserForm(instance=request.user)
-        return render(request, 'edit_profile.html',
-                      {'profile_form': profile_form.as_p,
-                       'user_form': user_form.as_p})
+    def get_form_kwargs(self):
+        kwargs = super(ProfileFormView, self).get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def form_valid(self, form):
+        profile = form.save(commit=False, request=self.request)
+        profile.user = self.request.user
+        profile.save()
+        return super(ProfileFormView, self).form_valid(profile)
