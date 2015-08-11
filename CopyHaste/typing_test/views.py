@@ -7,3 +7,7 @@ with open("typing_test/test1.txt", "r") as myfile:
 
 def play_view(request):
     return render(request, 'typingtest2.html', {'data2': data2})
+
+
+def multi_play_view(request):
+    return render(request, 'typingtest3.html', {'data2': data2})
