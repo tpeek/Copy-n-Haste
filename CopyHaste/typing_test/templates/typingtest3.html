@@ -92,16 +92,16 @@ function Right(str, n){
        return String(str).substring(iLen, iLen - n);
     }
 }
-
+var intervalID;
 //beginTest Function/Sub initializes the test and starts
 //the timers to determine the WPM and Accuracy
 function beginTest()
 {
-  window.setInterval(function(){
+  intervalID = window.setInterval(function(){
   var foe = document.getElementById("typed2");
   foe.value += String(document.getElementById("type").value).charAt(secs);
   secs += 1;
-}, 50);
+}, 500);
  //We're starting the test, so set the variable to true
  hasStarted = true;
 
@@ -148,6 +148,7 @@ function deterCPProtect()
 // the accuracy, and setting post-test variables
 function endTest()
 {
+  window.clearInterval(intervalID)
  //Clear the timer that tracks the progress of the test, since it's complete
  clearTimeout(checkStatusInt);
 
