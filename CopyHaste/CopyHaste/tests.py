@@ -34,7 +34,7 @@ class HomepageClientTests(TestCase):
     # Check that home page loads the correct template
     def test_home_template(self):
         response = Client().get('/')
-        self.assertTemplateUsed(response, 'index.html')
+        self.assertTemplateUsed(response, 'home.html')
 
 
 # # # # # # # # # # # # # #
