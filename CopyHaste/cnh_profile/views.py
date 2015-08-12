@@ -1,28 +1,28 @@
-from django.views.generic import FormView
+from __future__ import division
+from django.views.generic import TemplateView
 from .models import CNHProfile
-from .forms import ProfileSettingsForm
 
 
-class ProfileFormView(FormView):
-    template_name = 'edit_profile.html'
-    form_class = ProfileSettingsForm
-    success_url = '/profile/'
+class ProfileView(TemplateView):
+    template_name = 'profile.html'
 
-    def get_form(self, form_class=ProfileSettingsForm):
+    def get_context_data(self, **kwargs):
+        context = super(ProfileView, self).get_context_data(**kwargs)
         try:
-            profile = CNHProfile.objects.get(user=self.request.user)
-            return ProfileSettingsForm(
-                instance=profile, **self.get_form_kwargs())
-        except (TypeError, CNHProfile.DoesNotExist):
-            return ProfileSettingsForm(**self.get_form_kwargs())
-
-    def get_form_kwargs(self):
-        kwargs = super(ProfileFormView, self).get_form_kwargs()
-        kwargs['request'] = self.request
-        return kwargs
-
-    def form_valid(self, form):
-        profile = form.save(commit=False, request=self.request)
-        profile.user = self.request.user
-        profile.save()
-        return super(ProfileFormView, self).form_valid(profile)
+            context['user'] = self.request.user
+            scores = self.request.user.scores.all()
+            avg_gwpm = 0
+            avg_nwpm = 0
+            avg_mistakes = 0
+            count = 0
+            for i in range(len(scores)-1):
+                avg_gwpm += scores[i].wpm_gross
+                avg_nwpm += scores[i].wpm_net
+                avg_mistakes += scores[i].mistakes
+                count += 1
+            context['avg_gwpm'] = avg_gwpm/count
+            context['avg_nwpm'] = avg_nwpm/count
+            context['avg_mistakes'] = avg_mistakes/count
+        except ZeroDivisionError, CNHProfile.DoesNotExist:
+            pass
+        return context
