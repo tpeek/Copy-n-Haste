@@ -45,23 +45,14 @@ class HomepageClientTests(TestCase):
 @override_settings(DEBUG=True)
 class HomePageWebTests(StaticLiveServerTestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        super(HomePageWebTests, cls).setUpClass()
-        cls.browser = Browser()
-
-    @classmethod
-    def tearDownClass(cls):
-        cls.browser.quit()
-        super(HomePageWebTests, cls).tearDownClass()
-
     def setUp(self):
-        self.user1 = UserFactory()
+        self.user1 = UserFactory.build()
         self.user1.set_password('abc')
         self.user1.save()
+        self.browser = Browser()
 
     def tearDown(self):
-        User.objects.all().delete()
+        self.browser.quit()
 
     def login_helper(self, username, password):
         self.browser.visit('%s%s' % (self.live_server_url, '/accounts/login/'))
@@ -119,7 +110,7 @@ class HomePageWebTests(StaticLiveServerTestCase):
 
         self.assertEqual(
             self.browser.url,
-            '%s%s' % (self.live_server_url, '/accounts/logout/')
+            '%s%s' % (self.live_server_url, '/')
         )
 
     # Test 6
@@ -148,5 +139,5 @@ class HomePageWebTests(StaticLiveServerTestCase):
             '%s%s' % (self.live_server_url, '/accounts/activate/complete/')
         )
         self.login_helper('joseph', '123')
-        user_name = self.browser.find_by_tag('big')[0]
-        self.assertEqual('Well howdy there, joseph.', user_name.text)
+        greeting = self.browser.find_by_tag('big')[0]
+        self.assertEqual('Well howdy there, joseph.', greeting.text)
