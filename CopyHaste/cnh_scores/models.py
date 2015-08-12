@@ -9,7 +9,10 @@ class UserScores(models.Model):
     score_date = models.DateField(
         auto_now_add=True
     )
-    cpm = models.IntegerField(
+    wpm_gross = models.IntegerField(
+        default=0
+    )
+    wpm_net = models.IntegerField(
         default=0
     )
     mistakes = models.IntegerField(
