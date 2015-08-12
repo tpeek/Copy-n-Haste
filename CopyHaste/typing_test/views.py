@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+import redis
 
 with open("typing_test/test1.txt", "r") as myfile:
     data2 = myfile.read().replace('\n', '\\n')
@@ -13,7 +14,8 @@ def play_view(request):
 @csrf_exempt
 def multi_play_view(request):
     if request.method == 'POST':
-        print request.POST['user_input']
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r.set(request.user.username, request.POST['user_input'])
         return render(request, 'typingtest3.html', {'data2': data2})
     else:
         return render(request, 'typingtest3.html', {'data2': data2})
