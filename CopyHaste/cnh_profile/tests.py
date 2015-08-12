@@ -140,14 +140,14 @@ class UnAuthNWebTests(StaticLiveServerTestCase):
             '%s%s' % (self.live_server_url, '/accounts/login/?next=/profile/')
         )
 
-    # Test 13
+    # Test 13 - future consideration
     # Check anonymous get of /profile/edit/
-    def test_unauthn_get_edit(self):
-        self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
-        self.assertEqual(
-            self.browser.url,
-            '%s%s' % (self.live_server_url, '/accounts/login/?next=/profile/edit/')
-        )
+    # def test_unauthn_get_edit(self):
+    #     self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
+    #     self.assertEqual(
+    #         self.browser.url,
+    #         '%s%s' % (self.live_server_url, '/accounts/login/?next=/profile/edit/')
+    #     )
 
 
 @override_settings(DEBUG=True)
@@ -186,11 +186,10 @@ class AuthNWebTests(StaticLiveServerTestCase):
         )
 
     # Test 13
-    # Check user get of /profile/edit/ and post updates
-    def test_authn_edit(self):
-        self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
-        self.assertEqual(
-            self.browser.url,
-            '%s%s' % (self.live_server_url, '/profile/edit/')
-        )
-        # import pdb; pdb.set_trace()
+    # Check user get of /profile/edit/ and post updates - future consideration
+    # def test_authn_edit(self):
+    #     self.browser.visit('%s%s' % (self.live_server_url, '/profile/edit/'))
+    #     self.assertEqual(
+    #         self.browser.url,
+    #         '%s%s' % (self.live_server_url, '/profile/edit/')
+    #     )
