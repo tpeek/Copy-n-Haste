@@ -9,7 +9,7 @@ class UserScoreView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(UserScoreView, self).get_context_data(**kwargs)
         try:
-            context['users'] = User.objects.all()
+            context['scores'] = UserScores.objects.all()
         except UserScores.DoesNotExist:
             pass
         return context
