@@ -23,6 +23,6 @@ class ProfileView(TemplateView):
             context['avg_gwpm'] = avg_gwpm/count
             context['avg_nwpm'] = avg_nwpm/count
             context['avg_mistakes'] = avg_mistakes/count
-        except ZeroDivisionError, CNHProfile.DoesNotExist:
+        except (ZeroDivisionError, CNHProfile.DoesNotExist):
             pass
         return context
