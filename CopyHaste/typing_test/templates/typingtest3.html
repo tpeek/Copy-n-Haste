@@ -35,6 +35,10 @@
 
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
+
+
+
+
 var secs = 0;
 
 
@@ -42,6 +46,14 @@ var secs = 0;
 $(document).delegate('#typed', 'keydown', function(e) {
 // var foe = document.getElementById("typed2");
 //   foe.value += String(document.getElementById("type").value).charAt(secs);
+        $.ajax({
+           method : "POST",
+            url : "/play/multi/",
+            data : {"user_input": $('#typed').val()}
+        }).done(function(response){
+        }).fail(function(){
+            alert("fail");
+        });
 
 
   var keyCode = e.keyCode || e.which;
