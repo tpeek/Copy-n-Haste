@@ -35,7 +35,15 @@
 
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
+var secs = 0;
+
+
+
 $(document).delegate('#typed', 'keydown', function(e) {
+// var foe = document.getElementById("typed2");
+//   foe.value += String(document.getElementById("type").value).charAt(secs);
+
+
   var keyCode = e.keyCode || e.which;
 
   if (keyCode == 9) {
@@ -89,6 +97,11 @@ function Right(str, n){
 //the timers to determine the WPM and Accuracy
 function beginTest()
 {
+  window.setInterval(function(){
+  var foe = document.getElementById("typed2");
+  foe.value += String(document.getElementById("type").value).charAt(secs);
+  secs += 1;
+}, 50);
  //We're starting the test, so set the variable to true
  hasStarted = true;
 
