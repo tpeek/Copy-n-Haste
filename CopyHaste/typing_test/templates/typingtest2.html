@@ -23,23 +23,62 @@
 
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
-$(document).delegate('#typed', 'keydown', function(e) {
+var strToTest;
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+$.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated'}).done(function(data) {
+  var l = data.items.length;
+  var i = getRandomInt(0, l - 1);
+  var item = data.items[i];
+  var repo = item.name;
+  var user = item.owner.login;
+  $.ajax({url: 'https://api.github.com/search/code?q=language:python+repo:' + item.full_name}).done(function(codeData) {
+    var cl = codeData.items.length;
+    var ci = getRandomInt(0, cl - 1);
+    var citem = codeData.items[ci];
+    var path = citem.path;
+    $.ajax({
+           method : "POST",
+            url : "/play/content/",
+            data : {"user": user,
+                    "repo": repo,
+                    "path": path}
+        }).done(function(response){
+          $('#type').val(response);
+          strToTest[0] = response;
+          strToTestType = response;
+        }).fail(function(){
+            alert("fail");
+        });
+  });
+});
+var opponent = "{{ opponent }}"
+var secs = 0;
+$(document).delegate('#typed', 'keyup', function(e) {
   var keyCode = e.keyCode || e.which;
-
   if (keyCode == 9) {
     e.preventDefault();
     var start = $(this).get(0).selectionStart;
     var end = $(this).get(0).selectionEnd;
-
     // set textarea value to: text before caret + tab + text after caret
     $(this).val($(this).val().substring(0, start)
                 + "\t"
                 + $(this).val().substring(end));
-
     // put caret at right position again
     $(this).get(0).selectionStart =
     $(this).get(0).selectionEnd = start + 1;
   }
+  $.ajax({
+     method : "POST",
+      url : "/play/multi/",
+      data : {"user_input": $('#typed').val(),
+              "opponent": opponent}
+  }).done(function(response){
+    $('#typed2').val(response)
+  }).fail(function(){
+      alert("fail");
+  });
 });
 
 var hasStarted = false;
