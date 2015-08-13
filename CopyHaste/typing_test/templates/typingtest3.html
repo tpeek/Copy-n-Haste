@@ -5,7 +5,7 @@
 
   textarea {
     position: absolute;
-    font-size: 20px;
+    font-size: 14px;
     width: 500px;
     padding: -500px;
 }
@@ -42,6 +42,7 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+
 $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated'}).done(function(data) {
   var l = data.items.length;
   var i = getRandomInt(0, l - 1);
@@ -62,7 +63,6 @@ $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:
                     "path": path}
         }).done(function(response){
           $('#type').val(response);
-          $('#type2').val(response);
           strToTest[0] = response;
           strToTestType = response;
         }).fail(function(){
@@ -71,25 +71,13 @@ $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:
   });
 });
 
-
+var opponent = "{{ opponent }}"
 
 var secs = 0;
 
 
 
-$(document).delegate('#typed', 'keydown', function(e) {
-// var foe = document.getElementById("typed2");
-//   foe.value += String(document.getElementById("type").value).charAt(secs);
-        $.ajax({
-           method : "POST",
-            url : "/play/multi/",
-            data : {"user_input": $('#typed').val()}
-        }).done(function(response){
-        }).fail(function(){
-            alert("fail");
-        });
-
-
+$(document).delegate('#typed', 'keyup', function(e) {
   var keyCode = e.keyCode || e.which;
 
   if (keyCode == 9) {
@@ -106,6 +94,17 @@ $(document).delegate('#typed', 'keydown', function(e) {
     $(this).get(0).selectionStart =
     $(this).get(0).selectionEnd = start + 1;
   }
+
+  $.ajax({
+     method : "POST",
+      url : "/play/multi/",
+      data : {"user_input": $('#typed').val(),
+              "opponent": opponent}
+  }).done(function(response){
+    $('#typed2').val(response)
+  }).fail(function(){
+      alert("fail");
+  });
 });
 
 var hasStarted = false;
@@ -143,11 +142,6 @@ var intervalID;
 //the timers to determine the WPM and Accuracy
 function beginTest()
 {
-  intervalID = window.setInterval(function(){
-  var foe = document.getElementById("typed2");
-  foe.value += String($('#type').val()).charAt(secs);
-  secs += 1;
-}, 500);
  //We're starting the test, so set the variable to true
  hasStarted = true;
 
@@ -170,8 +164,6 @@ function beginTest()
 
  //Initialize the testing objects by setting the values
  //of the buttons, what to type, and what is typed
- document.JobOp.start.value = "-- Typing Test Started --";
- document.JobOp.start.disabled = true;
  document.JobOp.given.value = strToTestType;
  document.JobOp.typed.value = "";
 
@@ -218,13 +210,6 @@ function endTest()
  wpmType = Math.round(((document.JobOp.typed.value.replace(/  /g,
                   " ").split(" ").length)/totalTime) * 60)
 
- //Set the start test button label and enabled state
- document.JobOp.start.value = ">> Re-Start Typing Test <<";
- document.JobOp.start.disabled = false;
-
- //Flip the starting and stopping buttons around since the test is complete
- document.JobOp.stop.style.display="none";
- document.JobOp.start.style.display="block";
 
  //Declare an array of valid words for what NEEDED to be typed and what WAS typed
  //Again, refer to the above statement on removing the double spaces globally (1A)
@@ -324,17 +309,6 @@ function endTest()
  //versus total expected words -- and only show the percentage as ###.##
  tscore.innerText = ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%";
 
- //Flip the display of the typing area and the
- //expected area with the after action display area
- aArea.style.display = "block";
- tArea.style.display = "none";
- eArea.style.display = "none";
-
- //Set the after action details report to the summary as
- //we found; and in case there are more words found than typed
- //Set the undefined areas of the report to a space,
- //otherwise we may get un-needed word holders
- aArea.innerHTML = aftReport.replace(/undefined/g, " ");
 
  //Notify the user of their testing status via a JavaScript Alert
  //Update: There isn't any need in showing this popup now that
@@ -344,6 +318,7 @@ function endTest()
  //        wpmType + " words per minute.\n\nYou also had " + badWords +
  //        " errors, and " + goodWords + " correct words, giving scoring of " +
  //       ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%.");
+  document.forms["myForm"].submit();
 }
 
 //calcStat is a function called as the user types
@@ -384,12 +359,6 @@ try {
  //Set the words per minute variable on the statistical information block
  tStat.innerText=wpmType + " WPM";
 
- //The test has started apparantly, so disable the stop button
- document.JobOp.stop.disabled = false;
-
- //Flip the stop and start button display status
- document.JobOp.stop.style.display="block";
- document.JobOp.start.style.display="none";
 
  //Calculate and show the time taken to reach this point
  //of the test and also the remaining time left in the test
@@ -440,7 +409,7 @@ try {
 
  //Determine if the test is complete based on whether or not they have
  //typed exactly or exceeded the number of valid words (determined by a space)
- if (word <= (thisTyped.split(" ").length))
+ if (word <= (thisTyped.split(" ").length) + 1)
  {
   endTest();
  }
@@ -564,25 +533,6 @@ function doCheck()
      </td>
     </tr>
     <tr>
-     <td>
-     <p align="center" style="margin-top: 0; margin-bottom: 2px">
-     <input type="button"
-        value="&gt;&gt; Start Typing Test &lt;&lt;" name="start"
-        onclick="beginTest()"
-        style="display:block; border-left:1px solid #293358; border-right:2px
-           solid #293358; border-top:1px solid #293358; border-bottom:2px solid #293358;
-           width: 100%; background-color: #9BB892; color:#FFFFFF;" /></p>
-     <p align="center" style="margin-top: 0; margin-bottom: 0">
-     <input disabled="" type="button"
-       value="&gt;&gt; End Typing Test &lt;&lt;"
-       name="stop" onclick="endTest()"
-       style="display:none; border-left:1px solid #293358; border-right:2px
-                solid #293358; border-top:1px solid #293358; border-bottom:2px
-                solid #293358; width: 100%; background-color: #F05959;
-                color:#FFFFFF;" /></p>
-     </td>
-    </tr>
-    <tr>
      <td style="font-family: Courier; font-size: 9pt">
      <div id="typeArea" style="display:block">
       <table border="0" width="100%" cellspacing="1">
@@ -611,16 +561,16 @@ function doCheck()
       <p style="margin-top: 0; margin-bottom: 0">
 
 <div id='test' class="placeholder" style="display: block;">
-    <textarea onkeypress="doCheck();" onkeydown="//calcStat()" id="typed" name="typed" cols=50 rows=25></textarea>
-    <textarea id="type" name="given" cols=50 rows=25 disabled>
+    <textarea onkeypress="doCheck();" onkeydown="//calcStat()" id="typed" name="typed" cols=50 rows=50></textarea>
+    <textarea id="type" name="given" cols=50 rows=50 disabled>
     </textarea>
      </div>
 
 
 </div>
 <div id='test2'>
-<textarea id="typed2" cols=50 rows=25 disabled></textarea>
-    <textarea id="type2" cols=50 rows=25 disabled>
+<textarea id="typed2" cols=50 rows=50 disabled></textarea>
+    <textarea id="type2" cols=50 rows=50 disabled>
     </textarea>
     </div>
      <div id="afterAction" style="display:none">
@@ -648,13 +598,12 @@ function doCheck()
 </tbody>
 </table>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<form action="{% url 'score_form' %}" method="POST">
+<form id="myForm" name="myForm" action="{% url 'score_form' %}" method="POST">
 {% csrf_token %}
   <input type='hidden' id="wpm_net" name="wpm_net" value="default">
   <input type='hidden' id="wpm_gross" name="wpm_gross" value="default">
   <input type='hidden' id="errors" name="mistakes" value="default">
   <input type='hidden' id="score" name="score" value="default">
-  <input type='submit' value='submit'>
 </form>
 
 {% endblock %}
