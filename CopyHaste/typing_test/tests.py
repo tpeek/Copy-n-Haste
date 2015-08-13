@@ -5,10 +5,10 @@ from __future__ import unicode_literals
 from django.test import TestCase, Client
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.contrib.auth.models import User
-from django.core import mail
 from django.test.utils import override_settings
 import factory
 from faker import Faker
+import redis
 from splinter import Browser
 
 
@@ -37,12 +37,27 @@ class PlayClientTests(TestCase):
         self.assertTemplateUsed(response, 'typingtest2.html')
 
     # Test 2
-    # Check that /play/multi/ page loads the correct template
+    # Check that /play/multi/ page loads the correct content
     def test_multi_template(self):
-        response = Client().get('/play/multi/')
-        self.assertTemplateUsed(response, 'typingtest3.html')
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r.getset('', 'begin')   # anon username is empty string
+        r.getset('someschmuck', 'off we go now')
+        response = Client().post(
+            '/play/multi/',
+            {
+                'user_input': 'good start',
+                'opponent': 'someschmuck'
+            }
+        )
+        self.assertEqual(response.content, 'off we go now')
 
     # Test 3
+    # Check that /play/match/ page loads the correct template
+    def test_match_template(self):
+        response = Client().get('/play/match/')
+        self.assertTemplateUsed(response, 'typingtest3.html')
+
+    # Test 4
     # Check that /play/content/ page loads the correct content
     def test_content_api(self):
         response = Client().post(
@@ -54,3 +69,50 @@ class PlayClientTests(TestCase):
             }
         )
         self.assertEqual(response.content[:14], '# Copy-n-Haste')
+
+
+# # # # # # # # # # # # # # #
+# Web Tests for Play Pages  #
+# # # # # # # # # # # # # # #
+
+
+@override_settings(DEBUG=True)
+class PlayPagesWebTests(StaticLiveServerTestCase):
+
+    def setUp(self):
+        self.user1 = UserFactory.build()
+        self.user1.set_password('abc')
+        self.user1.save()
+        self.browser = Browser()
+
+    def tearDown(self):
+        self.browser.quit()
+
+    def login_helper(self, username, password):
+        self.browser.visit('%s%s' % (self.live_server_url, '/accounts/login/'))
+
+        self.browser.fill('username', username)
+        self.browser.fill('password', password)
+        self.browser.find_by_value('Log in').first.click()
+
+    # Test 5
+    # Check for anonymous playing single player game
+    def test_anon_single_player(self):
+        self.browser.visit(
+            '%s%s' % (self.live_server_url, '/play/')
+        )
+
+    # Test 6
+    # Check for anonymous playing multiplayer game
+    def test_anon_multiplayer(self):
+        pass
+
+    # Test 7
+    # Check for user playing single player game
+    def test_user_single_player(self):
+        pass
+
+    # Test 8
+    # Check for user playing multiplayer game
+    def test_user_multiplayer(self):
+        pass
