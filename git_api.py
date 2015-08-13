@@ -84,7 +84,7 @@ for repository in gh.all_repositories():
     print('{0} - id: {0.id}, url: {0.html_url}'.format(repository))
 
 
---------------get them contesnts of the repository ----------
+--------------get them contents of the repository ----------
 import github3
 repo = github3.repository('heyiamjames', 'CodingInterviewPractice')
 contents = repo.file_contents('/close_far.py')
