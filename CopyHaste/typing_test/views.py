@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import redis
 from django.http import HttpResponse
+import redis
 import urllib
 
 
@@ -11,7 +12,7 @@ with open("typing_test/test1.txt", "r") as myfile:
 
 
 def play_view(request):
-        return render(request, 'typingtest2.html', {'data2': data2})
+    return render(request, 'typingtest2.html', {'data2': data2})
 
 
 @csrf_exempt
@@ -43,6 +44,8 @@ def matchmaking_view(request):
         return render(request, 'typingtest3.html', {'opponent': opponent,
                                                     'data2': data2})
         print request.POST['user_input']
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r.set(request.user.username, request.POST['user_input'])
         return render(request, 'typingtest3.html', {'data2': data2})
     return render(request, 'typingtest3.html', {'data2': data2})
 
