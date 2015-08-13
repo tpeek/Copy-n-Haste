@@ -1,6 +1,9 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import redis
+from django.http import HttpResponse
+import urllib
+
 
 with open("typing_test/test1.txt", "r") as myfile:
     data2 = myfile.read().replace('\n', '\\n')
@@ -39,3 +42,17 @@ def matchmaking_view(request):
     else:
         return render(request, 'typingtest3.html', {'opponent': opponent,
                                                     'data2': data2})
+        print request.POST['user_input']
+        return render(request, 'typingtest3.html', {'data2': data2})
+    return render(request, 'typingtest3.html', {'data2': data2})
+
+
+@csrf_exempt
+def get_content_view(request):
+    user = request.POST['user']
+    repo = request.POST['repo']
+    path = request.POST['path']
+    print user, repo, path
+    code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}".format(user, repo, path)).read()
+    code = str(code)
+    return HttpResponse(code)
