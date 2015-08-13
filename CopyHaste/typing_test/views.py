@@ -44,10 +44,12 @@ def matchmaking_view(request):
 
 @csrf_exempt
 def get_content_view(request):
-    user = request.POST['user']
-    repo = request.POST['repo']
-    path = request.POST['path']
-    code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
-                          .format(user, repo, path)).read()
-    code = str(code)
-    return HttpResponse(code)
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    if request.POST['opponent']:
+        user = request.POST['user']
+        repo = request.POST['repo']
+        path = request.POST['path']
+        code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
+                              .format(user, repo, path)).read()
+        code = str(code)
+        return HttpResponse(code)
