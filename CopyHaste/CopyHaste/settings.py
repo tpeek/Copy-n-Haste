@@ -73,11 +73,12 @@ ROOT_URLCONF = 'CopyHaste.urls'
 
 WSGI_APPLICATION = 'CopyHaste.wsgi.application'
 
-STATIC_URL = '/static/'
-# STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static2/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static2')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+
 
 
 # Database
