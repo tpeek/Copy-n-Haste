@@ -41,6 +41,12 @@ var strToTest;
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
+$.ajax({
+           method : "POST",
+            url : "/match",
+            data : {}
+        }).done(function(response){
+
 
 $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated'}).done(function(data) {
   var l = data.items.length;
@@ -69,7 +75,7 @@ $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:
             alert("fail");
         });
   });
-});
+});});
 
 
 
