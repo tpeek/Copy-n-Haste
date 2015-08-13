@@ -47,7 +47,6 @@ def get_content_view(request):
     user = request.POST['user']
     repo = request.POST['repo']
     path = request.POST['path']
-    print user, repo, path
     code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
                           .format(user, repo, path)).read()
     code = str(code)
