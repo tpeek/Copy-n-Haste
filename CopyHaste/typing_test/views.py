@@ -1,7 +1,6 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-import redis
-from django.http import HttpResponse
 import redis
 import urllib
 
@@ -41,12 +40,10 @@ def matchmaking_view(request):
             r.set('guest', request.user.username)
             opponent = r.get('host')
     else:
-        return render(request, 'typingtest3.html', {'opponent': opponent,
-                                                    'data2': data2})
-        print request.POST['user_input']
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
         r.set(request.user.username, request.POST['user_input'])
-        return render(request, 'typingtest3.html', {'data2': data2})
+        return render(request, 'typingtest3.html', {'opponent': opponent,
+                                                    'data2': data2})
     return render(request, 'typingtest3.html', {'data2': data2})
 
 
@@ -56,6 +53,7 @@ def get_content_view(request):
     repo = request.POST['repo']
     path = request.POST['path']
     print user, repo, path
-    code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}".format(user, repo, path)).read()
+    code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
+                          .format(user, repo, path)).read()
     code = str(code)
     return HttpResponse(code)
