@@ -28,22 +28,29 @@ class UserFactory(factory.django.DjangoModelFactory):
 # # # # # # # # # # # # # # # #
 
 
-class HomepageClientTests(TestCase):
+class PlayClientTests(TestCase):
 
     # Test 1
-    # Check that /game/ page loads the correct template
+    # Check that /play/ page loads the correct template
     def test_game_template(self):
-        response = Client().get('/game/')
+        response = Client().get('/play/')
         self.assertTemplateUsed(response, 'typingtest2.html')
 
     # Test 2
-    # Check that /game/multi/ page loads the correct template
+    # Check that /play/multi/ page loads the correct template
     def test_multi_template(self):
-        response = Client().get('/game/multi/')
+        response = Client().get('/play/multi/')
         self.assertTemplateUsed(response, 'typingtest3.html')
 
     # Test 3
-    # Check that /game/content/ page loads the correct content
+    # Check that /play/content/ page loads the correct content
     def test_home_template(self):
-        response = Client().get('/game/content/')
-        import pdb; pdb.set_trace()
+        response = Client().post(
+            '/play/content/',
+            {
+                'user': 'tpeek',
+                'repo': 'Copy-n-Haste',
+                'path': 'README.md'
+            }
+        )
+        self.assertEqual(response.content[:14], '# Copy-n-Haste')
