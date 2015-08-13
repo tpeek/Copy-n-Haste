@@ -42,6 +42,12 @@ class PlayClientTests(TestCase):
         self.assertTemplateUsed(response, 'typingtest3.html')
 
     # Test 3
+    # Check that /play/match/ page loads the correct template
+    def test_match_template(self):
+        response = Client().get('/play/match/')
+        self.assertTemplateUsed(response, 'typingtest3.html')
+
+    # Test 4
     # Check that /play/content/ page loads the correct content
     def test_content_api(self):
         response = Client().post(
@@ -79,22 +85,24 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         self.browser.fill('password', password)
         self.browser.find_by_value('Log in').first.click()
 
-    # Test 4
+    # Test 5
     # Check for anonymous playing single player game
     def test_anon_single_player(self):
-        pass
+        self.browser.visit(
+            '%s%s' % (self.live_server_url, '/play/')
+        )
 
-    # Test 5
+    # Test 6
     # Check for anonymous playing multiplayer game
     def test_anon_multiplayer(self):
         pass
 
-    # Test 6
+    # Test 7
     # Check for user playing single player game
     def test_user_single_player(self):
         pass
 
-    # Test 7
+    # Test 8
     # Check for user playing multiplayer game
     def test_user_multiplayer(self):
         pass
