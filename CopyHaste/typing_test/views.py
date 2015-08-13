@@ -95,5 +95,4 @@ def report_results_view(request):
     r.delete(request.POST['opponent' + 'wpm_net'])
     r.delete(request.POST['opponent' + 'mistakes'])
     r.delete(request.POST['opponent'])
-    return redirect('scores')
->>>>>>> ee768fc8e3cc47bfabaebefe22bee6243d8547d0
+    return HttpResponse("nope")
