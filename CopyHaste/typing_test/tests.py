@@ -32,7 +32,7 @@ class PlayClientTests(TestCase):
 
     # Test 1
     # Check that /play/ page loads the correct template
-    def test_game_template(self):
+    def test_play_template(self):
         response = Client().get('/play/')
         self.assertTemplateUsed(response, 'typingtest2.html')
 
