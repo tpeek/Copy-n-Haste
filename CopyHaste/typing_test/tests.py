@@ -23,9 +23,9 @@ class UserFactory(factory.django.DjangoModelFactory):
     email = fake.email()
 
 
-# # # # # # # # # # # # # # # #
-# Client Tests for Templates  #
-# # # # # # # # # # # # # # # #
+# # # # # # # # # # # # # #
+# Client Tests for Views  #
+# # # # # # # # # # # # # #
 
 
 class PlayClientTests(TestCase):
@@ -44,7 +44,7 @@ class PlayClientTests(TestCase):
 
     # Test 3
     # Check that /play/content/ page loads the correct content
-    def test_home_template(self):
+    def test_content_api(self):
         response = Client().post(
             '/play/content/',
             {
