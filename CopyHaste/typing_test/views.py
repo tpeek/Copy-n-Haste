@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
 import redis
 import urllib
@@ -15,15 +15,12 @@ def play_view(request):
 
 
 @csrf_exempt
-def multi_play_view(request):
+def multi_play_view(request, opponent=None):
     if request.method == 'POST':
         r = redis.StrictRedis(host='localhost', port=6379, db=0)
         r.set(request.user.username, request.POST['user_input'])
         opponent_data = r.get(request.POST['opponent'])
-        return render(request, 'typingtest3.html',
-                      {'opponent_data': opponent_data, 'data2': data2})
-    else:
-        return render(request, 'typingtest3.html', {'data2': data2})
+        return HttpResponse(opponent_data)
 
 
 @csrf_exempt
@@ -40,8 +37,9 @@ def matchmaking_view(request):
         r.set('guest', request.user.username)
         opponent = r.get('host')
         r.delete('host')
-    return render(request, 'typingtest3.html', {'opponent': opponent,
-                                                'data2': data2})
+        r.set(request.user.username, '')
+    return render(request, 'typingtest3.html',
+                  {'opponent': opponent})
 
 
 @csrf_exempt
