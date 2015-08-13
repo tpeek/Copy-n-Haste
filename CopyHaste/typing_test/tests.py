@@ -10,17 +10,18 @@ import factory
 from faker import Faker
 import redis
 from splinter import Browser
+import time
 
 
-fake = Faker()
+faker = Faker()
 
 
 class UserFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = User
 
-    username = fake.username()
-    email = fake.email()
+    username = factory.LazyAttribute(lambda x: faker.username())
+    email = factory.LazyAttribute(lambda x: faker.email())
 
 
 # # # # # # # # # # # # # #
@@ -83,36 +84,72 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         self.user1 = UserFactory.build()
         self.user1.set_password('abc')
         self.user1.save()
-        self.browser = Browser()
+
+        self.user2 = UserFactory.build()
+        self.user2.set_password('123')
+        self.user2.save()
+
+        self.browser1 = Browser()
 
     def tearDown(self):
-        self.browser.quit()
+        self.browser1.quit()
 
-    def login_helper(self, username, password):
-        self.browser.visit('%s%s' % (self.live_server_url, '/accounts/login/'))
-
-        self.browser.fill('username', username)
-        self.browser.fill('password', password)
-        self.browser.find_by_value('Log in').first.click()
-
-    # Test 5
-    # Check for anonymous playing single player game
-    def test_anon_single_player(self):
-        self.browser.visit(
-            '%s%s' % (self.live_server_url, '/play/')
+    def login_helper(self, browser, username, password):
+        browser.visit(
+            '%s%s' % (self.live_server_url, '/accounts/login/')
         )
 
+        browser.fill('username', username)
+        browser.fill('password', password)
+        browser.find_by_value('Log in').first.click()
+
+    # Test 5
+    # Check perfectly playing single player game
+    def test_perfect_single_player(self):
+        self.browser1.visit(
+            '%s%s' % (self.live_server_url, '/play/')
+        )
+        start = time.time()
+        snippet = self.browser1.find_by_id('type').value
+        for c in snippet:
+            self.browser1.type('typed', c)
+            time.sleep(0.1)
+        elapsed = time.time() - start
+        wpm = str(len(snippet.split()) / (elapsed / 60))
+        accuracy = '100 %'
+        self.assertEqual(self.browser1.find_by_id('stat_wpm').text, wpm)
+        self.assertEqual(self.browser1.find_by_id('stat_score').text, accuracy)
+
     # Test 6
-    # Check for anonymous playing multiplayer game
-    def test_anon_multiplayer(self):
-        pass
+    # Check terribly playing single player game
+    def test_crappy_single_player(self):
+        self.browser1.visit(
+            '%s%s' % (self.live_server_url, '/play/')
+        )
+        snippet = self.browser1.find_by_id('type').value
+        start = time.time()
+        for word in snippet.split():
+            self.browser1.type('typed', 'aaaa ')
+            time.sleep(0.1)
+        elapsed = time.time() - start
+        wpm = str(int(len(snippet.split()) / (elapsed / 60)))
+        accuracy = '0 %'
+        self.assertEqual(self.browser1.find_by_id('stat_wpm').text, wpm)
+        self.assertEqual(self.browser1.find_by_id('stat_score').text, accuracy)
 
     # Test 7
-    # Check for user playing single player game
-    def test_user_single_player(self):
-        pass
+    # Check playing multiplayer game
+    def test_multiplayer(self):
+        self.browser2 = Browser()
+        self.login_helper(self.browser1, self.user1.username, 'abc')
+        self.login_helper(self.browser2, self.user2.username, '123')
 
-    # Test 8
-    # Check for user playing multiplayer game
-    def test_user_multiplayer(self):
-        pass
+        self.browser1.visit(
+            '%s%s' % (self.live_server_url, '/play/')
+        )
+        snippet = self.browser1.find_by_id('type').value
+        for c in snippet:
+            self.browser1.type('typed', c)
+            time.sleep(0.1)
+
+        self.browser2.quit()
