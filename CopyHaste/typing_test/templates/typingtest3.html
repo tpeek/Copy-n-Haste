@@ -598,7 +598,7 @@ function doCheck()
 </tbody>
 </table>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<form id="myForm" name="myForm" action="{% url 'score_form' %}" method="POST">
+<form id="myForm" name="myForm" action="{% url 'report_results' %}" method="POST">
 {% csrf_token %}
   <input type='hidden' id="wpm_net" name="wpm_net" value="default">
   <input type='hidden' id="wpm_gross" name="wpm_gross" value="default">
