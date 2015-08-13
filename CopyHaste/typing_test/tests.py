@@ -145,8 +145,21 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         self.login_helper(self.browser2, self.user2.username, '123')
 
         self.browser1.visit(
-            '%s%s' % (self.live_server_url, '/play/')
+            '%s%s' % (self.live_server_url, '/play/match/')
         )
+        import pdb; pdb.set_trace()
+        self.browser2.visit(
+            '%s%s' % (self.live_server_url, '/play/match/')
+        )
+        snippet = self.browser1.find_by_id('type').value
+        for i, c in enumerate(snippet):
+            j = 2 * i
+            self.browser1.type('typed', c)
+            self.browser2.type('typed', snippet[j])
+            time.sleep(0.1)
+            self.browser2.type('typed', snippet[j + 1])
+            time.sleep(0.1)
+
         snippet = self.browser1.find_by_id('type').value
         for c in snippet:
             self.browser1.type('typed', c)
