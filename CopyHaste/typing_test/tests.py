@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.test.utils import override_settings
 import factory
 from faker import Faker
+import redis
 from splinter import Browser
 
 
@@ -36,10 +37,19 @@ class PlayClientTests(TestCase):
         self.assertTemplateUsed(response, 'typingtest2.html')
 
     # Test 2
-    # Check that /play/multi/ page loads the correct template
+    # Check that /play/multi/ page loads the correct content
     def test_multi_template(self):
-        response = Client().get('/play/multi/')
-        self.assertTemplateUsed(response, 'typingtest3.html')
+        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r.getset('', 'begin')   # anon username is empty string
+        r.getset('someschmuck', 'off we go now')
+        response = Client().post(
+            '/play/multi/',
+            {
+                'user_input': 'good start',
+                'opponent': 'someschmuck'
+            }
+        )
+        self.assertEqual(response.content, 'off we go now')
 
     # Test 3
     # Check that /play/match/ page loads the correct template
