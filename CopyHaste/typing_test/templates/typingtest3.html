@@ -41,11 +41,6 @@ var strToTest;
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-$.ajax({
-           method : "POST",
-            url : "/match",
-            data : {}
-        }).done(function(response){
 
 
 $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated'}).done(function(data) {
@@ -75,9 +70,9 @@ $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:
             alert("fail");
         });
   });
-});});
+});
 
-
+var opponent = "{{ opponent }}"
 
 var secs = 0;
 
@@ -87,8 +82,10 @@ $(document).delegate('#typed', 'keydown', function(e) {
   $.ajax({
      method : "POST",
       url : "/play/multi/",
-      data : {"user_input": $('#typed').val()}
+      data : {"user_input": $('#typed').val(),
+              "opponent": opponent}
   }).done(function(response){
+    $('#typed2').val(response)
   }).fail(function(){
       alert("fail");
   });
@@ -147,11 +144,6 @@ var intervalID;
 //the timers to determine the WPM and Accuracy
 function beginTest()
 {
-  intervalID = window.setInterval(function(){
-  var foe = document.getElementById("typed2");
-  foe.value += String($('#type').val()).charAt(secs);
-  secs += 1;
-}, 500);
  //We're starting the test, so set the variable to true
  hasStarted = true;
 
