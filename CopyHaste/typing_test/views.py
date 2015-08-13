@@ -35,9 +35,11 @@ def matchmaking_view(request):
         while r.get('guest') is None:
             pass
         opponent = r.get('guest')
+        r.delete('guest')
     else:
         r.set('guest', request.user.username)
         opponent = r.get('host')
+        r.delete('host')
     return render(request, 'typingtest3.html', {'opponent': opponent,
                                                 'data2': data2})
 
