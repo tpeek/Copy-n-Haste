@@ -1,5 +1,5 @@
 from django.views.generic import CreateView, TemplateView
-from .models import UserScores
+from .models import Matches, UserScores
 from django.contrib.auth.models import User
 
 
@@ -13,6 +13,12 @@ class UserScoreView(TemplateView):
         except UserScores.DoesNotExist:
             pass
         return context
+
+
+class MatchFormView(CreateView):
+    model = Matches
+    fields = ['winner', 'loser']
+    success_url = '/scores'
 
 
 class ScoreFormView(CreateView):

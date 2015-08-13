@@ -1,6 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from cnh_scores.models import Matches, UserScores
 import redis
 import urllib
 
@@ -53,3 +54,46 @@ def get_content_view(request):
                               .format(user, repo, path)).read()
         code = str(code)
         return HttpResponse(code)
+
+
+@csrf_exempt
+def report_results_view(request):
+    r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    r.set(request.user.username + 'wpm_net', request.POST['wpm_net'])
+    r.set(request.user.username + 'wpm_gross', request.POST['wpm_gross'])
+    r.set(request.user.username + 'mistakes', request.POST['mistakes'])
+    if r.get(request.POST['opponent'] + 'wpm_net') is None:
+        return redirect('scores')
+    while r.get(request.POST['opponent'] + 'wpm_net') is None:
+        pass
+    user1 = UserScores()
+    user1.user = request.user
+    user1.wpm_gross = request.POST['wpm_gross']
+    user1.wpm_net = request.POST['wpm_net']
+    user1.mistakes = request.POST['mistakes']
+    user1.save()
+    user2 = UserScores()
+    user2.wpm_gross = r.get(request.user.username + 'wpm_gross')
+    user2.wpm_net = r.get(request.user.username + 'wpm_net')
+    user2.mistakes = r.get(request.user.username + 'mistakes')
+    user2.save()
+    if user1.wpm_net > user2.wpm_net:
+        winner = user1
+        loser = user2
+    else:
+        winner = user2
+        loser = user1
+    match = Matches()
+    match.winner = winner
+    match.loser = loser
+    match.save()
+    r.delete(request.user.username + 'wpm_gross')
+    r.delete(request.user.username + 'wpm_net')
+    r.delete(request.user.username + 'mistakes')
+    r.delete(request.user.username)
+    r.delete(request.POST['opponent' + 'wpm_gross'])
+    r.delete(request.POST['opponent' + 'wpm_net'])
+    r.delete(request.POST['opponent' + 'mistakes'])
+    r.delete(request.POST['opponent'])
+    return redirect('scores')
+>>>>>>> ee768fc8e3cc47bfabaebefe22bee6243d8547d0
