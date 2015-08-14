@@ -1,5 +1,5 @@
 # Copy-n-Haste
-A totally awesome website where coders and civilians alike can train and show off their typing skills.
+A totally awesome website where coders and others alike can train and show off their typing skills.
 
 ## As an anonymous user, I want to be able to ..
 1. Go to registration page and create an account.
