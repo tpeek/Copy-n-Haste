@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -75,10 +76,13 @@ def report_results_view(request):
     user1.mistakes = request.POST['mistakes']
     user1.save()
     user2 = UserScores()
+    user2.user = User.objects.get(username=request.POST['opponent'])
     user2.wpm_gross = r.get(request.user.username + 'wpm_gross')
     user2.wpm_net = r.get(request.user.username + 'wpm_net')
     user2.mistakes = r.get(request.user.username + 'mistakes')
     user2.save()
+    winner = ''
+    loser = ''
     if user1.wpm_net > user2.wpm_net:
         winner = user1
         loser = user2
