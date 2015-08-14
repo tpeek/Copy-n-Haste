@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from cnh_scores.models import Matches, UserScores
 import redis
 import urllib
+import re
 
 
 with open("typing_test/test1.txt", "r") as myfile:
