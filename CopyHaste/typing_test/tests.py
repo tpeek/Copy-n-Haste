@@ -62,7 +62,7 @@ class PlayClientTests(TestCase):
                 'path': 'README.md'
             }
         )
-        self.assertEqual(response.content[:14], '# Copy-n-Haste')
+        self.assertEqual(response.content[:25], 'A totally awesome website')
 
 
 # # # # # # # # # # # # # # #
