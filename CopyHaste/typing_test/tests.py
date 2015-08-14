@@ -92,16 +92,16 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         self.browser1 = Browser()
 
     def tearDown(self):
-        self.browser1.quit()
+        self.browser.quit()
 
-    def login_helper(self, browser, username, password):
-        browser.visit(
+    def login_helper(self, username, password):
+        self.browser.visit(
             '%s%s' % (self.live_server_url, '/accounts/login/')
         )
 
-        browser.fill('username', username)
-        browser.fill('password', password)
-        browser.find_by_value('Log in').first.click()
+        self.browser.fill('username', username)
+        self.browser.fill('password', password)
+        self.browser.find_by_value('Log in').first.click()
 
     # Test 5
     # Check perfectly playing single player game

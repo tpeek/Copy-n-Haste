@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+        {% for match in matches %}
+        <li>Date:{{match.matchdate}}, Winner:{{match.winner.user}}, Loser: {{match.loser.user}}</li>
+        {% endfor %}
+
+{% endblock %}
