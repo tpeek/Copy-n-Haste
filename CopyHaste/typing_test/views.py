@@ -69,6 +69,17 @@ def get_content_view(request):
 
 
 @csrf_exempt
+def get_content_view2(request):
+    user = request.POST['user']
+    repo = request.POST['repo']
+    path = request.POST['path']
+    code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
+                          .format(user, repo, path)).read()
+    code = str(code)
+    return HttpResponse(code)
+
+
+@csrf_exempt
 def report_results_view(request):
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
     r.set(request.user.username + 'wpm_net', request.POST['wpm_net'])
