@@ -10,7 +10,7 @@ import factory
 from faker import Faker
 import redis
 from splinter import Browser
-# import time
+import time
 
 
 faker = Faker()
@@ -154,18 +154,24 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
     #     self.browser2 = Browser()
     #     self.login_helper(self.browser1, self.user1.username, 'abc')
     #     self.login_helper(self.browser2, self.user2.username, '123')
-
+    #     import pdb; pdb.set_trace()
     #     self.browser1.find_by_tag('a')[2].click()
+
+    #     time.sleep(2)
+
     #     self.browser2.find_by_tag('a')[2].click()
 
+    #     time.sleep(2)
+
     #     snippet = self.browser1.find_by_id('type').value
+    #     snippet = snippet[:-(len(snippet.split()[:-1]) + 1)]
     #     for i, c in enumerate(snippet):
     #         j = 2 * i
     #         self.browser1.type('typed', c)
     #         self.browser2.type('typed', snippet[j])
-    #         time.sleep(0.1)
+    #         time.sleep(0.001)
     #         self.browser2.type('typed', snippet[j + 1])
-    #         time.sleep(0.1)
+    #         time.sleep(0.001)
 
     #     self.assertEqual(self.browser1.find_by_id('result').text, 'loser')
     #     self.assertEqual(self.browser2.find_by_id('result').text, 'winner')
