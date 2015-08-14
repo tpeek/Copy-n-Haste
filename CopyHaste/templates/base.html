@@ -42,9 +42,9 @@
                   <li ><a href="{% url 'homepage' %}">Home</a></li>
                   <li><a href="{% url 'typing_test' %}">Single</a></li>
                     {% if user.is_authenticated %}
-                  <li><a href="{% url 'matchmaking' %}">Double</a></li>
-                  <li><a href="{% url 'scores' %}">Single Results</a></li>
-                  <li><a href="{% url 'match_score' %}">Double Results</a></li>
+                    <li><a href="{% url 'matchmaking' %}">Double</a></li>
+                    <li><a href="{% url 'scores' %}">Scores</a></li>
+                    <li><a href="{% url 'match_score' %}">Match Results</a></li>
                   <li><a href="{% url 'profile' %}">Profile</a></li>
                   <li><a href="{% url 'auth_logout' %}?next=/">Logout</a></li>
                      {% else %}
