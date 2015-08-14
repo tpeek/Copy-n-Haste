@@ -2,6 +2,10 @@
  * Globals
  */
 
+.errorlist.nonfield > li {
+  font-size: 24px;
+}
+
 h1, h2, h3, li{
     font-family: 'Courier';
     font-size: 30px;
