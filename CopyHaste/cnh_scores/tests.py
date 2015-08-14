@@ -230,9 +230,9 @@ class ScoresWebTests(StaticLiveServerTestCase):
     #         self.browser.find_by_tag('li')[5].text,
     #         'Date:' + str(
     #             self.match.match_date
-    #         ).split()[0] + ', Winner:' + str(
+    #         ) + ', Winner:' + str(
     #             self.user1.username
     #         ) + ', Loser:' + str(self.user2.username)
     #     )
 
-    # Test for result page in typing_test.tests
+    # # Test for result page in typing_test.tests
