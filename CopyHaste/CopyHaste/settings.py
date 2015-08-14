@@ -19,7 +19,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 
 DEBUG = True
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -36,7 +36,6 @@ INSTALLED_APPS = (
     'registration',
     'cnh_profile',
     'bootstrap3',
-    'debug_toolbar',
     'cnh_scores',
     'typing_test',
 )
