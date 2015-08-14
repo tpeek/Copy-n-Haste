@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}<br><br><br><br><br><br><br>
+{% block content %}<br><br><br><br><br>
 
 <style type="text/css">
   textarea {
@@ -25,7 +25,7 @@ var strToTest;
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
-$.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated+size:>25'}).done(function(data) {
+$.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated'}).done(function(data) {
   var l = data.items.length;
   var i = getRandomInt(0, l - 1);
   var item = data.items[i];
@@ -544,7 +544,7 @@ function doCheck()
  </tr>
 </tbody>
 </table>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <form action="{% url 'score_form' %}" method="POST">
 {% csrf_token %}
   <input type='hidden' id="wpm_net" name="wpm_net" value="default">

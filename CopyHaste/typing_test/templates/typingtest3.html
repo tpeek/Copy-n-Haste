@@ -328,7 +328,7 @@ function endTest()
             "mistakes": badWords,
             "opponent": opponent}
 }).done(function(response){
-  window.location.href = "{% url 'report_results_view' %}";
+  window.location.href = "{% url 'match_score' %}";
 }).fail(function(){
     alert("fail");
 });
