@@ -1,12 +1,10 @@
 from django.contrib.auth.models import User
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from cnh_scores.models import Matches, UserScores
 import redis
 import urllib
-import time
-from random import randint
 
 
 with open("typing_test/test1.txt", "r") as myfile:
