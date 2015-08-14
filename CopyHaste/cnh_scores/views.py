@@ -9,7 +9,7 @@ class UserScoreView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(UserScoreView, self).get_context_data(**kwargs)
         try:
-            context['scores'] = UserScores.objects.all()
+            context['scores'] = UserScores.objects.all().order_by('-wpm_net')[:10]
         except UserScores.DoesNotExist:
             pass
         return context
@@ -28,7 +28,7 @@ class MatchScoreView(TemplateView):
 
 
 class ScoreFormView(CreateView):
-    model = Matches
+    model = UserScores
     fields = ['wpm_gross', 'wpm_net', 'mistakes']
     success_url = '/scores'
 
