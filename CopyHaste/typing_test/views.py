@@ -64,7 +64,7 @@ def report_results_view(request):
     r.set(request.user.username + 'wpm_gross', request.POST['wpm_gross'])
     r.set(request.user.username + 'mistakes', request.POST['mistakes'])
     if r.get(request.POST['opponent'] + 'wpm_net') is None:
-        return redirect('scores')
+        return HttpResponse("nope")
     while r.get(request.POST['opponent'] + 'wpm_net') is None:
         pass
     user1 = UserScores()
@@ -95,8 +95,8 @@ def report_results_view(request):
     r.delete(request.user.username + 'wpm_net')
     r.delete(request.user.username + 'mistakes')
     r.delete(request.user.username)
-    r.delete(request.POST['opponent' + 'wpm_gross'])
-    r.delete(request.POST['opponent' + 'wpm_net'])
-    r.delete(request.POST['opponent' + 'mistakes'])
+    r.delete(request.POST['opponent'] + 'wpm_gross')
+    r.delete(request.POST['opponent'] + 'wpm_net')
+    r.delete(request.POST['opponent'] + 'mistakes')
     r.delete(request.POST['opponent'])
     return HttpResponse("nope")
