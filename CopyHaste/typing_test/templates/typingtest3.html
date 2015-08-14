@@ -36,7 +36,8 @@
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
 
-var opponent = "{{ opponent }}"
+var opponent = "{{ opponent }}";
+var role = "{{ role }}"
 var secs = 0;
 var strToTest;
 
@@ -63,7 +64,8 @@ $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:
             data : {"user": user,
                     "repo": repo,
                     "path": path,
-                    "opponent": opponent}
+                    "opponent": opponent,
+                    "role": role}
         }).done(function(response){
           $('#type').val(response);
           strToTest[0] = response;
@@ -171,6 +173,9 @@ function beginTest()
  //Apply focus to the text box the user will type the test into
  document.JobOp.typed.focus();
  document.JobOp.typed.select();
+
+
+
 }
 
 //User to deter from Copy and Paste, also acting as a testing protection system
@@ -301,11 +306,6 @@ function endTest()
  tStat.innerText= (wpmType-badWords) + " WPM / " + wpmType + " WPM";
  tTT.innerText = totalTime.toFixed(2) + " sec. elapsed"
 
- document.getElementById("wpm_net").value = (wpmType-badWords);
- document.getElementById("wpm_gross").value = wpmType;
- document.getElementById("errors").value = badWords;
- document.getElementById("score").value = ((goodWords / (goodWords+badWords)) * 100).toFixed(2);
-
  //Calculate the accuracy score based on good words typed
  //versus total expected words -- and only show the percentage as ###.##
  tscore.innerText = ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%";
@@ -319,7 +319,20 @@ function endTest()
  //        wpmType + " words per minute.\n\nYou also had " + badWords +
  //        " errors, and " + goodWords + " correct words, giving scoring of " +
  //       ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%.");
-  document.forms["myForm"].submit();
+
+ $.ajax({
+   method : "POST",
+    url : "/play/report_results/",
+    data : {"wpm_gross": wpmType,
+            "wpm_net": wpmType-badWords,
+            "mistakes": badWords,
+            "opponent": opponent}
+}).done(function(response){
+  window.location.href = "{% url 'scores' %}";
+}).fail(function(){
+    alert("fail");
+});
+
 }
 
 //calcStat is a function called as the user types
@@ -599,12 +612,6 @@ function doCheck()
 </tbody>
 </table>
 <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<form id="myForm" name="myForm" action="{% url 'score_form' %}" method="POST">
-{% csrf_token %}
-  <input type='hidden' id="wpm_net" name="wpm_net" value="default">
-  <input type='hidden' id="wpm_gross" name="wpm_gross" value="default">
-  <input type='hidden' id="errors" name="mistakes" value="default">
-  <input type='hidden' id="score" name="score" value="default">
 </form>
 
 {% endblock %}
