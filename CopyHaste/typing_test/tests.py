@@ -106,7 +106,7 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         time.sleep(2)
         snippet = self.browser1.find_by_id('type').value
         snippet = 'some code' if not snippet else snippet[:-(
-            len(snippet.split()[:-1][-1]) + 1
+            len(snippet.split()[-1]) + 1
         )]
         for c in snippet[:100]:
             self.browser1.type('typed', c)
