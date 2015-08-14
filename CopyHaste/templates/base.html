@@ -39,7 +39,7 @@
               <nav>
                 <ul class="nav masthead-nav">
 
-                  <li class="active"><a href="{% url 'homepage' %}">Home</a></li>
+                  <li ><a href="{% url 'homepage' %}">Home</a></li>
                   <li><a href="{% url 'typing_test' %}">Single</a></li>
                     {% if user.is_authenticated %}
                   <li><a href="{% url 'matchmaking' %}">Double</a></li>
@@ -60,7 +60,7 @@
         {% block content %}
         {% endblock %}<br><br><br><br>
           <div class="mastfoot">
-          
+
     </div>
             <div class="inner">
             <footer style="clear:both;" class="text-center">&copy; 2015 CopynHaste, inc.</footer>
@@ -88,7 +88,7 @@
         s0.parentNode.insertBefore(s1,s0);
       })();
     </script>
-    
+
   </body>
 </html>
 
