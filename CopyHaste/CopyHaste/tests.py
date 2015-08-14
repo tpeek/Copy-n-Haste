@@ -65,7 +65,7 @@ class HomePageWebTests(StaticLiveServerTestCase):
     # Check for login link from anonymous get of homepage
     def test_anon_login(self):
         self.browser.visit('%s%s' % (self.live_server_url, '/'))
-        login_link = self.browser.find_by_tag('a')[3]
+        login_link = self.browser.find_by_tag('a')[2]
         self.assertEqual(
             '%s%s' % (self.live_server_url, '/accounts/login/'),
             login_link['href']
@@ -75,7 +75,7 @@ class HomePageWebTests(StaticLiveServerTestCase):
     # Check for register link from anonymous get of homepage
     def test_anon_register(self):
         self.browser.visit('%s%s' % (self.live_server_url, '/'))
-        register_link = self.browser.find_by_tag('a')[4]
+        register_link = self.browser.find_by_tag('a')[3]
         self.assertEqual(
             '%s%s' % (self.live_server_url, '/accounts/register/'),
             register_link['href']
@@ -85,19 +85,18 @@ class HomePageWebTests(StaticLiveServerTestCase):
     # Check for user login success
     def test_login_success(self):
         self.login_helper(self.user1.username, 'abc')
-
         self.assertEqual(
             self.browser.url,
             '%s%s' % (self.live_server_url, '/profile/')
         )
-        logout_link = self.browser.find_by_tag('a')[4]
+        logout_link = self.browser.find_by_tag('a')[6]
         self.assertEqual(
             '%s%s' % (self.live_server_url, '/accounts/logout/?next=/'),
             logout_link['href']
         )
-        greeting = self.browser.find_by_tag('big')[0]
+        greeting = self.browser.find_by_tag('h1')[0]
         self.assertEqual(
-            '%s%s%s' % ('Well howdy there, ', self.user1.username, '.'),
+            '%s%s%s' % ('Well howdy there, ', self.user1.username, '!'),
             greeting.text
         )
 
@@ -106,7 +105,7 @@ class HomePageWebTests(StaticLiveServerTestCase):
     def test_logout_success(self):
         self.login_helper(self.user1.username, 'abc')
 
-        self.browser.find_by_tag('a')[4].click()
+        self.browser.find_by_tag('a')[6].click()
 
         self.assertEqual(
             self.browser.url,
@@ -139,5 +138,5 @@ class HomePageWebTests(StaticLiveServerTestCase):
             '%s%s' % (self.live_server_url, '/accounts/activate/complete/')
         )
         self.login_helper('joseph', '123')
-        greeting = self.browser.find_by_tag('big')[0]
-        self.assertEqual('Well howdy there, joseph.', greeting.text)
+        greeting = self.browser.find_by_tag('h1')[0]
+        self.assertEqual('Well howdy there, joseph!', greeting.text)
