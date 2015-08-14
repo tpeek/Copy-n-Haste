@@ -65,6 +65,11 @@ def get_content_view(request):
         code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
                               .format(user, repo, path)).read()
         code = str(code)
+        code = re.sub(r'"""([\w\W\s]+)"""', '', code)
+        code = re.sub(r'#([\w\W\s].*)', '', code)
+        code = re.sub(r'from([\w\W\s].*)', '', code)
+        code = re.sub(r'import([\w\W\s].*)', '', code)
+        code = code.lstrip()
         r.set(request.user.username + "_sample", code)
         return HttpResponse(code)
 
