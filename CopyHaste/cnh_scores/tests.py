@@ -28,3 +28,11 @@ class UserFactory(factory.django.DjangoModelFactory):
 # # # # # # # # # # # # #
 # Unit Tests for Models #
 # # # # # # # # # # # # #
+
+
+class UserScoresNMatchesTests(TransactionTestCase):
+    def setUp(self):
+        self.user1 = UserFactory()
+        self.user1.set_password('abc')
+        self.user1.save()
+        self.profile1 = self.user1.profile
