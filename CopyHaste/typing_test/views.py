@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from cnh_scores.models import Matches, UserScores
 import redis
 import urllib
+import re
 
 
 with open("typing_test/test1.txt", "r") as myfile:
@@ -64,6 +65,11 @@ def get_content_view(request):
         code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
                               .format(user, repo, path)).read()
         code = str(code)
+        code = re.sub(r'"""([\w\W\s]+)"""', '', code)
+        code = re.sub(r'#([\w\W\s].*)', '', code)
+        code = re.sub(r'from([\w\W\s].*)', '', code)
+        code = re.sub(r'import([\w\W\s].*)', '', code)
+        code = code.lstrip()
         r.set(request.user.username + "_sample", code)
         return HttpResponse(code)
 
@@ -76,6 +82,11 @@ def get_content_view2(request):
     code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
                           .format(user, repo, path)).read()
     code = str(code)
+    code = re.sub(r'"""([\w\W\s]+)"""', '', code)
+    code = re.sub(r'#([\w\W\s].*)', '', code)
+    code = re.sub(r'from([\w\W\s].*)', '', code)
+    code = re.sub(r'import([\w\W\s].*)', '', code)
+    code = code.lstrip()
     return HttpResponse(code)
 
 

@@ -42,9 +42,9 @@
                   <li ><a href="{% url 'homepage' %}">Home</a></li>
                   <li><a href="{% url 'typing_test' %}">Single</a></li>
                     {% if user.is_authenticated %}
-                  <li><a href="{% url 'matchmaking' %}">Double</a></li>
-                  <li><a href="{% url 'scores' %}">Single Results</a></li>
-                  <li><a href="{% url 'match_score' %}">Double Results</a></li>
+                    <li><a href="{% url 'matchmaking' %}">Double</a></li>
+                    <li><a href="{% url 'scores' %}">Scores</a></li>
+                    <li><a href="{% url 'match_score' %}">Match Results</a></li>
                   <li><a href="{% url 'profile' %}">Profile</a></li>
                   <li><a href="{% url 'auth_logout' %}?next=/">Logout</a></li>
                      {% else %}
@@ -76,18 +76,20 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="../../dist/js/bootstrap.min.js"></script>
 
-    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
-        <script type="text/javascript" id='chatbox'>
-      var $_Tawk_API={},$_Tawk_LoadStart=new Date();
-      (function(){
+        <!--Start of analytics Script-->
+        <script type="text/javascript">
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
         var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
         s1.async=true;
-        s1.src='https://embed.tawk.to/55a5513b84d307454c00f83a/default';
+        s1.src='https://embed.tawk.to/55ccd103f9797c3633b6c267/default';
         s1.charset='UTF-8';
         s1.setAttribute('crossorigin','*');
         s0.parentNode.insertBefore(s1,s0);
-      })();
-    </script>
+        })();
+        </script>
+        <!--End of Script-->
+
 
   </body>
 </html>
