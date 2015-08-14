@@ -44,8 +44,7 @@ class PlayClientTests(TestCase):
         r.getset('', 'begin')   # anon username is empty string
         r.getset('someschmuck', 'off we go now')
         response = Client().post(
-            '/play/multi/',
-            {
+            '/play/multi/', {
                 'user_input': 'good start',
                 'opponent': 'someschmuck'
             }

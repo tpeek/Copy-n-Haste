@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import unicode_literals
-from django.test import TestCase
 from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from django.test import TransactionTestCase
+from django.test import Client, TestCase, TransactionTestCase
 from django.test.utils import override_settings
 import factory
 from faker import Faker
@@ -104,21 +103,63 @@ class UserScoresNMatchesTests(TransactionTestCase):
 
 
 class MultiplayerClientTests(TestCase):
+    def setUp(self):
+        self.user1 = UserFactory()
+        self.user1.set_password('abc')
+        self.user1.save()
+
+        self.user2 = UserFactory.build()
+        self.user2.set_password('123')
+        self.user2.save()
+
+        self.userscore1 = UserScores(
+            user=self.user1,
+            wpm_gross=110,
+            wpm_net=100,
+            mistakes=8
+        )
+        self.userscore1.save()
+
+        self.userscore2 = UserScores(
+            user=self.user2,
+            wpm_gross=100,
+            wpm_net=90,
+            mistakes=10
+        )
+        self.userscore2.save()
+
+        self.match1 = Matches(winner=self.userscore1, loser=self.userscore2)
+        self.match1.save()
+
+        self.client = Client()
+
+        self.client.login(
+            username=self.user1.username, password='abc'
+        )
 
     # Test 9
     # Check that /scores/ page loads the correct template
     def test_scores_template(self):
-        pass
+        response = self.client.get('/scores/')
+        self.assertTemplateUsed(response, 'scores.html')
 
     # Test 10
     # Check that /scores/result page loads the correct template
     def test_result_template(self):
-        pass
+        response = self.client.post(
+            '/scores/result', {
+                'wpm_gross': 110,
+                'wpm_net': 100,
+                'mistakes': 8
+            }
+        )
+        self.assertTemplateUsed(response, 'scores.html')
 
     # Test 11
     # Check that /scores/match_score page loads the correct template
     def test_match_template(self):
-        pass
+        response = self.client.get('/scores/match')
+        self.assertTemplateUsed(response, 'match_score.html')
 
 
 # # # # # # # # # # # # # # #
@@ -138,21 +179,21 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         self.user2.set_password('123')
         self.user2.save()
 
-        self.scores1 = UserScores(
+        self.userscore1 = UserScores(
             user=self.user1,
             wpm_gross=110,
             wpm_net=100,
             mistakes=8
         )
-        self.scores1.save()
+        self.userscore1.save()
 
-        self.scores2 = UserScores(
+        self.userscore2 = UserScores(
             user=self.user2,
             wpm_gross=100,
             wpm_net=90,
             mistakes=10
         )
-        self.scores2.save()
+        self.userscore2.save()
 
         self.match = Matches(winner=self.user1, loser=self.user2)
         self.match.save()
@@ -174,19 +215,40 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
     # Test 12
     # Check anon get of /scores/
     def test_anon_get_scores(self):
-        pass
+        self.browser.visit('%s%s' % (self.live_server_url, '/scores/'))
+        self.assertEqual(
+            self.browser.url,
+            '%s%s' % (self.live_server_url, '/accounts/login/?next=/scores/')
+        )
 
     # Test 13
     # Check anon get of /scores/match_score
     def test_anon_get_match_score(self):
-        pass
+        self.browser.visit('%s%s' % (
+            self.live_server_url,
+            '/scores/match_score')
+        )
+        self.assertEqual(
+            self.browser.url,
+            '%s%s' % (
+                self.live_server_url,
+                '/accounts/login/?next=/scores/match_score'
+            )
+        )
 
     # Test 14
     # Check scores for user
     def test_user_for_scores(self):
         self.login_helper(self.user1, 'abc')
+        self.browser.visit('%s%s' % (self.live_server_url, '/scores/'))
 
     # Test 15
     # Check matches for user
     def test_user_for_matches(self):
         self.login_helper(self.user1, 'abc')
+        self.browser.visit('%s%s' % (
+            self.live_server_url,
+            '/scores/match_score')
+        )
+
+    # Test for result page in typing_test.tests
