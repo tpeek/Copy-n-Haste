@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block content %}<br><br><br><br><br><br><br>
+{% block content %}<br><br><br><br><br>
 
 <style type="text/css">
   textarea {
@@ -544,7 +544,7 @@ function doCheck()
  </tr>
 </tbody>
 </table>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 <form action="{% url 'score_form' %}" method="POST">
 {% csrf_token %}
   <input type='hidden' id="wpm_net" name="wpm_net" value="default">
