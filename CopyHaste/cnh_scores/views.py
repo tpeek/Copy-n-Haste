@@ -15,14 +15,20 @@ class UserScoreView(TemplateView):
         return context
 
 
-class MatchFormView(CreateView):
-    model = Matches
-    fields = ['winner', 'loser']
-    success_url = '/scores'
+class MatchScoreView(TemplateView):
+    template_name = 'matches.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(MatchScoreView, self).get_context_data(**kwargs)
+        try:
+            context['matches'] = Matches.objects.all()
+        except Matches.DoesNotExist:
+            pass
+        return context
 
 
 class ScoreFormView(CreateView):
-    model = UserScores
+    model = Matches
     fields = ['wpm_gross', 'wpm_net', 'mistakes']
     success_url = '/scores'
 
