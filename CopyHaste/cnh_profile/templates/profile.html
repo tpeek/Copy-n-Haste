@@ -2,15 +2,16 @@
 {% block content %}
 
 <body>
-<h1><big>Well howdy there, {{ user.profile }}.</big></h1><br>
+<br>
+<h1>Well howdy there, {{ user.profile }}!</h1><br>
 <h4>
-    <li>User: {{user}}</li>
-    <li>Average Wpm_Gross:{{avg_gwpm}}</li>
-    <li>Average Wpm_Net:{{avg_nwpm}}</li>
-    <li>Average Mistakes per Run: {{avg_mistakes}}</li>
-    You joined us on {{ user.date_joined|date:"l, F dS, Y." }}<br>
+    <p>User: {{user}}</p>
+    <p>Average Wpm_Gross:{{avg_gwpm}}</p>
+    <p>Average Wpm_Net:{{avg_nwpm}}</p>
+    <p>Average Mistakes per Run: {{avg_mistakes}}</p>
+    <p>You joined us on {{ user.date_joined|date:"l, F dS, Y." }}<br></p>
     {% if user.email %}
-    We will write to your email, {{ user.email }}, every day.<br>
+    <!-- We will write to your email, {{ user.email }}, every day.<br> -->
     {% endif %}
 </h4>
 
