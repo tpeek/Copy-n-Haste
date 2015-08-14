@@ -36,7 +36,7 @@
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <SCRIPT LANGUAGE="JavaScript">
 
-var opponent = "{{ opponent }}"
+var opponent = "{{ opponent }}";
 var secs = 0;
 var strToTest;
 
@@ -171,6 +171,9 @@ function beginTest()
  //Apply focus to the text box the user will type the test into
  document.JobOp.typed.focus();
  document.JobOp.typed.select();
+
+
+
 }
 
 //User to deter from Copy and Paste, also acting as a testing protection system
@@ -301,11 +304,6 @@ function endTest()
  tStat.innerText= (wpmType-badWords) + " WPM / " + wpmType + " WPM";
  tTT.innerText = totalTime.toFixed(2) + " sec. elapsed"
 
- document.getElementById("wpm_net").value = (wpmType-badWords);
- document.getElementById("wpm_gross").value = wpmType;
- document.getElementById("errors").value = badWords;
- document.getElementById("score").value = ((goodWords / (goodWords+badWords)) * 100).toFixed(2);
-
  //Calculate the accuracy score based on good words typed
  //versus total expected words -- and only show the percentage as ###.##
  tscore.innerText = ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%";
@@ -319,7 +317,8 @@ function endTest()
  //        wpmType + " words per minute.\n\nYou also had " + badWords +
  //        " errors, and " + goodWords + " correct words, giving scoring of " +
  //       ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%.");
-$.ajax({
+
+ $.ajax({
    method : "POST",
     url : "/play/report_results/",
     data : {"wpm_gross": wpmType,
@@ -327,10 +326,11 @@ $.ajax({
             "mistakes": badWords,
             "opponent": opponent}
 }).done(function(response){
-  window.location.replace("{% url 'scores' %}");
+  window.location.href = "{% url 'scores' %}";
 }).fail(function(){
     alert("fail");
 });
+
 }
 
 //calcStat is a function called as the user types
