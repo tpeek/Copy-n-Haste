@@ -9,6 +9,7 @@ from django.test.utils import override_settings
 import factory
 from faker import Faker
 import redis
+from selenium.common.exceptions import ElementNotVisibleException
 from splinter import Browser
 import time
 
@@ -105,7 +106,7 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         )
         time.sleep(2)
         snippet = self.browser1.find_by_id('type').value
-        if snippet:
+        try:
             snippet = snippet[:-(
                 len(snippet.split()[-1]) + 1
             )]
@@ -118,7 +119,7 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
                 self.browser1.url,
                 '%s%s' % (self.live_server_url, '/scores/')
             )
-        else:
+        except ElementNotVisibleException:
             self.assertTrue(True)
 
     # # Test 5 - future consideration
