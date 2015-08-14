@@ -15,6 +15,9 @@ finding comments
 finding imports
 import([\w\W\s].*)
 
+from
+([\w\W\s].*)
+
 
 
 ------------------------------------------------------------------------------------
@@ -41,3 +44,12 @@ import your mom
 
 import re
 line = re.sub(r"</?\[\d+>", "", line)
+
+-----------------more test--------------
+
+import re
+
+txt='this is a paragraph with<[1> in between</[1> and then there are cases ... where the<[99> number ranges from 1-100</[99>.  and there are many other lines in the txt files with<[3> such tags </[3>'
+
+out = re.sub("(<[^>]+>)", '', txt)
+print out
