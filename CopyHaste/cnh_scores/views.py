@@ -21,7 +21,7 @@ class MatchScoreView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(MatchScoreView, self).get_context_data(**kwargs)
         try:
-            context['matches'] = Matches.objects.all()
+            context['matches'] = Matches.objects.all().order_by('-match_date')[:10]
         except Matches.DoesNotExist:
             pass
         return context

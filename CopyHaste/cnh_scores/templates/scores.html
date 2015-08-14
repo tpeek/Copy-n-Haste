@@ -8,7 +8,6 @@ z-index: 10;
 
 ul {
 list-style-type: none;
-background-color: #666;
 }
 
 .scores li {
@@ -28,7 +27,7 @@ strong {
 <h1>Single Player High Scores</h1>
 <div>
 <ul class='scores'>
-        <li><strong>Username</strong>        <strong>Net WPM</strong></li>
+        <li><strong>Username</strong>        <strong>Gross WPM</strong></li>
         {% for score in scores %}
         <li><strong>{{score.user}}</strong>     <strong>{{score.wpm_net}}</strong></li>
         {% endfor %}
