@@ -53,3 +53,4 @@ txt='this is a paragraph with<[1> in between</[1> and then there are cases ... w
 
 out = re.sub("(<[^>]+>)", '', txt)
 print out
+
