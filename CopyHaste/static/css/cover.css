@@ -2,8 +2,19 @@
  * Globals
  */
 
+
+
+
+
+.bodya {
+  padding: 100px;
+}
 .errorlist.nonfield > li {
   font-size: 24px;
+}
+
+p {
+  font-family: 'Courier';
 }
 
 h1, h2, h3, li{
