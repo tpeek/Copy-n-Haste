@@ -2,7 +2,7 @@
 
 {% block content %}
         {% for match in matches %}
-        <li>Date:{{match.matchdate}}, Winner:{{match.winner.user}}, Loser: {{match.loser.user}}</li>
+        <li>Date:{{match.match_date}}, Winner:{{match.winner.user}}, Loser: {{match.loser.user}}</li>
         {% endfor %}
 
 {% endblock %}
