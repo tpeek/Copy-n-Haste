@@ -3,7 +3,7 @@
 
 from __future__ import unicode_literals
 from django.test import TestCase
-from django.db import DataError
+from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.test import TransactionTestCase
@@ -35,47 +35,67 @@ class UserScoresNMatchesTests(TransactionTestCase):
         self.user1 = UserFactory()
         self.user1.set_password('abc')
         self.user1.save()
-        self.userscore1 = self.user1.profile
+
+        self.user2 = UserFactory.build()
+        self.user2.set_password('123')
+        self.user2.save()
+
+        self.userscore1 = UserScores(user=self.user1)
+        self.userscore1.save()
+
+        self.userscore2 = UserScores(user=self.user2)
+        self.userscore2.save()
+
+        self.match1 = Matches(winner=self.userscore1, loser=self.userscore2)
+        self.match1.save()
 
     # Test 1
     # Check that a related name is created for the user for UserScore
     def test_user_for_userscore(self):
-        pass
+        self.assertEqual(self.user1.scores.all()[0], self.userscore1)
 
     # Test 2
     # Check for database error if no user specified
     def test_error_for_userscore(self):
-        pass
+        self.userscore3 = UserScores()
+        with self.assertRaises(IntegrityError):
+            self.userscore3.save()
 
     # Test 3
     # Check that a date is created for UserScore
     def test_date_for_userscore(self):
-        pass
+        self.assertTrue(self.userscore1.score_date)
 
     # Test 4
     # Check string representation for UserScore
     def test_str_for_userscore(self):
-        pass
+        self.assertEqual(str(self.userscore1), self.userscore1.score_date)
 
     # Test 5
     # Check that related names are created for users for Matches
     def test_users_for_matches(self):
-        pass
+        self.assertEqual(self.userscore1.winner.all()[0], self.match1)
+        self.assertEqual(self.userscore2.loser.all()[0], self.match1)
 
     # Test 6
     # Check for database error if no loser specified
     def test_error_for_matches(self):
-        pass
+        self.match2 = Matches(winner=self.userscore2)
+        with self.assertRaises(IntegrityError):
+            self.match2.save()
 
     # Test 7
     # Check that a date is created for Matches
     def test_date_for_matches(self):
-        pass
+        self.assertTrue(self.match1.score_date)
 
     # Test 8
     # Check string representation for Matches
     def test_str_for_matches(self):
-        pass
+        self.assertEqual(
+            str(self.match1),
+            "Winner:" + str(self.user1) + " Loser:" + str(self.user2)
+        )
 
 
 # # # # # # # # # # # # # #
