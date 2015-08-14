@@ -25,7 +25,10 @@ textarea:focus, input:focus {
     color: grey;
 }
 
-
+form {
+  margin-top: 15%;
+  text-align: left;
+}
 
 
 /* Links */
