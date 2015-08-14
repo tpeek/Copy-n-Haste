@@ -68,7 +68,7 @@ class UserScoresNMatchesTests(TransactionTestCase):
     # Test 4
     # Check string representation for UserScore
     def test_str_for_userscore(self):
-        self.assertEqual(str(self.userscore1), self.userscore1.score_date)
+        self.assertEqual(str(self.userscore1), str(self.userscore1.score_date))
 
     # Test 5
     # Check that related names are created for users for Matches
@@ -86,7 +86,7 @@ class UserScoresNMatchesTests(TransactionTestCase):
     # Test 7
     # Check that a date is created for Matches
     def test_date_for_matches(self):
-        self.assertTrue(self.match1.score_date)
+        self.assertTrue(self.match1.match_date)
 
     # Test 8
     # Check string representation for Matches
@@ -102,34 +102,11 @@ class UserScoresNMatchesTests(TransactionTestCase):
 # # # # # # # # # # # # # #
 
 
-class MultiplayerClientTests(TestCase):
+class ScoresClientTests(TestCase):
     def setUp(self):
         self.user1 = UserFactory()
         self.user1.set_password('abc')
         self.user1.save()
-
-        self.user2 = UserFactory.build()
-        self.user2.set_password('123')
-        self.user2.save()
-
-        self.userscore1 = UserScores(
-            user=self.user1,
-            wpm_gross=110,
-            wpm_net=100,
-            mistakes=8
-        )
-        self.userscore1.save()
-
-        self.userscore2 = UserScores(
-            user=self.user2,
-            wpm_gross=100,
-            wpm_net=90,
-            mistakes=10
-        )
-        self.userscore2.save()
-
-        self.match1 = Matches(winner=self.userscore1, loser=self.userscore2)
-        self.match1.save()
 
         self.client = Client()
 
@@ -143,32 +120,20 @@ class MultiplayerClientTests(TestCase):
         response = self.client.get('/scores/')
         self.assertTemplateUsed(response, 'scores.html')
 
-    # Test 10
-    # Check that /scores/result page loads the correct template
-    def test_result_template(self):
-        response = self.client.post(
-            '/scores/result', {
-                'wpm_gross': 110,
-                'wpm_net': 100,
-                'mistakes': 8
-            }
-        )
-        self.assertTemplateUsed(response, 'scores.html')
-
     # Test 11
     # Check that /scores/match_score page loads the correct template
     def test_match_template(self):
-        response = self.client.get('/scores/match')
+        response = self.client.get('/scores/match_score')
         self.assertTemplateUsed(response, 'match_score.html')
 
 
-# # # # # # # # # # # # # # #
-# Web Tests for Multiplayer #
-# # # # # # # # # # # # # # #
+# # # # # # # # # # # # #
+# Web Tests for Scores  #
+# # # # # # # # # # # # #
 
 
 @override_settings(DEBUG=True)
-class PlayPagesWebTests(StaticLiveServerTestCase):
+class ScoresWebTests(StaticLiveServerTestCase):
 
     def setUp(self):
         self.user1 = UserFactory.build()
@@ -195,7 +160,7 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         )
         self.userscore2.save()
 
-        self.match = Matches(winner=self.user1, loser=self.user2)
+        self.match = Matches(winner=self.userscore1, loser=self.userscore2)
         self.match.save()
 
         self.browser = Browser()
@@ -207,7 +172,6 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         self.browser.visit(
             '%s%s' % (self.live_server_url, '/accounts/login/')
         )
-
         self.browser.fill('username', username)
         self.browser.fill('password', password)
         self.browser.find_by_value('Log in').first.click()
@@ -239,16 +203,36 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
     # Test 14
     # Check scores for user
     def test_user_for_scores(self):
-        self.login_helper(self.user1, 'abc')
+        self.login_helper(self.user1.username, 'abc')
         self.browser.visit('%s%s' % (self.live_server_url, '/scores/'))
-
-    # Test 15
-    # Check matches for user
-    def test_user_for_matches(self):
-        self.login_helper(self.user1, 'abc')
-        self.browser.visit('%s%s' % (
-            self.live_server_url,
-            '/scores/match_score')
+        self.assertEqual(
+            self.browser.find_by_tag('li')[5].text,
+            'Username:' + self.user1.username + ', Net WPM:' + str(
+                self.userscore1.wpm_net
+            )
         )
+        self.assertEqual(
+            self.browser.find_by_tag('li')[6].text,
+            'Username:' + self.user2.username + ', Net WPM:' + str(
+                self.userscore2.wpm_net
+            )
+        )
+
+    # Test 15 - future consideration
+    # Check matches for user
+    # def test_user_for_matches(self):
+    #     self.login_helper(self.user1.username, 'abc')
+    #     self.browser.visit('%s%s' % (
+    #         self.live_server_url,
+    #         '/scores/match_score')
+    #     )
+    #     self.assertEqual(
+    #         self.browser.find_by_tag('li')[5].text,
+    #         'Date:' + str(
+    #             self.match.match_date
+    #         ).split()[0] + ', Winner:' + str(
+    #             self.user1.username
+    #         ) + ', Loser:' + str(self.user2.username)
+    #     )
 
     # Test for result page in typing_test.tests
