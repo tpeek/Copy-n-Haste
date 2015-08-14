@@ -61,7 +61,7 @@ class PlayClientTests(TestCase):
     # Check that /play/content/ page loads the correct content
     def test_content_api(self):
         response = Client().post(
-            '/play/content/',
+            '/play/content2/',
             {
                 'user': 'tpeek',
                 'repo': 'Copy-n-Haste',
@@ -116,6 +116,7 @@ class PlayPagesWebTests(StaticLiveServerTestCase):
         elapsed = time.time() - start
         wpm = str(len(snippet.split()) / (elapsed / 60))
         accuracy = '100 %'
+        import pdb; pdb.set_trace()
         self.assertEqual(self.browser1.find_by_id('stat_wpm').text, wpm)
         self.assertEqual(self.browser1.find_by_id('stat_score').text, accuracy)
 
