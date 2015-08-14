@@ -5,6 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from cnh_scores.models import Matches, UserScores
 import redis
 import urllib
+import time
+from random import randint
 
 
 with open("typing_test/test1.txt", "r") as myfile:
@@ -30,30 +32,41 @@ def matchmaking_view(request):
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
     opponent = ''
     if r.get('host') is None:
+        role = 'host'
         r.set('host', request.user.username)
         while r.get('guest') is None:
             pass
         opponent = r.get('guest')
         r.delete('guest')
     else:
+        role = 'guest'
         r.set('guest', request.user.username)
         opponent = r.get('host')
         r.delete('host')
         r.set(request.user.username, '')
     return render(request, 'typingtest3.html',
-                  {'opponent': opponent})
+                  {'opponent': opponent, 'role': role})
 
 
 @csrf_exempt
 def get_content_view(request):
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    if request.POST['opponent']:
+    if request.POST['role'] == 'guest':
+        while r.get(request.POST['opponent'] + "_sample") is None:
+            pass
+        code = r.get(request.POST['opponent'] + "_sample")
+        r.delete(request.POST['opponent'] + "_sample")
+
+        return HttpResponse(code)
+
+    if request.POST['role'] == 'host':
         user = request.POST['user']
         repo = request.POST['repo']
         path = request.POST['path']
         code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
                               .format(user, repo, path)).read()
         code = str(code)
+        r.set(request.user.username + "_sample", code)
         return HttpResponse(code)
 
 

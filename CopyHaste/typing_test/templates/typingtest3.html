@@ -37,6 +37,7 @@
 <SCRIPT LANGUAGE="JavaScript">
 
 var opponent = "{{ opponent }}";
+var role = "{{ role }}"
 var secs = 0;
 var strToTest;
 
@@ -63,7 +64,8 @@ $.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:
             data : {"user": user,
                     "repo": repo,
                     "path": path,
-                    "opponent": opponent}
+                    "opponent": opponent,
+                    "role": role}
         }).done(function(response){
           $('#type').val(response);
           strToTest[0] = response;
