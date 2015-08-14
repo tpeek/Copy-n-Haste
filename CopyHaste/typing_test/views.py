@@ -59,7 +59,6 @@ def get_content_view(request):
 
 @csrf_exempt
 def report_results_view(request):
-    print "hello"
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
     r.set(request.user.username + 'wpm_net', request.POST['wpm_net'])
     r.set(request.user.username + 'wpm_gross', request.POST['wpm_gross'])
