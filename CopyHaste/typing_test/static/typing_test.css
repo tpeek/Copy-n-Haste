@@ -1,0 +1,28 @@
+textarea {
+    position: absolute;
+    font-size: 14px;
+    width: 500px;
+    padding: -500px;
+}
+
+#type, #type2 {
+    color: gray;
+    background-color: black;
+    opacity: .9;
+}
+
+#typed, #typed2 {
+    background: none;
+    z-index: 10;
+    color: #00FF00;
+}
+
+#test {
+  float: left;
+  margin-left: -160px;
+}
+
+#test2 {
+  float: right;
+  margin-right: 350px;
+}

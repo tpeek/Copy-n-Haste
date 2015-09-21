@@ -94,8 +94,11 @@ def get_code(language):
 
 @csrf_exempt
 def get_content_view(request):
+    print 1
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
+    print request.POST
     if request.POST['role'] == 'guest':
+        print 2.1
         while r.get(request.POST['opponent'] + "_sample") is None:
             pass
         code = r.get(request.POST['opponent'] + "_sample")
@@ -104,6 +107,7 @@ def get_content_view(request):
         return HttpResponse(code)
 
     if request.POST['role'] == 'host':
+        print 3.1
         user = request.POST['user']
         repo = request.POST['repo']
         path = request.POST['path']
