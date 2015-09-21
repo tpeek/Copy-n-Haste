@@ -4,8 +4,10 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from cnh_scores.models import Matches, UserScores
 import redis
-import urllib
+import urllib2
 import re
+import json
+from random import randint
 
 
 with open("typing_test/test1.txt", "r") as myfile:
@@ -47,6 +49,49 @@ def matchmaking_view(request):
                   {'opponent': opponent, 'role': role})
 
 
+def get_code(language):
+    while True:
+        # Get the 100 most recently updated repos that are large and pick one randomly.
+        url = ('https://api.github.com/search/repositories?q=language:' +
+               '{}+sort:updated+size:>20000&per_page=100'.format(language))
+        data = json.load(urllib2.urlopen(url))
+        try:
+            info = data['items'][randint(0, 99)]
+        except:
+            continue
+        repo = info['name']
+        user = info['owner']['login']
+        full_name = info['full_name']
+
+        # Get the files and pick one randomly.
+        repo_url = ('https://api.github.com/search/code?q=language:' +
+                    '{}+sort:size+repo:{}'.format(language, full_name))
+        data = json.load(urllib2.urlopen(repo_url))
+        try:
+            path = data['items'][randint(0, len(data['items'])-1)]['path']
+        except:
+            continue
+        print path
+        # Get the raw text of the file.
+        code = urllib2.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
+                               .format(user, repo, path)).read()
+        print code
+        # Get rid of doc strings, comments, import statements, blank lines and
+        # convert multi spaces to tabs.
+
+        code = re.sub(r'[\s]*"{3}([\s\S]*?"{3})', '', code)
+        code = re.sub(r"[\s]*'{3}([\s\S]*?'{3})", '', code)
+        code = re.sub(r'[\s]*#([\w\W\s].*)', '', code)
+        code = re.sub(r'[\s]*from([\w\W\s].*)', '', code)
+        code = re.sub(r'[\s]*import([\w\W\s].*)', '', code)
+        code = re.sub(r'^[\s]*$', '', code)
+        code = re.sub(r'\n{2,}', '\n', code)
+        code = re.sub(r'[ ]{4}', '\t', code)
+        code = code.lstrip()
+        if len(code) > 750:
+            return code
+
+
 @csrf_exempt
 def get_content_view(request):
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
@@ -62,8 +107,8 @@ def get_content_view(request):
         user = request.POST['user']
         repo = request.POST['repo']
         path = request.POST['path']
-        code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
-                              .format(user, repo, path)).read()
+        code = urllib2.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
+                               .format(user, repo, path)).read()
         code = str(code)
         code = re.sub(r'"""([\w\W\s]+)"""', '', code)
         code = re.sub(r'#([\w\W\s].*)', '', code)
@@ -76,18 +121,7 @@ def get_content_view(request):
 
 @csrf_exempt
 def get_content_view2(request):
-    user = request.POST['user']
-    repo = request.POST['repo']
-    path = request.POST['path']
-    code = urllib.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
-                          .format(user, repo, path)).read()
-    code = str(code)
-    code = re.sub(r'"""([\w\W\s]+)"""', '', code)
-    code = re.sub(r'#([\w\W\s].*)', '', code)
-    code = re.sub(r'from([\w\W\s].*)', '', code)
-    code = re.sub(r'import([\w\W\s].*)', '', code)
-    code = code.lstrip()
-    return HttpResponse(code)
+    return HttpResponse(get_code('python'))
 
 
 @csrf_exempt
