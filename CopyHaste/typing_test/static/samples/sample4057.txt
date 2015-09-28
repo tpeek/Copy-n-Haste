@@ -1,0 +1,21 @@
+(C_NONE, C_BACKSLASH, C_STRING_FIRST_LINE,
+ C_STRING_NEXT_LINES, C_BRACKET) = range(5)
+if 0:
+	def dump(*stuff):
+		sys.__stdout__.write(" ".join(map(str, stuff)) + "\n")
+_synchre = re.compile(r, re.VERBOSE | re.MULTILINE).search
+_junkre = re.compile(r, re.VERBOSE).match
+_match_stringre = re.compile(r [^"\\]* (?:
+					 (?: \\. | "(?!"") )
+					 [^"\\]*
+				 )*
+	(?: \, re.VERBOSE | re.DOTALL).match
+_itemre = re.compile(r, re.VERBOSE).match
+_closere = re.compile(r, re.VERBOSE).match
+_chew_ordinaryre = re.compile(r, re.VERBOSE).match
+class StringTranslatePseudoMapping(Mapping):
+	r
+	def __init__(self, non_defaults, default_value):
+		self._non_defaults = non_defaults
+		self._default_value = default_value
+		def _get(key, _get=non_defaults.get, _def

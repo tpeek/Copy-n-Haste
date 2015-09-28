@@ -1,0 +1,18 @@
+
+class Migration(SchemaMigration):
+	def forwards(self, orm):
+		db.add_column('core_nodeset', 'solr_query',
+					  self.gf('django.db.models.fields.TextField')(null=True, blank=True),
+					  keep_default=False)
+		db.add_column('core_nodeset', 'node_count',
+					  self.gf('django.db.models.fields.IntegerField')(null=True, blank=True),
+					  keep_default=False)
+		db.add_column('core_nodeset', 'is_implicit',
+					  self.gf('django.db.models.fields.BooleanField')(default=False),
+					  keep_default=False)
+		db.delete_table('core_nodeset_nodes')
+	def backwards(self, orm):
+		db.delete_column('core_nodeset', 'solr_query')
+		db.delete_column('core_nodeset', 'node_count')
+		db.delete_column('core_nodeset', 'is_implicit')
+		db.create_table('core_node

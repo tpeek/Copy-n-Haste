@@ -1,0 +1,24 @@
+
+def _b64_encode_bytes(b):
+	return base64.b64encode(b).decode("ascii")
+def _b64_encode_str(s):
+	return _b64_encode_bytes(s.encode("utf8"))
+def _b64_decode_bytes(b):
+	return base64.b64decode(b.encode("ascii"))
+def _b64_decode_str(s):
+	return _b64_decode_bytes(s).decode("utf8")
+class Serializer(object):
+	def dumps(self, request, response, body=None):
+		response_headers = CaseInsensitiveDict(response.headers)
+		if body is None:
+			body = response.read(decode_content=False)
+			response._fp = io.BytesIO(body)
+		data = {
+			"response": {
+				"body": _b64_encode_bytes(body),
+				"headers": dict(
+					(_b64_encode_str(k), _b64_encode_str(v))
+					for k, v in response.headers.items()
+				),
+				"status": response.status,
+				"version": response.vers

@@ -1,0 +1,24 @@
+
+class CropParameters:
+	name = ''
+	def __init__(self, v, vb_flag=False):
+		self.name = str(v[0]).replace('"', '').strip()
+		self.class_number = abs(int(v[1]))
+		if int(v[1]) < 0:
+			self.is_annual = True
+		else:
+			self.is_annual = False
+		self.irrigation_flag = int(v[2])
+		self.days_after_planting_irrigation = int(v[3])
+		self.crop_fw = int(v[4])
+		self.winter_surface_cover_class = int(v[5])
+		self.kc_max = float(v[6])
+		self.mad_initial = int(v[7])
+		self.mad_midseason = int(v[8])
+		self.rooting_depth_initial = float(v[9])
+		self.rooting_depth_max = float(v[10])
+		self.end_of_root_growth_fraction_time = float(v[11])
+		self.height_initial = float(v[12])
+		self.height_max = float(v[13])
+		self.curve_number = int(v[14])
+		self.curve_name = s

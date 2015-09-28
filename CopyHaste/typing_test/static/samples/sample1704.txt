@@ -1,0 +1,30 @@
+
+class ProjectData(object):
+	def get(self):
+		return dict()
+def mock_version(repo):
+	class MockVersion(object):
+		def __init__(self, x=None):
+			pass
+		def put(self, x=None):
+			return x
+		def get(self, **kwargs):
+			version = json.loads()
+			project = json.loads()
+			version['project'] = project
+			project['repo'] = repo
+			if 'slug' in kwargs:
+				return {'objects': [version], 'project': project}
+			else:
+				return version
+	return MockVersion
+class MockApi(object):
+	def __init__(self, repo):
+		self.version = mock_version(repo)
+	def project(self, x):
+		return ProjectData()
+	def build(self, x):
+		return mock.Mock(**{'get.return_value': {'state': 'triggered'}})
+	def command(self, x):
+		return mock.Mock(**{'get.return_value': {}})
+@contextma

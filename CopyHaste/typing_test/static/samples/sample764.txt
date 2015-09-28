@@ -1,0 +1,25 @@
+
+def assert_has_keys(dct, required=None, optional=None):
+	required = required or []
+	optional = optional or []
+	for k in required:
+		try:
+			assert k in dct
+		except AssertionError:
+			extra_keys = set(dct.keys()).difference(set(required + optional))
+			raise AssertionError("found unexpected keys: %s" %
+								 list(extra_keys))
+class TestResponse(requests.Response):
+	def __init__(self, data):
+		super(TestResponse, self).__init__()
+		self._content_consumed = True
+		if isinstance(data, dict):
+			self.status_code = data.get('status_code', 200)
+			text = data.get('text', "")
+			if isinstance(text, (dict, list)):
+				self._content = json.dumps(text)
+				default_headers = {
+					"Content-Type": "application/json",
+				}
+			else:
+				self._conte

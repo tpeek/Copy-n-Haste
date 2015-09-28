@@ -1,0 +1,18 @@
+
+operating_system = check_os()
+if operating_system == "posix":
+	definepath = os.getcwd()
+	print "\n[*] Welcome to the SET-Proxy Configuration Utility"
+	print "\nEnter the proxy setting informatiom below.\n\nExample: http://10.3.1.1:8080\n"
+	try:
+		proxy = raw_input("Enter the proxy server: ")
+		username = raw_input("Enter the username for the proxy (hit enter for none): ")
+		password = getpass.getpass("Enter the password for the proxy (hit enter for none): ")
+	except KeyboardInterrupt:
+		print "\n[!] Exiting the Social-Engineer Toolkit."
+		sys.exit()
+	if username != "":
+		proxy_string = "export http_proxy='http://%s:%s@%s'" % (username,password,proxy)
+	if username == "":
+		proxy_string = "export http_proxy='http://%s'" % (proxy)
+	filewrite 

@@ -1,0 +1,32 @@
+
+class BackStabber(Player):
+	name = 'BackStabber'
+	classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def strategy(self, opponent):
+		if not opponent.history:
+			return 'C'
+		if len(opponent.history) > (self.tournament_attributes['length'] - 3):
+			return 'D'
+		if opponent.defections > 3:
+			return 'D'
+		return 'C'
+class DoubleCrosser(Player):
+	name = 'DoubleCrosser'
+	classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def strategy(self, opponent):
+		cutoff = 6
+		if not opponent.history:
+			return 'C'
+		if len(opponent.hist

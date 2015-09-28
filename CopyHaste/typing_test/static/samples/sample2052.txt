@@ -1,0 +1,23 @@
+
+sys.path = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')]+sys.path
+class Tests(unittest.TestCase):
+	def test_iterate_otu_table_rows_hello_world(self):
+		s = Stats_And_Summary()
+		self.assertEqual(
+						 [(1, ['ab','c'], [1])],
+						 list(s._iterate_otu_table_rows([{'readname': ['ab','c']}]))
+						 )  
+		
+	def test_iterate_otu_table_rows_two_samples_same_tax(self):
+		s = Stats_And_Summary()
+		self.assertEqual(
+						 [(1, ['ab','c'], [1,1])],
+						 list(s._iterate_otu_table_rows(({'readname': ['ab','c']},
+														 {'readname2': ['ab','c']})))
+						 )  
+		
+	def test_iterate_otu_table_rows_two_samples_different_counts(self):
+		s = Stats_And_Summary()
+		self.assertEqual(
+						 [(1, ['ab','c'], [2,1])],
+						 list

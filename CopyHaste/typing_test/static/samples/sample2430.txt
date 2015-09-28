@@ -1,0 +1,19 @@
+
+class cmd_checkmodulesets(Command):
+	doc = N_('Check if modules in JHBuild have the correct definition')
+	name = 'checkmodulesets'
+	def run(self, config, options, args, help=None):
+		module_set = jhbuild.moduleset.load(config)
+		module_list = module_set.get_full_module_list \
+						  (warn_about_circular_dependencies = True)
+		for mod in module_list:
+			if mod.type in ('meta', 'tarball'):
+				continue
+			try:
+				if not mod.branch.exists():
+					logging.error(_('%(module)s is unreachable (%(href)s)') % {
+							'module': mod.name, 'href': mod.branch.module})
+			except NotImplementedError:
+				logging.warning((_('Cannot check %(module)s (%(href)s)') % {
+							'module': mod.name, 'href': mod.branch.module}))
+register_command(cmd_checkmodule

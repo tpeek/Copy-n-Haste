@@ -1,0 +1,107 @@
+class CallTips:
+	menudefs = [
+		('edit', [
+			("Show call tip", "<<force-open-calltip>>"),
+		])
+	]
+	def __init__(self, editwin=None):
+		if editwin is None:
+			self.editwin = None
+		else:
+			self.editwin = editwin
+			self.text = editwin.text
+			self.active_calltip = None
+			self._calltip_window = self._make_tk_calltip_window
+	def close(self):
+		self._calltip_window = None
+	def _make_tk_calltip_window(self):
+		return CallTipWindow.CallTip(self.text)
+	def _remove_calltip_window(self, event=None):
+		if self.active_calltip:
+			self.active_calltip.hidetip()
+			self.active_calltip = None
+	def force_open_calltip_event(self, event):
+		"The user selected the menu entry or hotkey, open the tip."
+		self.open_calltip(True)
+	def try_open_calltip_event(self, event):
+		self.open_calltip(False)
+	def refresh_calltip_event(self, event):
+		if self.active_calltip and self.active_calltip.is_active():
+			self.open_calltip(False)
+	def open_calltip(self, evalfuncs):
+		self._remove_calltip_window()
+		hp = HyperParser(self.editwin, "insert")
+		sur_paren = hp.get_surrounding_brackets('(')
+		if not sur_paren:
+			return
+		hp.set_index(sur_paren[0])
+		expression  = hp.get_expression()
+		if not expression:
+			return
+		if not evalfuncs and (expression.find('(') != -1):
+			return
+		argspec = self.fetch_tip(expression)
+		if not argspec:
+			return
+		self.active_calltip = self._calltip_window()
+		self.active_calltip.showtip(argspec, sur_paren[0], sur_paren[1])
+	def fetch_tip(self, expression):
+		try:
+			rpcclt = self.editwin.flist.pyshell.interp.rpcclt
+		except AttributeError:
+			rpcclt = None
+		if rpcclt:
+			return rpcclt.remotecall("exec", "get_the_calltip",
+									 (expression,), {})
+		else:
+			return get_argspec(get_entity(expression))
+def get_entity(expression):
+	if expression:
+		namespace = sys.modules.copy()
+		namespace.update(__main__.__dict__)
+		try:
+			return eval(expression, namespace)
+		except BaseException:
+			return None
+_MAX_COLS = 85
+_MAX_LINES = 5
+_INDENT = ' '*4
+_first_param = re.compile('(?<=\()\w*\,?\s*')
+_default_callable_argspec = "See source or doc"
+def get_argspec(ob):
+	argspec = ""
+	try:
+		ob_call = ob.__call__
+	except BaseException:
+		return argspec
+	if isinstance(ob, type):
+		fob = ob.__init__
+	elif isinstance(ob_call, types.MethodType):
+		fob = ob_call
+	else:
+		fob = ob
+	if isinstance(fob, (types.FunctionType, types.MethodType)):
+		argspec = inspect.formatargspec(*inspect.getfullargspec(fob))
+		if (isinstance(ob, (type, types.MethodType)) or
+				isinstance(ob_call, types.MethodType)):
+			argspec = _first_param.sub("", argspec)
+	lines = (textwrap.wrap(argspec, _MAX_COLS, subsequent_indent=_INDENT)
+			if len(argspec) > _MAX_COLS else [argspec] if argspec else [])
+	if isinstance(ob_call, types.MethodType):
+		doc = ob_call.__doc__
+	else:
+		doc = getattr(ob, "__doc__", "")
+	if doc:
+		for line in doc.split('\n', _MAX_LINES)[:_MAX_LINES]:
+			line = line.strip()
+			if not line:
+				break
+			if len(line) > _MAX_COLS:
+				line = line[: _MAX_COLS - 3] + '...'
+			lines.append(line)
+		argspec = '\n'.join(lines)
+	if not argspec:
+		argspec = _default_callable_argspec
+	return argspec
+if __name__ == '__main__':
+	main('idlelib.idle_test.test_calltips', verbosity=2)

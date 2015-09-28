@@ -1,0 +1,26 @@
+
+class CellWorld(World):
+	def __init__(self, canvas_size=500, cell_size=5, interactive=False):
+		World.__init__(self)
+		self.title('CellWorld')
+		self.canvas_size = canvas_size
+		self.cell_size = cell_size
+		self.cells = {}
+		if interactive:
+			self.make_canvas()
+			self.make_control()
+		
+	def make_canvas(self):
+		self.canvas = self.ca(width=self.canvas_size, 
+							  height=self.canvas_size,
+							  bg='white', 
+							  scale = [self.cell_size, self.cell_size])
+		
+	def make_control(self):
+		self.la(text='Click or drag on the canvas to create cells.')
+		self.row([0,1,0])
+		self.la(text='Cell size: ')
+		self.cell_size_en = self.en(width=10, text=str(self.cell_size))
+		self.bu(text='resize', command=self.rescale)
+		self.endrow()
+	def bind(

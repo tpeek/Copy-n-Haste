@@ -1,0 +1,25 @@
+
+common.addon.log('Initializing URLResolver version: %s' % common.addon_version)
+plugnplay.set_plugin_dirs(common.plugins_path)
+MAX_SETTINGS = 75
+def lazy_plugin_scan():
+	if not UrlResolver.implementors():
+		plugnplay.scan_plugins(UrlWrapper)
+def resolve(web_url):
+	lazy_plugin_scan()
+	source = HostedMediaFile(url=web_url)
+	return source.resolve()
+def filter_source_list(source_list):
+	lazy_plugin_scan()
+	return [source for source in source_list if source]
+def choose_source(sources):
+	lazy_plugin_scan()
+	sources = filter_source_list(sources)
+	if len(sources) > 1:
+		dialog = xbmcgui.Dialog()
+		titles = []
+		for source in sources:
+			titles.append(source.title)
+		index = dialog.select('Choose your stream', titles)
+		if index > -1:
+			return sou

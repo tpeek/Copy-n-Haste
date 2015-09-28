@@ -1,0 +1,23 @@
+
+def plotspec(specData, bandNames, limits, objID, plotInstructions, specnames,figNum=1):
+	GRAYS = ['
+			 '
+	colors = [colorSet[9][::-1][2], colorSet[9][::-1][5], colorSet[9][::-1][7]]
+	X_LABEL = 'Wavelength ($\mu$m)'
+	Y_LABEL = 'Normalized Flux (F$_{\lambda}$) + constant'
+	plt.close()
+	plt.rc('font', size=8)
+	fig = plt.figure(figNum, figsize=(6.5,6.5))
+	plt.subplots_adjust(wspace=0.1, hspace=0.001, top=0.99, \
+						bottom=0.06, right=0.98, left=0.03)
+	plt.clf()
+	bandNames.reverse()
+	for bandIdx, band in enumerate(bandNames):
+		spLines = []
+		minPlot = 1
+		maxPlot = 1
+		copyColors = list(colors)
+		subPlot = plt.figure(figNum).add_subplot(1,3,3 - bandIdx)
+		subPlot.set_autoscale_on(False)
+		if bandIdx == 1:
+			subPlot.set_xlabel(X_LABEL, lab

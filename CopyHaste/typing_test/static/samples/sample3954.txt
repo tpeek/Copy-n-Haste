@@ -1,0 +1,29 @@
+__author__ = "Nick Sweet"
+__copyright__ = "Copyright 2015, Cohrint"
+__credits__ = ["Nick Sweet", "Nisar Ahmed"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Nick Sweet"
+__email__ = "nick.sweet@colorado.edu"
+__status__ = "Development"
+												GoalPlanner,
+												PathPlanner,
+												Controller)
+class Robot(iRobotCreate):
+	def __init__(self,
+				 name,
+				 pose=None,
+				 pose_source='python',
+				 color_str='darkorange',
+				 map_cfg={},
+				 create_mission_planner=True,
+				 goal_planner_cfg={},
+				 path_planner_cfg={},
+				 **kwargs):
+		self.name = name
+		self.pose_source = pose_source
+		self.map = Map(**map_cfg)
+		feasible_robot_generated = False
+		if pose is None:
+			while not feasible_robot_generated:
+				x

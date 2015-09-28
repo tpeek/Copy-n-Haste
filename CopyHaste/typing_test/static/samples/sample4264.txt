@@ -1,0 +1,17 @@
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+class TestJSInterpreter(unittest.TestCase):
+	def test_basic(self):
+		jsi = JSInterpreter('function x(){;}')
+		self.assertEqual(jsi.call_function('x'), None)
+		jsi = JSInterpreter('function x3(){return 42;}')
+		self.assertEqual(jsi.call_function('x3'), 42)
+	def test_calc(self):
+		jsi = JSInterpreter('function x4(a){return 2*a+1;}')
+		self.assertEqual(jsi.call_function('x4', 3), 7)
+	def test_empty_return(self):
+		jsi = JSInterpreter('function f(){return; y()}')
+		self.assertEqual(jsi.call_function('f'), None)
+	def test_morespace(self):
+		jsi = JSInterpreter('function x (a) { return 2 * a + 1 ; }')
+		self.assertEqual(jsi.call_function('x', 3), 7)
+		jsi = JSInterpre

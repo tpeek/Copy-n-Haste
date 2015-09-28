@@ -1,0 +1,27 @@
+
+def pun():
+	q1 = "What do you call a killer bee?"
+	a1 = "BBGun"
+	q2 = "What do you call an American bee?"
+	a2 = "USB"
+	q3 = "What is Forrest Gump's email password?"
+	a3 = "1forrest1"
+	q4 = "How did I escape Iraq?"
+	a4 = "Iran"
+	q5 = "What does a bee call his wife??"
+	a5 = "Honey"
+	punDict = {q1:a1, q2:a2, q3:a3, q4:a4, q5:a5}
+	punDictCopy = punDict
+	randQNum = random.randrange(len(punDict))
+	randQ = punDict.keys()[randQNum]
+	ans = ""
+	response = ""
+	restart = ""
+	wrong = False
+	score = 0
+	print "Welcome to Guess the Bad Pun!\nRules are simple: Guess the answer to the pun, and get a point! \n*Note: Answers are one word and can contain letters and numbers.\nFirst Question:"
+	while len(punDict) > 0:
+		response = ""
+		ans = ""
+		restart = ""
+	

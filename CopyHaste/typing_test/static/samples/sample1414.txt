@@ -1,0 +1,25 @@
+
+def myPresenceHandler(con, event):
+  print str(event.getFrom().getStripped()) +'is now '+ str(event.getType())
+class Gtalk:
+  def __init__(self,loginid,passwd,domain = 'gmail.com'):
+	self.cnx =None
+	cnx = xmpp.Client(domain,debug=[])
+	if cnx.connect( server=('talk.google.com',5223) ) =="":
+	  print 'Not able to connect'
+	  return None
+	if cnx.auth(loginid,passwd, 'botty') ==None:
+	  print "Auth Failed"
+	  return None
+	cnx.sendInitPresence()
+	self.cnx = cnx
+	print 'Logied in'
+	self.cnx.RegisterHandler('message', self.messageCB)
+	self.cnx.RegisterHandler('presence', myPresenceHandler)
+	
+  def getConn(self):
+	return self.cnx
+  
+  def update_status(self,msg):
+	pres = xmpp.Presence(typ='unavailable',show='unavailable',status='unavailable')
+	pre

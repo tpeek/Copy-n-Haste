@@ -1,0 +1,39 @@
+
+	WindowsAzureError,
+	MANAGEMENT_HOST,
+	_str,
+	_validate_not_none,
+	)
+	AffinityGroups,
+	AffinityGroup,
+	AvailabilityResponse,
+	Certificate,
+	Certificates,
+	DataVirtualHardDisk,
+	Deployment,
+	Disk,
+	Disks,
+	Locations,
+	Operation,
+	HostedService,
+	HostedServices,
+	Images,
+	OperatingSystems,
+	OperatingSystemFamilies,
+	OSImage,
+	PersistentVMRole,
+	StorageService,
+	StorageServices,
+	Subscription,
+	SubscriptionCertificate,
+	SubscriptionCertificates,
+	VirtualNetworkSites,
+	_XmlSerializer,
+	)
+	_ServiceManagementClient,
+	)
+class ServiceManagementService(_ServiceManagementClient):
+	def __init__(self, subscription_id=None, cert_file=None,
+				 host=MANAGEMENT_HOST):
+		super(ServiceManagementService, self).__init__(
+			subscription_id, cert_file, host)

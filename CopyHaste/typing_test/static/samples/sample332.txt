@@ -1,0 +1,31 @@
+
+class TestNegativeBasicGenerator(base.TestCase):
+	valid_desc = {
+		"name": "list-flavors-with-detail",
+		"http-method": "GET",
+		"url": "flavors/detail",
+		"json-schema": {
+			"type": "object",
+			"properties": {
+				"minRam": {"type": "integer"},
+				"minDisk": {"type": "integer"}
+			}
+		},
+		"resources": ["flavor", "volume", "image"]
+	}
+	minimal_desc = {
+		"name": "list-flavors-with-detail",
+		"http-method": "GET",
+		"url": "flavors/detail",
+	}
+	add_prop_desc = {
+		"name": "list-flavors-with-detail",
+		"http-method": "GET",
+		"url": "flavors/detail",
+		"unknown_field": [12]
+	}
+	invalid_json_schema_desc = {
+		"name": "list-flavors-with-detail",
+		"http-method": "GET",
+		"url": "flavors/detail",
+		"json-schema": {"type": "NotExistingType"}

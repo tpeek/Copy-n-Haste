@@ -1,0 +1,30 @@
+def testClassification(train, test):
+	rf = GBTClassifier(maxIter=30, maxDepth=4, labelCol="indexedLabel")
+	model = rf.fit(train)
+	predictionAndLabels = model.transform(test).select("prediction", "indexedLabel") \
+		.map(lambda x: (x.prediction, x.indexedLabel))
+	metrics = BinaryClassificationMetrics(predictionAndLabels)
+	print("AUC %.3f" % metrics.areaUnderROC)
+def testRegression(train, test):
+	rf = GBTRegressor(maxIter=30, maxDepth=4, labelCol="indexedLabel")
+	model = rf.fit(train)
+	predictionAndLabels = model.transform(test).select("prediction", "indexedLabel") \
+		.map(lambda x: (x.prediction, x.indexedLabel))
+	metrics = RegressionMetrics(predictionAndLabels)
+	print("rmse %.3f" % metrics.rootMeanSquaredError)
+	print("r2 %.3f" % metrics.r2)
+	print("mae %.3f" % metrics.meanAbsoluteError)
+if __name__ == "__main__":
+	if len(sys.argv) > 1:
+		print("Usage: gradient_boosted_trees", file=sys.stderr)
+		exit(1)
+	sc = SparkContext(appName="PythonGBTExample")
+	sqlContext = SQLContext(sc)
+	df = MLUtils.loadLibSVMFile(sc, "data/mllib/sample_libsvm_data.txt").toDF()
+	stringIndexer = StringIndexer(inputCol="label", outputCol="indexedLabel")
+	si_model = stringIndexer.fit(df)
+	td = si_model.transform(df)
+	[train, test] = td.randomSplit([0.7, 0.3])
+	testClassification(train, test)
+	testRegression(train, test)
+	sc.stop()

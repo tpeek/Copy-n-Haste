@@ -1,0 +1,55 @@
+if not os.access('classes', os.W_OK):
+	os.mkdir('classes')
+if not os.access('races', os.W_OK):
+	os.mkdir('races')
+for r in ['Mountain Dwarf', 'Hill Dwarf', 'High Elf', 'Wood Elf', 'Dark Elf', 'Lightfoot Halfling', 'Stout Halfling', 'Human', 'Dragonborn', 'Forest Gnome', 'Rock Gnome', 'Half Elf', 'Half Orc', 'Tiefling']:
+	file = 'races/' + r.lower().replace(' ', '_') + '.json'
+	
+	obj = {}
+	
+	for f in os.listdir('archive'):
+		if f.startswith('race') and not f == 'race_subraces.json':
+			name = f[5:-5]
+			data = archiver.load('archive/' + f)[r]
+			obj[name] = data
+	
+	archiver.save(obj, file)
+for c in ['barbarian', 'bard', 'cleric', 'druid', 'fighter', 'monk', 'paladin', 'ranger', 'rogue', 'sorcerer', 'warlock', 'wizard']:
+	file = 'classes/' + c + '.json'
+	
+	obj = {}
+	
+	for f in os.listdir('archive'):
+		if f.startswith('class'):
+			name = f[6:-5]
+			data = archiver.load('archive/' + f)[c]
+			if name == 'features':
+				for item in data:
+					while 'Ability Score Improvement' in item:
+						item.remove('Ability Score Improvement')
+			elif name == 'cantrips_known':
+				if data == [0] * 21:
+					continue
+			elif name == 'rage':
+				if data == [[0, 0]] * 21:
+					continue
+			elif name == 'fist':
+				if data == ['1'] * 21:
+					continue
+			elif name == 'sneak_attack':
+				if data == ['1'] * 21:
+					continue
+			elif name == 'spells_known':
+				if data == [0] * 21:
+					continue
+			elif name == 'unarmored_movement':
+				if data == [0] * 21:
+					continue
+			obj[name] = data
+		elif c == 'warlock' and f.startswith('warlock'):
+			name = f[8:-5]
+			data = archiver.load(f)
+			if name != '':
+				obj[name] = data
+	
+	archiver.save(obj,  file)

@@ -1,0 +1,19 @@
+
+VERSION = "1.0"
+class BaseBackend(object):
+	CMDS = {
+		memcacheConstants.CMD_GET: 'handle_get',
+		memcacheConstants.CMD_GETQ: 'handle_getq',
+		memcacheConstants.CMD_SET: 'handle_set',
+		memcacheConstants.CMD_ADD: 'handle_add',
+		memcacheConstants.CMD_REPLACE: 'handle_replace',
+		memcacheConstants.CMD_DELETE: 'handle_delete',
+		memcacheConstants.CMD_INCR: 'handle_incr',
+		memcacheConstants.CMD_DECR: 'handle_decr',
+		memcacheConstants.CMD_QUIT: 'handle_quit',
+		memcacheConstants.CMD_FLUSH: 'handle_flush',
+		memcacheConstants.CMD_NOOP: 'handle_noop',
+		memcacheConstants.CMD_VERSION: 'handle_version',
+		memcacheConstants.CMD_APPEND: 'handle_append',
+		memcacheConstants.CMD_PREPEND: 'handle_prepend',
+		memcacheConstants.CMD_SASL_LIST_MECHS: 'ha

@@ -1,0 +1,32 @@
+
+class GnomeMaildirSource(MaildirSource):
+	name = "GNOME commits-list"
+	def __init__(self, mailbox, modules, prefix):
+		MaildirSource.__init__(self, mailbox, prefix=prefix)
+		self.modules = modules
+	def parse(self, m, prefix=None):
+		if m is None:
+			return None
+		if '<' in
+		else:
+		name, domain =
+		if domain != 'src.gnome.org':
+			return None
+		when = util.now()
+		revision = None
+		files = []
+		comments = ""
+		isdir = 0
+		links = []
+		subject = m['subject']
+		if not subject.startswith('['):
+			return None
+		revision = m.get('X-Git-Newrev')
+		if not revision:
+			return None
+		if revision == '0000000000000000000000000000000000000000':
+			return None
+		if m.get('X-Git-Refname', '').startswith('refs/tags/'):
+			return None
+		try:
+			project =

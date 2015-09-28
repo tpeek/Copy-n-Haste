@@ -1,0 +1,22 @@
+
+error_logo = os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
+net = Net()
+class CyberlockerResolver(Plugin, UrlResolver, PluginSettings):
+	implements = [UrlResolver, PluginSettings]
+	name = "cyberlocker"
+	domains = [ "cyberlocker.ch" ]
+	def __init__(self):
+		p = self.get_setting('priority') or 100
+		self.priority = int(p)
+		self.net = Net()
+	def get_media_url(self, host, media_id):
+		try:
+			url = self.get_url(host, media_id)
+			html = self.net.http_GET(url).content
+			r = re.findall('<center><h3>File Not Found</h3></center><br>',html,re.I)
+			if r:
+				raise Exception ('File Not Found or removed')
+			if not r:
+				dialog = xbmcgui.DialogProgress()
+				dialog.create('Resolving', 'Resolving Cyberlocker Link...')	   
+				di

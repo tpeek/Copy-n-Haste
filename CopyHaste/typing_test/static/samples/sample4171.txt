@@ -1,0 +1,18 @@
+def init_model(engine):
+	Session.configure(bind=engine)
+citations_tasks_table = Table('citations_tasks', Base.metadata,
+		Column('citation_id', types.Integer, ForeignKey('citations.id')),
+		Column('task_id', types.Integer, ForeignKey('tasks.id'))
+)
+users_projects_table = Table('users_projects', Base.metadata,
+		Column('user_id', types.Integer, ForeignKey('user.id')),
+		Column('project_id', types.Integer, ForeignKey('projects.id'))
+)
+projects_leaders_table = Table('projects_leaders', Base.metadata,
+		Column('user_id', types.Integer, ForeignKey('user.id')),
+		Column('project_id', types.Integer, ForeignKey('projects.id'))
+)
+class Project(Base):
+	__tablename__ = "projects"
+	id = Column(types.Integer, primary_key=True)
+	initial_assignment_id = C

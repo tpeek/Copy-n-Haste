@@ -1,0 +1,32 @@
+
+try:
+except ImportError:
+__author__ = 'Brian Quinlan (brian@sweetapp.com)'
+_threads_queues = weakref.WeakKeyDictionary()
+_shutdown = False
+def _python_exit():
+	global _shutdown
+	_shutdown = True
+	items = list(_threads_queues.items())
+	for t, q in items:
+		q.put(None)
+	for t, q in items:
+		t.join()
+atexit.register(_python_exit)
+class _WorkItem(object):
+	def __init__(self, future, fn, args, kwargs):
+		self.future = future
+		self.fn = fn
+		self.args = args
+		self.kwargs = kwargs
+	def run(self):
+		if not self.future.set_running_or_notify_cancel():
+			return
+		try:
+			result = self.fn(*self.args, **self.kwargs)
+		except BaseException:
+			e = sys.exc_info()[1]
+			self.future.set_exception(e)
+		else:
+			self.future.set_result(result)
+def _worker(

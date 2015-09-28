@@ -1,0 +1,25 @@
+good_wp = 0
+good_joo = 0
+pbcount = 0
+theard_count = 300
+headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36'}
+domain_file = "domains.txt"
+open('good.txt','w')
+def check_url(host):
+	global pbcount
+	global domains_count
+	global good_wp
+	global good_joo
+	pbcount = pbcount + 1
+	sys.stdout.write("\033[0;32m\r%d" %pbcount + " / "+str(domains_count)+' || Good WordPress: ' + str(good_wp) + ' || Good Joomla: ' + str(good_joo))
+	sys.stdout.flush()
+	url = 'http://'+host+'/wp-login.php'
+	try:
+		response = requests.get(url, timeout=10, headers=headers)
+	except Exception:
+		return False
+	else:
+		if response.status_code == 200:
+			if response.text.find('wp-admin')>0:
+				return 2
+	

@@ -1,0 +1,26 @@
+
+__all__ = ['interpret']
+class Evaluator(object):
+	operators = {
+		'eq': lambda x, y: x == y,
+		'gt': lambda x, y: x > y,
+		'gte': lambda x, y: x >= y,
+		'in': lambda x, y: x in y,
+		'lt': lambda x, y: x < y,
+		'lte': lambda x, y: x <= y,
+		'not': lambda x: not x,
+		'noteq': lambda x, y: x != y,
+		'notin': lambda x, y: x not in y,
+	}
+	allowed_values = {
+		'sys_platform': sys.platform,
+		'python_version': '%s.%s' % sys.version_info[:2],
+		'python_full_version': sys.version.split(' ', 1)[0],
+		'os_name': os.name,
+		'platform_in_venv': str(in_venv()),
+		'platform_release': platform.release(),
+		'platform_version': platform.version(),
+		'platform_machine': platform.machine(),
+		'platform_python_implementation': python_implementation(),
+	}
+	def 

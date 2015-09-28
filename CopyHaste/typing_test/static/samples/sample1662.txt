@@ -1,0 +1,22 @@
+
+class AugeasCommand(object):
+	def __init__(self, command, augeas_obj, logger):
+		self._augeas = augeas_obj
+		self.command = command
+		self.entry = self.command.getparent()
+		self.logger = logger
+	def get_path(self, attr="path"):
+		return "/files/%s/%s" % (self.entry.get("name").strip("/"),
+								 self.command.get(attr).lstrip("/"))
+	def _exists(self, path):
+		return len(self._augeas.match(path)) > 1
+	def _verify_exists(self, path=None):
+		if path is None:
+			path = self.get_path()
+		self.logger.debug("Augeas: Verifying that '%s' exists" % path)
+		return self._exists(path)
+	def _verify_not_exists(self, path=None):
+		if path is None:
+			path = self.get_path()
+		self.logger.debug("Augeas: Verifying that '%s' does not exist" % path)
+		return

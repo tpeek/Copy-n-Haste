@@ -1,0 +1,20 @@
+
+class Controller(wsgi.Controller):
+	def __init__(self):
+		self.volume_api = volume.API()
+		super(Controller, self).__init__()
+	def _get_metadata(self, context, volume_id):
+		try:
+			volume = self.volume_api.get(context, volume_id)
+			meta = self.volume_api.get_volume_metadata(context, volume)
+		except exception.VolumeNotFound:
+			msg = _('volume does not exist')
+			raise exc.HTTPNotFound(explanation=msg)
+		return meta
+	@wsgi.serializers(xml=common.MetadataTemplate)
+	def index(self, req, volume_id):
+		context = req.environ['cinder.context']
+		return {'metadata': self._get_metadata(context, volume_id)}
+	@wsgi.serializers(xml=common.MetadataTemplate)
+	@wsgi.deserializers(xml=common.MetadataDeserializer)
+	def create(self, req, volume_id, body)

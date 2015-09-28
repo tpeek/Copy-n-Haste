@@ -1,0 +1,31 @@
+
+class TestGeller(TestPlayer):
+	name = "Geller"
+	player = axelrod.Geller
+	expected_classifier = {
+		'memory_depth': -1,
+		'stochastic': True,
+		'inspects_source': True,
+		'manipulates_state': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		P1 = self.player()
+		P2 = axelrod.Cooperator()
+		self.assertEqual(P1.strategy(P2), 'C')
+		P1 = self.player()
+		P2 = axelrod.Defector()
+		self.assertEqual(P1.strategy(P2), 'D')
+class TestGellerCooperator(TestGeller):
+	name = "Geller Cooperator"
+	player = axelrod.GellerCooperator
+	expected_classifier = {
+		'memory_depth': -1,
+		'stochastic': False,
+		'inspects_source': True,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_against_self(self):
+		P1 = self.player()
+	

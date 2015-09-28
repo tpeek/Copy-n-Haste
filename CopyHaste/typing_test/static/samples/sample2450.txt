@@ -1,0 +1,17 @@
+
+__author__ = ('Alberto Planas <aplanas@suse.de>',
+			  'Stephan Kulow <coolo@suse.de>')
+B_M = 1024 * 1024
+PRICE_CUTOFF = 50
+SIZE_CUTOFF = 0
+SIZE_CUTOFF_GREEDY = 2048
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Resolve the knapsack problem.')
+	parser.add_argument('--price', help='Price sorted file')
+	parser.add_argument('--size', help='Size sorted file')
+	parser.add_argument('--wsize', type=int, help='Knapsack max size in MB')
+	parser.add_argument('--fixsize', action='store_true',
+						help='Use a lineal model to calculate the correct size')
+	parser.add_argument('--slope', type=float, default=1.10873,
+						help='Slope of the lineal model used to fix the size')
+	parser.add_argument('--intercept', type=float, d

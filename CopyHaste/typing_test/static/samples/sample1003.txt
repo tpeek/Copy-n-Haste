@@ -1,0 +1,16 @@
+
+parser = argparse.ArgumentParser(usage='pycbc_ligolw_cluster \
+[--options]',
+								 description="Cluster single detector \
+								 gravitational-wave triggers using the \
+								 ligolw_sicluster algorithm.")
+parser.add_argument('-i', '--input-file', type=str,
+				  help='Input xml file with SnglInspiral triggers.')
+parser.add_argument('-o', '--output-file', type=str,
+				  help='Output xml file with clustered SnglInspiral triggers.')
+parser.add_argument('-t', '--cluster-window', type=float,
+				  help='Time window to cluster.')
+parser.add_argument('-s', '--snr-threshold', type=float,
+				  help='Discard SnglInspiral triggers below this threshold.')
+parser.add_argument('-v', '--verbose', action='store_true',
+				  help='Print extra deb

@@ -1,0 +1,20 @@
+
+try:
+	def exithandler(signum, _frame):
+		signal.signal(signal.SIGINT, signal.SIG_IGN)
+		signal.signal(signal.SIGTERM, signal.SIG_IGN)
+		sys.exit(128 + signum)
+	signal.signal(signal.SIGINT, exithandler)
+	signal.signal(signal.SIGTERM, exithandler)
+	signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+except KeyboardInterrupt:
+	sys.exit(128 + signal.SIGINT)
+def debug_signal(_signum, _frame):
+	pdb.set_trace()
+if platform.python_implementation() == 'Jython':
+	debug_signum = signal.SIGUSR2
+else:
+	debug_signum = signal.SIGUSR1
+signal.signal(debug_signum, debug_signal)
+if osp.isfile(osp.join(osp.dirname(osp.dirname(osp.realpath(__file__))), ".portage_not_installed")):
+	sys.path.insert(0, osp.join(osp.dirname(osp.dirname(osp.realpath(__file__))), "pym"))

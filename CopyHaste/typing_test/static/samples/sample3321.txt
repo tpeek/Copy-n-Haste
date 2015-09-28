@@ -1,0 +1,82 @@
+class Tool(object):
+  def __init__(self, name, attrs=None):
+	self._attrs = attrs or {}
+	self._attrs['Name'] = name
+  def _GetSpecification(self):
+	return ['Tool', self._attrs]
+class Filter(object):
+  def __init__(self, name, contents=None):
+	self.name = name
+	self.contents = list(contents or [])
+class Writer(object):
+  def __init__(self, project_path, version, name, guid=None, platforms=None):
+	self.project_path = project_path
+	self.version = version
+	self.name = name
+	self.guid = guid
+	if not platforms:
+	  platforms = ['Win32']
+	self.platform_section = ['Platforms']
+	for platform in platforms:
+	  self.platform_section.append(['Platform', {'Name': platform}])
+	self.tool_files_section = ['ToolFiles']
+	self.configurations_section = ['Configurations']
+	self.files_section = ['Files']
+	self.files_dict = dict()
+  def AddToolFile(self, path):
+	self.tool_files_section.append(['ToolFile', {'RelativePath': path}])
+  def _GetSpecForConfiguration(self, config_type, config_name, attrs, tools):
+	if not attrs:
+	  attrs = {}
+	if not tools:
+	  tools = []
+	node_attrs = attrs.copy()
+	node_attrs['Name'] = config_name
+	specification = [config_type, node_attrs]
+	if tools:
+	  for t in tools:
+		if isinstance(t, Tool):
+		  specification.append(t._GetSpecification())
+		else:
+		  specification.append(Tool(t)._GetSpecification())
+	return specification
+  def AddConfig(self, name, attrs=None, tools=None):
+	spec = self._GetSpecForConfiguration('Configuration', name, attrs, tools)
+	self.configurations_section.append(spec)
+  def _AddFilesToNode(self, parent, files):
+	for f in files:
+	  if isinstance(f, Filter):
+		node = ['Filter', {'Name': f.name}]
+		self._AddFilesToNode(node, f.contents)
+	  else:
+		node = ['File', {'RelativePath': f}]
+		self.files_dict[f] = node
+	  parent.append(node)
+  def AddFiles(self, files):
+	self._AddFilesToNode(self.files_section, files)
+  def AddFileConfig(self, path, config, attrs=None, tools=None):
+	parent = self.files_dict.get(path)
+	if not parent:
+	  raise ValueError('AddFileConfig: file "%s" not in project.' % path)
+	spec = self._GetSpecForConfiguration('FileConfiguration', config, attrs,
+										 tools)
+	parent.append(spec)
+  def WriteIfChanged(self):
+	content = [
+		'VisualStudioProject',
+		{'ProjectType': 'Visual C++',
+		 'Version': self.version.ProjectVersion(),
+		 'Name': self.name,
+		 'ProjectGUID': self.guid,
+		 'RootNamespace': self.name,
+		 'Keyword': 'Win32Proj'
+		},
+		self.platform_section,
+		self.tool_files_section,
+		self.configurations_section,
+		['References'],
+		self.files_section,
+		['Globals']
+	]
+	easy_xml.WriteXmlIfChanged(content, self.project_path,
+							   encoding="Windows-1252")

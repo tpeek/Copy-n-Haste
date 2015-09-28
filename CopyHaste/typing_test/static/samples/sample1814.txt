@@ -1,0 +1,26 @@
+
+class sgd(trainer):
+	def __init__(self, rate = 0.05, 
+					   rate_decay = 1.0,
+					   momentum = 0.85, 
+					   nesterov = True, batchsize = 64,
+					   max_epochs = 20, 
+					   max_steps = 10000,
+					   viz_steps = 10000,
+					   checkpoints = 1,
+					   checkpoint_save = True,
+					   weight_decay_start = 100,
+					   lossfunc = None,
+					   gradcheck = False):
+		self.rate		= rate
+		self.rate_decay  = rate_decay
+		self.momentum	= momentum
+		self.nesterov	= nesterov
+		self.batchsize   = batchsize
+		self.max_epochs  = max_epochs
+		self.max_steps   = max_steps
+		self.viz_steps   = viz_steps
+		self.checkpoints = checkpoints
+		self.checkpoint_save = checkpoint_save
+		self.weight_decay_start = weight_decay_start
+		self.gradcheck   = gradc

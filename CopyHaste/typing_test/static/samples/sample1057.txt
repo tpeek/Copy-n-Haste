@@ -1,0 +1,31 @@
+
+def init_git_annex():
+	hostname = socket.gethostname()
+	cmd = ['git-annex', 'init', hostname]
+	subprocess.check_call(cmd)
+	cmd = ['git', 'config', 'remote.origin.annex-ignore', 'true']
+	subprocess.check_call(cmd)
+	
+def get_main_list(filename):
+	if not os.path.exists(filename):
+		response = requests.get('http://%s/if-archive/ls-lR' % mirror_host)
+		if not response.ok:
+			raise RuntimeError, response
+		with file(filename, 'w') as outfile:
+			outfile.write(response.content)
+		
+def make_single_stanza(infile, line):
+	stanza = list()
+	while line:
+		stanza.append(line)
+		try:
+			line = infile.next().strip()
+		except StopIteration:
+			return stanza
+	return stanza
+	
+	
+def make_stanzas(infile):
+	stlist = list()
+	line = infile.next().strip()
+	while l

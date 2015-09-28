@@ -1,0 +1,24 @@
+
+class TestNetflix (TestCase) :
+	def test_read_1 (self) :
+		s	= "6181 18168\n"
+		i, j = netflix_read(s)
+		self.assertEqual(i, 6181)
+		self.assertEqual(j, 18168)
+	def test_read_2 (self) :
+		s	= "17524 274815\n"
+		i, j = netflix_read(s)
+		self.assertEqual(i, 17524)
+		self.assertEqual(j, 274815)
+	def test_read_3 (self) :
+		s	= "201 3\n"
+		i, j = netflix_read(s)
+		self.assertEqual(i, 201)
+		self.assertEqual(j, 3)
+	def test_read_4 (self) :
+		s	= "7 7\n"
+		i, j = netflix_read(s)
+		self.assertEqual(i,  7)
+		self.assertEqual(j,  7)
+	def test_rmse_1 (self) :
+		v = netflix_rmse({'10': {'1531863': 3.1699999999999999, '1952305': 3.2999999999999998}, '10000': {'200206': 3.6499999999999999, '523108': 3.5800000000000001}, '10001': {'2570808': 3.6200000000

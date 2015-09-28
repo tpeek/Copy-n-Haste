@@ -1,0 +1,10 @@
+
+default_wallF = (4e-1, 1e-6, 1e-7, 250)
+def demo_single_trajectories():
+	print "demo_single_trajectories"
+	for i in range(10):
+		generate_trajectory.Trajectory(agent_pos="door", target_pos="left", plotting = True,   v0_stdev=0.01, wtf=7e-07, rf=4e-06, beta=1e-5, Tmax=15, dt=0.01, detect_thresh=0.023175, bounded=True, bounce="crash", wallF=default_wallF, title = "wall repulsion demo", titleappend = ", normal")
+	for i in range(10):
+		generate_trajectory.Trajectory(agent_pos="door", target_pos="left", plotting = True,   v0_stdev=0.01, wtf=0., rf=0., beta=1e-5, Tmax=15, dt=0.01, detect_thresh=0.023175, bounded=True, bounce="crash", wallF=None, title = "wall repulsion demo", titleappend = ", no randomF, wtf only")
+	plt.show()
+	for i in range(10

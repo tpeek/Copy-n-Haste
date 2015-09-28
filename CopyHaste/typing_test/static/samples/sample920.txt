@@ -1,0 +1,23 @@
+
+BASE = os.path.dirname(__file__)
+class OponentesSelectBox(Gtk.VBox):
+	__gsignals__ = {
+	"valor": (GObject.SIGNAL_RUN_FIRST,
+		GObject.TYPE_NONE, (GObject.TYPE_INT,
+		GObject.TYPE_STRING))}
+	def __init__(self):
+		Gtk.VBox.__init__(self)
+		hbox = Gtk.HBox()
+		oponentes = Gtk.Label("Oponentes")
+		spin = NumBox(range(1, 10))
+		spin.connect("valor", self.__emit_valor, "oponentes")
+		hbox.pack_start(spin, False, False, 5)
+		hbox.pack_start(oponentes, False, False, 5)
+		self.pack_start(hbox, False, False, 0)
+		hbox = Gtk.HBox()
+		limite = Gtk.Label("Vidas")
+		spin = NumBox(range(5, 51))
+		spin.connect("valor", self.__emit_valor, "vidas")
+		hbox.pack_start(spin, False, False, 5)
+		hbox.pack_start(limite, False, False, 5)
+		self.pack_start(hbox, Fa

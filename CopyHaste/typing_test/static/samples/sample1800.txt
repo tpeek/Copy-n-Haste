@@ -1,0 +1,29 @@
+
+			   AlreadyLocked)
+class LinkLockFile(LockBase):
+	def acquire(self, timeout=None):
+		try:
+			open(self.unique_name, "wb").close()
+		except IOError:
+			raise LockFailed("failed to create %s" % self.unique_name)
+		end_time = time.time()
+		if timeout is not None and timeout > 0:
+			end_time += timeout
+		while True:
+			try:
+				os.link(self.unique_name, self.lock_file)
+			except OSError:
+				nlinks = os.stat(self.unique_name).st_nlink
+				if nlinks == 2:
+					return
+				else:
+					if timeout is not None and time.time() > end_time:
+						os.unlink(self.unique_name)
+						if timeout > 0:
+							raise LockTimeout
+						else:
+							raise AlreadyLocked
+					time.sleep(timeout is not None and timeout/10 or 0.1)
+			else:
+				return
+	def release(se

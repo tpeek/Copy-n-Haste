@@ -1,0 +1,25 @@
+if sys.version < '3':
+	def u(x):
+		return codecs.unicode_escape_decode(x)[0]
+else:
+	def u(x):
+		return x
+ 
+class Generator:
+	def __init__( self ):
+		self._generate_addons_file()
+		self._generate_md5_file()
+		print("Finished updating addons xml and md5 files")
+ 
+	def _generate_addons_file( self ):
+		addons = os.listdir( "." )
+		
+		excludedFolders = {'.svn':'.svn', '.git':'.git', 'repo':'repo'}
+		addons_xml = u("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n<addons>\n")
+		for addon in sorted(addons):
+			try:
+				if ( not os.path.isdir( addon ) or addon in excludedFolders ): continue
+				_path = os.path.join( addon, "addon.xml" )
+				xml_lines = open( _path, "r" ).read().splitlines()
+				addon_xml = ""
+				for line in xml_line

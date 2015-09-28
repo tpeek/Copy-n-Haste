@@ -1,0 +1,24 @@
+class SerialsSpider(Spider):
+	name = "serials"
+	allowed_domains = ["lostfilm.tv"]
+	start_urls = (
+		'http://www.lostfilm.tv/serials.php',
+	)
+	def parse(self, response):
+		sel = Selector(response)
+		serials = []
+		for a in sel.css('.shadow .bb a.bb_a'):
+			name = ' '.join(a.css('::text').extract())
+			id = a.css('::attr(href)').extract()[0].split('=')[1].strip('_')
+			serials.append({
+				'id': id,
+				'name': name,
+				'url': 'http://www.lostfilm.tv/browse.php?cat=%s' % id,
+			})
+		with open('README.md', 'w') as f:
+			f.write('
+			for serial in serials:
+				s = '* [%s](https://rawgit.com/onrik/lostrss/master/rss/%s.xml)\n' % (serial['name'], serial['id'])
+				f.write(s.encode('utf-8'))
+		with open('serials.txt', 'w') as f:
+			for serial in 

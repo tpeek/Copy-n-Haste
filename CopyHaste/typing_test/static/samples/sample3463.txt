@@ -1,0 +1,23 @@
+_storedEbeDBReader = None
+e = lambda s: _storedEbeDBReader.evaluateExpressionOnly(s)
+def use(database):
+	global _storedEbeDBReader
+	_storedEbeDBReader = EbeDBReader(database)
+def info():
+	global _storedEbeDBReader
+	print("Total number of events: {}".format(_storedEbeDBReader.getNumberOfEvents()))
+	print("-"*60)
+	print("\t{:<30}{:^20}".format("Particle","Number of events"))
+	for aParticle, numberOfEvents in _storedEbeDBReader.getAttendance():
+		if numberOfEvents>0: print("\t{:<30}{:^20}".format(aParticle, numberOfEvents))
+def h():
+	print(r)
+if __name__ == '__main__':
+	try:
+		databaseFilename = argv[1]
+		use(databaseFilename)
+		expr = " ".join(argv[2:])
+		if not expr: raise ValueError()
+		print(e(expr))
+	except:
+		print("Usage: uhg.py database_filename 'symbols to be evaluated'")

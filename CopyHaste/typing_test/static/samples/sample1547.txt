@@ -1,0 +1,41 @@
+
+sys.path.extend([
+	'/usr/local/www',
+	'/usr/local/www/freenasUI'
+])
+os.environ["DJANGO_SETTINGS_MODULE"] = "freenasUI.settings"
+cache.get_apps()
+	FreeNAS_ActiveDirectory,
+	FreeNAS_LDAP,
+	FLAGS_DBINIT
+)
+	get_certificateauthority_path,
+)
+	activedirectory_enabled,
+	ldap_enabled,
+	ldap_anonymous_bind
+)
+	ActiveDirectory,
+	LDAP
+)
+SSSD_CONFIGFILE = "/usr/local/etc/sssd/sssd.conf"
+class SSSDBase(object):
+	keys = [
+		'stdin',
+		'stdout',
+		'stderr',
+		'path',
+		'domain',
+		'cookie',
+		'_config',
+	]
+	def __init__(self, *args, **kwargs):
+		self.path = SSSD_CONFIGFILE
+		self.stdin = sys.stdin
+		self.stdout = sys.stdout
+		self.stderr = sys.stderr
+		self.cookie = None
+		self._config = []
+		for key in SSSDBase.keys:
+			if key in kwargs and kwargs[key]:
+	

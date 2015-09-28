@@ -1,0 +1,15 @@
+
+class Namespace(types.Base, WSMEModelTransformer):
+	namespace = wsme.wsattr(types.text, mandatory=True)
+	display_name = wsme.wsattr(types.text, mandatory=False)
+	description = wsme.wsattr(types.text, mandatory=False)
+	visibility = wsme.wsattr(types.text, mandatory=False)
+	protected = wsme.wsattr(bool, mandatory=False)
+	owner = wsme.wsattr(types.text, mandatory=False)
+	created_at = wsme.wsattr(types.text, mandatory=False)
+	updated_at = wsme.wsattr(types.text, mandatory=False)
+	resource_type_associations = wsme.wsattr([ResourceTypeAssociation],
+											 mandatory=False)
+	properties = wsme.wsattr({types.text: PropertyType}, mandatory=False)
+	objects = wsme.wsattr([MetadefObject], mandatory=False)
+	tags = wsme.wsattr([MetadefTag], mandatory

@@ -1,0 +1,18 @@
+DependencyError, get_plugins, phase_methods, plugin_schemas, PluginError, PluginWarning, task_phases)
+log = logging.getLogger('task')
+Base = db_schema.versioned_base('feed', 0)
+class TaskConfigHash(Base):
+	__tablename__ = 'feed_config_hash'
+	id = Column(Integer, primary_key=True)
+	task = Column('name', Unicode, index=True, nullable=False)
+	hash = Column('hash', String)
+	def __repr__(self):
+		return '<TaskConfigHash(task=%s,hash=%s)>' % (self.task, self.hash)
+@with_session
+def config_changed(task=None, session=None):
+	log.debug('Marking config for %s as changed.' % (task or 'all tasks'))
+	task_hash = session.query(TaskConfigHash)
+	if task:
+		task_hash = task_hash.filter(TaskConfigHash.task == task)
+	task_hash.delete()
+def use_task_logging(fu

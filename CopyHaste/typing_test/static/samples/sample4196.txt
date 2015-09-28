@@ -1,0 +1,20 @@
+current_path = os.path.dirname(os.path.abspath(__file__))
+SSLError = OpenSSL.SSL.WantReadError
+def load_sock():
+	if config.PROXY_ENABLE:
+		if config.PROXY_TYPE == "HTTP":
+			proxy_type = socks.HTTP
+		elif config.PROXY_TYPE == "SOCKS4":
+			proxy_type = socks.SOCKS4
+		elif config.PROXY_TYPE == "SOCKS5":
+			proxy_type = socks.SOCKS5
+		else:
+			xlog.error("proxy type %s unknown, disable proxy", config.PROXY_TYPE)
+			config.PROXY_ENABLE = 0
+	if config.PROXY_ENABLE:
+		socks.set_default_proxy(proxy_type, config.PROXY_HOST, config.PROXY_PORT, config.PROXY_USER, config.PROXY_PASSWD)
+load_sock()
+NetWorkIOError = (socket.error, SSLError, OpenSSL.SSL.Error, OSError)
+g_cacertfile = os.path.join(current_path, "cacert.pem")
+class Connect_pool():
+	def __in

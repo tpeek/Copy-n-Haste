@@ -1,0 +1,21 @@
+
+try:
+  parser = argparse.ArgumentParser()
+  parser.add_argument('out_FN', default='AAA.mol2', help='Output file name')
+  parser.add_argument('SMILES', default=None, help='SMILES string')
+  args = parser.parse_args()
+except:
+  class args:
+	out_FN = sys.argv[1]
+	SMILES = sys.argv[2]
+print 'Generating %s based on %s'%(args.out_FN, args.SMILES)
+dirs = {}
+dirs['script'] = os.path.dirname(os.path.abspath(\
+  inspect.getfile(inspect.currentframe())))
+execfile(os.path.join(dirs['script'],'_external_paths.py'))
+command_paths = findPaths(['balloon','chimera'])
+threeD_FN = os.path.join('3D', os.path.basename(args.out_FN))
+for dirN in [os.path.dirname(args.out_FN),'3D']:
+  if (dirN!='') and not os.path.isdir(dirN):
+	os.system('mkdir -p '+dirN)
+if not 

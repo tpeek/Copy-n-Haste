@@ -1,0 +1,25 @@
+vocab = []
+def find_list_index(list_list, value):
+	for i in range(len(list_list)):
+		if value == list_list[i][0]:
+			return i
+	return -1
+def strip_line(line, ltoken, rtoken):
+	if line.startswith(ltoken):
+		line = line[len(ltoken):]
+	if line.endswith(rtoken):
+		line = line[:-len(rtoken)]
+	return line
+def process_line(line, output_file):
+	global vocab
+	stemmer = SnowballStemmer('english')
+	if '<Date>' in line:
+		output_file.write(strip_line(line, '<Date>', '</Date>\n') + '|~|')
+	elif '<Title>' in line:
+		output_file.write(strip_line(line, '<Title>', '</Title>\n') + '|~|')
+	elif '<Topic>' in line:
+		output_file.write(strip_line(line, '<Topic>', '</Topic>\n') + '|~|')
+	elif '<Contents>' in line:
+		unique_words = []
+		unique_words_count = 0
+		li

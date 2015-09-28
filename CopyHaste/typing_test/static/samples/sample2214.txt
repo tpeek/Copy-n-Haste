@@ -1,0 +1,29 @@
+
+DOCUMENTATION =
+EXAMPLES =
+try:
+except ImportError:
+	print "failed=True msg={0}".format(sys.executable)
+	sys.exit(1)
+class DuplicateRouteTableError(Exception):
+	pass
+class InconsistentRouteError(Exception):
+	pass
+class RTManager():
+	def __init__(self, connection, vpc_id, route_name, routes, tags):
+		self.connection = connection
+		self.vpc_id = vpc_id
+		self.name = route_name
+		self.routes = routes
+		self.tags = tags
+		self.rt = None
+	def get_rt(self):
+		rt_filter = { "vpc_id": self.vpc_id,
+					  "tag:Name": self.name,
+					}
+		results = self.connection.get_all_route_tables(filters=rt_filter)
+		if len(results) == 1:
+			self.rt = results[0]
+		elif len(results) > 1:
+			msg = "Found multiple route tables with name '{}' in vpc with id '{}'."
+	

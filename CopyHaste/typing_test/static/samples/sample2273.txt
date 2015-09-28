@@ -1,0 +1,25 @@
+
+load_tests = testscenarios.load_tests_apply_scenarios
+class FakePlugin(base_plugin.NeutronDbPluginV2, agents_db.AgentDbMixin):
+class TestAgentsDbBase(testlib_api.SqlTestCase):
+	def setUp(self):
+		super(TestAgentsDbBase, self).setUp()
+		self.context = context.get_admin_context()
+		self.plugin = FakePlugin()
+	def _get_agents(self, hosts, agent_type):
+		return [
+			agents_db.Agent(
+				binary='foo-agent',
+				host=host,
+				agent_type=agent_type,
+				topic='foo_topic',
+				configurations="",
+				created_at=timeutils.utcnow(),
+				started_at=timeutils.utcnow(),
+				heartbeat_timestamp=timeutils.utcnow())
+			for host in hosts
+		]
+	def _save_agents(self, agents):
+		for agent in agents:
+			with self.context.session.begin(subtransactions=True):
+		

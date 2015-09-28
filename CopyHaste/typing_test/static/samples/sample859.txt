@@ -1,0 +1,13 @@
+
+_date_re = re.compile(r'(?P<yr>\d{4})-(?P<mon>\d{2})-(?P<day>\d{2})')
+_non_alphanum_re = re.compile(r'[^\w\s]+')
+def _convert_wos_record(record, ns):
+  r = dict()
+  r['wosid'] = xpath_str(record, "ns:UID/text()", ns)
+  r['title'] = xpath_str(record, "ns:static_data/ns:summary/ns:titles/ns:title[@type='item']/text()",ns)
+  r['journal'] = xpath_str(record, "ns:static_data/ns:summary/ns:titles/ns:title[@type='source']/text()", ns)
+  pubinfo = record.xpath("ns:static_data/ns:summary/ns:pub_info", namespaces=ns)[0]
+  (r['issue'], r['volume'], pubdate) = (pubinfo.attrib.get('issue'), pubinfo.attrib.get('vol'), pubinfo.attrib.get('sortdate'))
+  if pubdate:
+	m = _date_re.match(pubdate)
+	r['pubdate'] = int(m.group('yr') + m.group('mon') + m.group('

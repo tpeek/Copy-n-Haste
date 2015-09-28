@@ -1,0 +1,25 @@
+
+try:
+except ImportError:
+	USER_SITE = None
+DEFAULT_VERSION = "0.9.6"
+DEFAULT_URL = "https://pypi.python.org/packages/source/s/setuptools/"
+def _python_cmd(*args):
+	args = (sys.executable,) + args
+	return subprocess.call(args) == 0
+def _install(tarball, install_args=()):
+	tmpdir = tempfile.mkdtemp()
+	log.warn('Extracting in %s', tmpdir)
+	old_wd = os.getcwd()
+	try:
+		os.chdir(tmpdir)
+		tar = tarfile.open(tarball)
+		_extractall(tar)
+		tar.close()
+		subdir = os.path.join(tmpdir, os.listdir(tmpdir)[0])
+		os.chdir(subdir)
+		log.warn('Now working in %s', subdir)
+		log.warn('Installing Setuptools')
+		if not _python_cmd('setup.py', 'install', *install_args):
+			log.warn('Something went wrong during the installation.')
+			log.warn('See the error mes

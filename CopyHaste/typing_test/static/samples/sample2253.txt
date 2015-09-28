@@ -1,0 +1,32 @@
+
+try:
+except:
+  def findPath(locations):
+	for location in locations:
+	  if location is not None and os.path.exists(location):
+		return os.path.abspath(location)
+	if not locations == [None]:
+	  print 'File not found!'
+	  print 'Searched:'
+	  print locations
+	return None
+  search_paths = {
+	'namd':['/Users/dminh/Applications/NAMD_2.10/namd2',
+			'/share/apps/namd/2.9/Linux-x86_64-g++/namd2',
+			None]}
+class GRID:
+  def __init__(self,
+	  forceFN, LJR_FN, LJA_FN, ELE_FN,
+	  lambdaVal=1.0):
+	
+	self.set_scale(lambdaVal)
+	
+	self.LJ_conf =%(forceFN,LJR_FN,forceFN,LJA_FN)
+  
+	self.ELE_conf =%(forceFN,ELE_FN)
+  def set_scale(self,lambdaVal=1.0):
+	self.lambdaVal = lambdaVal
+	if self.lambdaVal==0:
+	  self.scale_LJ = 0
+	  self.scale_ELE = 0
+	elif self.l

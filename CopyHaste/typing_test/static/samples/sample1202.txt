@@ -1,0 +1,23 @@
+
+class Database(object):
+	def __init__(self, DbPath):
+		if os.path.exists(DbPath):
+			os.remove(DbPath)
+		self.Conn = sqlite3.connect(DbPath, isolation_level = 'DEFERRED')
+		self.Conn.execute("PRAGMA page_size=8192")
+		self.Conn.execute("PRAGMA synchronous=OFF")
+		self.Cur = self.Conn.cursor()
+		self.TblDataModel = TableDataModel(self.Cur)
+		self.TblFile = TableFile(self.Cur)
+		self.TblInf = TableInf(self.Cur)
+		self.TblDec = TableDec(self.Cur)
+		self.TblDsc = TableDsc(self.Cur)
+	def InitDatabase(self):
+		EdkLogger.verbose("\nInitialize ECC database started ...")
+		self.TblDataModel.Create()
+		self.TblFile.Create()
+		self.TblInf.Create()
+		self.TblDec.Create()
+		self.TblDsc.Create()
+		self.TblDataModel.InitTable()
+		EdkLog

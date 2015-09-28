@@ -1,0 +1,29 @@
+
+class Grid:
+  def __init__(self):
+	pass
+  def read(self, FN, multiplier=None):
+	if FN is None:
+	  raise Exception('File is not defined')
+	elif FN.endswith('.dx') or FN.endswith('.dx.gz'):
+	  data = self._read_dx(FN)
+	elif FN.endswith('.nc'):
+	  data = self._read_nc(FN)
+	else:
+	  raise Exception('File type not supported')
+	if multiplier is not None:
+	  data['origin'] = multiplier*data['origin']
+	  data['spacing'] = multiplier*data['spacing']
+	return data
+  def _read_dx(self, FN):
+	if FN.endswith('.dx'):
+	  F = open(FN,'r')
+	else:
+	  F = gzip.open(FN,'r')
+	line = F.readline()
+	while line.find('object')==-1:
+	  line = F.readline()
+	header = {}
+	header['counts'] = [int(x) for x in line.split(' ')[-3:]]
+	for name in ['origin','d0','d1','d2']:
+	

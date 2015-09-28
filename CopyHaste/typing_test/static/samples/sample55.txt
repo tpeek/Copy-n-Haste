@@ -1,0 +1,23 @@
+
+class TestNetflix (TestCase) :
+	
+	def test_prediction_1 (self) :
+		movie = 9966
+		users = [278047,2079929,803734,1767179,1586849,345940]
+		self.assertEqual(len(netflix_create_prediction(movie, users)), 6)
+	def test_prediction_2 (self) :
+		movie = 9967
+		users = [379957,1792333,1277109,1542171,2212455]
+		self.assertEqual(len(netflix_create_prediction(movie, users)), 5)
+	def test_prediction_3 (self) :
+		movie = 997
+		users = [939283,126127,379107,642195]
+		self.assertEqual(len(netflix_create_prediction(movie, users)), 4)
+	def test_prediction_4 (self) :
+		movie = 9970
+		users = [2278190,127547,1058902]
+		self.assertEqual(len(netflix_create_prediction(movie, users)), 3)
+	def test_rmse_1 (self) :
+		x = [1,2]
+		y = [1,2]
+		self.assertEqual(netfl

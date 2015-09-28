@@ -1,0 +1,19 @@
+
+error_logo = os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
+class CastampResolver(Plugin, UrlResolver, PluginSettings):
+	implements = [UrlResolver, PluginSettings]
+	name = "castamp"
+	domains = [ "castamp.com" ]
+	def __init__(self):
+		p = self.get_setting('priority') or 100
+		self.priority = int(p)
+		self.net = Net()
+		self.pattern =  r
+	def get_media_url(self, host, media_id):
+		web_url = self.get_url(host, media_id)
+		try:
+			html = self.net.http_GET(web_url).content
+		except urllib2.URLError, e:
+			common.addon.log_error(self.name + ': got http error %d fetching %s' % (e.code, web_url))
+			common.addon.show_small_popup('Error','Http error: '+str(e), 8000, error_logo)
+			return self.unresolvable(code=3, msg='Exception:

@@ -1,0 +1,31 @@
+
+class PlaylistItem:
+	def __init__(self):
+		self.duration = 0
+		self.filename = ''
+		self.description = ''
+		self.title = ''
+		self.episodetitle = ''
+		self.genre = ''
+		self.timestamp = ''
+		self.LiveID = ''
+		
+class Playlist:
+	def __init__(self):
+		self.itemlist = []
+		self.totalDuration = 0
+		self.processingSemaphore = threading.BoundedSemaphore()
+	def getduration(self, index):
+		self.processingSemaphore.acquire()
+		if index >= 0 and index < len(self.itemlist):
+			dur = self.itemlist[index].duration
+			self.processingSemaphore.release()
+			return dur
+		self.processingSemaphore.release()
+		return 0
+	def size(self):
+		self.processingSemaphore.acquire()
+		totsize = len(self.itemlist)
+		self.processingSemaphore.release()
+		return totsize
+	de

@@ -1,0 +1,27 @@
+def PRINT(s):
+	print(s)
+class EZO_DO(EZO):
+	MAX_LEN = 32
+	units = {'read':'mg/L','read_uM':'uM'}
+	
+	def __init__(self,address=0x61,lowpower=True):
+		self.i2c = Adafruit_I2C(address)
+		self.address = address
+		self.lowpower = lowpower
+		
+		try:
+			parser = SafeConfigParser()
+			parser.read(join(dirname(__file__),'ezo.ini'))
+			tmp = parser.get('do','s')
+			if tmp.endswith('us'):
+				tmp = float(tmp[:-2])
+				self.s(tmp,ppt=False)
+			elif tmp.endswith('ppt'):
+				tmp = float(tmp[:-3])
+				self.s(tmp,ppt=True)
+			else:
+				PRINT('EZO_DO: invalid stuff in configuration file')
+			self.p(float(parser.get('do','p')))
+			self.t(round(float(parser.get('ec','t')),0))
+		except NoSectionError:
+			PRINT('EZO_DO: configuration file not found. Not syncing

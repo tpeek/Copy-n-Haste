@@ -1,0 +1,23 @@
+class Job:
+	def __init__(self, id, status, task_files, states, file_results, github_status_url):
+		self.id = id
+		self.status = status
+		self.task_files = task_files
+		self.states = states
+		self.file_results = file_results
+		self.github_status_url = github_status_url
+	
+class Set:
+	def __init__(self, id, commit_sha, datetime_start, datetime_end,
+				 render_world, render_europe, render_usa, owner, repository):
+		self.id = id
+		self.commit_sha = commit_sha
+		self.datetime_start = datetime_start
+		self.datetime_end = datetime_end
+		self.render_world = render_world
+		self.render_europe = render_europe
+		self.render_usa = render_usa
+		self.owner = owner
+		self.repository = repository
+class Run:
+	def __init__(self, id, source_path, source_id, so

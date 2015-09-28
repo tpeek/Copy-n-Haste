@@ -1,0 +1,19 @@
+
+ProgName = "Hebrew WLC format handler"
+ProgVersion = "0.04"
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+class HebrewWLC( OSISXMLBible ):
+	def removeMorphemeBreaks( self, text=None ):
+		if text is None:
+			self.currentText = self.currentText.replace('=', '')
+			return self.currentText
+		return text.replace('=', '')
+	def removeCantillationMarks( self, text=None, removeMetegOrSiluq=False ):
+		if text is None:
+			self.currentText = self.removeCantillationMarks( self.currentText )
+			return self.currentText
+		h = Hebrew.Hebrew ( text )
+		return h.removeCantillationMarks( None, removeMetegOrSiluq )
+	def removeVowelPointing( self, text=None, removeMetegOrSiluq=False ):
+		if text is None:
+			self.currentText = self.removeVowelPointi

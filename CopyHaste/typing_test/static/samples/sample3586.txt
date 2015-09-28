@@ -1,0 +1,45 @@
+class MempoolCoinbaseTest(BitcreditTestFramework):
+	alert_filename = None
+	def setup_network(self):
+		args = ["-checkmempool", "-debug=mempool"]
+		self.nodes = []
+		self.nodes.append(start_node(0, self.options.tmpdir, args))
+		self.nodes.append(start_node(1, self.options.tmpdir, args))
+		connect_nodes(self.nodes[1], 0)
+		self.is_network_split = False
+		self.sync_all
+	def create_tx(self,
+		inputs = [{ "txid" :
+		outputs = { to_address : amount }
+		rawtx = self.nodes[0].createrawtransaction(inputs, outputs)
+		signresult = self.nodes[0].signrawtransaction(rawtx)
+		assert_equal(signresult["complete"], True)
+		return signresult["hex"]
+	def run_test(self):
+		start_count = self.nodes[0].getblockcount()
+		new_blocks = self.nodes[1].setgenerate(True, 4)
+		self.sync_all()
+		node0_address = self.nodes[0].getnewaddress()
+		node1_address = self.nodes[1].getnewaddress()
+		b = [ self.nodes[0].getblockhash(n) for n in range(102, 105) ]
+		coinbase_txids = [ self.nodes[0].getblock(h)['tx'][0] for h in b ]
+		spend_101_raw = self.create_tx(coinbase_txids[0], node1_address, 50)
+		spend_102_raw = self.create_tx(coinbase_txids[1], node0_address, 50)
+		spend_103_raw = self.create_tx(coinbase_txids[2], node0_address, 50)
+		spend_102_id = self.nodes[0].sendrawtransaction(spend_102_raw)
+		spend_103_id = self.nodes[0].sendrawtransaction(spend_103_raw)
+		self.nodes[0].setgenerate(True, 1)
+		spend_102_1_raw = self.create_tx(spend_102_id, node1_address, 50)
+		spend_103_1_raw = self.create_tx(spend_103_id, node1_address, 50)
+		spend_103_1_id = self.nodes[0].sendrawtransaction(spend_103_1_raw)
+		self.nodes[0].setgenerate(True, 1)
+		spend_101_id = self.nodes[0].sendrawtransaction(spend_101_raw)
+		spend_102_1_id = self.nodes[0].sendrawtransaction(spend_102_1_raw)
+		self.sync_all()
+		assert_equal(set(self.nodes[0].getrawmempool()), set([ spend_101_id, spend_102_1_id ]))
+		for node in self.nodes:
+			node.invalidateblock(new_blocks[0])
+		self.sync_all()
+		assert_equal(set(self.nodes[0].getrawmempool()), set())
+if __name__ == '__main__':
+	MempoolCoinbaseTest().main()

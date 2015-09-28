@@ -1,0 +1,21 @@
+try:
+	_trans = glocale.get_addon_translator(__file__)
+except ValueError:
+	_trans = glocale.translation
+_ = _trans.gettext
+class DeepConnectionsGramplet(Gramplet):
+	def init(self):
+		self.selected_handles = set()
+		self.relationship_calc = get_relationship_calculator()
+		self.set_tooltip(_("Double-click name for details"))
+		self.set_text(_("No Family Tree loaded."))
+		self.set_use_markup(True)
+		self.gui.get_container_widget().remove(self.gui.textview)
+		vbox = Gtk.VBox()
+		hbox = Gtk.HBox()
+		pause_button = Gtk.Button(_("Pause"))
+		pause_button.connect("clicked", self.interrupt)
+		continue_button = Gtk.Button(_("Continue"))
+		continue_button.connect("clicked", self.resume)
+		copy_button = Gtk.Button(_("Copy"))
+		copy_button.connect("clicke

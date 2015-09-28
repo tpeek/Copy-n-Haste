@@ -1,0 +1,31 @@
+class PipeSubscriber(Subscriber):
+  
+  def __init__(self, device_name, device_id, metric_name, pipe_name=None):
+	super(PipeSubscriber, self).__init__(device_name, device_id, None)
+	self.metric_name = metric_name
+	self.pipe_name = pipe_name
+	
+	
+  def connect(self):
+	if self.pipe_name is None:
+	  self.pipe = sys.stdin
+	else:
+	  self.pipe = open(self.pipe_name, 'r')
+  def disconnect(self):
+	self.connection.close_file()
+	
+	
+  def consume_messages(self, callback):
+	while True:
+	  line = self.pipe.readline()
+	  if line == '':
+		return
+	  data = json.loads(line)
+	  body = data['body']
+	  callback(None, None, None, json.dumps(body))
+	
+  def get_one_message(self):
+	line = self.pipe.readline()
+	return json.loads(line)
+	
+def _print_message(ch, method,

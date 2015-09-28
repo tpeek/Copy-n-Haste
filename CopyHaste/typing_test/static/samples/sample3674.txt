@@ -1,0 +1,23 @@
+class DiffTestCase(test.TestCase):
+	def test_main(self):
+		results1 = {"test.NONE": {"name": "test.NONE",
+								  "output": "test.NONE",
+								  "status": "SKIPPED",
+								  "time": 0.000},
+					"test.zerofive": {"name": "test.zerofive",
+									  "output": "test.zerofive",
+									  "status": "FAILED",
+									  "time": 0.05},
+					"test.one": {"name": "test.one",
+								 "output": "test.one",
+								 "status": "OK",
+								 "time": 0.111},
+					"test.two": {"name": "test.two",
+								 "output": "test.two",
+								 "status": "OK",
+								 "time": 0.222},
+					"test.three": {"name": "test.three",
+								   "output": "test.three",
+								   "status": "FAILED",
+								   "time": 0.333},
+					"test.four": {"name": "test.four"

@@ -1,0 +1,32 @@
+log = logging.getLogger('torrent')
+TORRENT_RE = re.compile(r'^d\d{1,3}:')
+METAFILE_STD_KEYS = [i.split('.') for i in (
+	"announce",
+	"announce-list",
+	"comment",
+	"created by",
+	"creation date",
+	"encoding",
+	"info",
+	"info.length",
+	"info.name",
+	"info.piece length",
+	"info.pieces",
+	"info.private",
+	"info.files",
+	"info.files.length",
+	"info.files.path",
+)]
+def clean_meta(meta, including_info=False, logger=None):
+	modified = set()
+	for key in meta.keys():
+		if [key] not in METAFILE_STD_KEYS:
+			if logger:
+				logger("Removing key %r..." % (key,))
+			del meta[key]
+			modified.add(key)
+	if including_info:
+		for key in meta["info"].keys():
+			if ["info", key] not in METAFILE_STD_KEYS:
+				if logger:
+					logger("Removing key %r..." % ("info.

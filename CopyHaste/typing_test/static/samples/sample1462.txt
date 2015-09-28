@@ -1,0 +1,35 @@
+
+if _platform == "linux" or _platform == "linux2":
+	isLinux = True
+else:
+	isLinux = False
+hasher = hashlib.md5()
+timeArgs = '%a %d %b %Y %H:%M:%S'
+dbTime = '%Y-%m-%d %H-%M-%S'
+gdiEmail = 'Subscriber Email,CC Email'
+gdiParams = 'Param Name,Param Key'
+gdiLists = 'Conditions,Qualifiers,Exclusions'
+def getPickleName(cfg):
+	types = {'pickle':'.txt',
+				'dbm':'DBM'}
+	try:
+		prefix = cfg['DBLocation']+'/'
+	except:
+		prefix = cfg['Directory']+'caches/'
+	
+	return prefix+"GeoPickle"+types[cfg['GeoFormat'].lower()]
+	
+def geoWrite(geo,ref,value,cfg):
+	if cfg['GeoFormat'] == 'pickle':
+		geo[ref] = value
+	else:
+		if cfg['QuickSend']:
+			return
+		ref = TweetMatch.stripUnicode(ref)
+		try:
+			geo[ref]
+			return
+		except:
+			None
+			
+		toWrite = json.dumps(

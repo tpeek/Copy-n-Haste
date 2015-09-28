@@ -1,0 +1,21 @@
+
+get_ipython().magic(u'matplotlib inline')
+dim = 2
+elementMesh = uw.mesh.FeMesh_Cartesian( elementType='Q2/dPc1', 
+										 elementRes=(32,32), 
+										   minCoord=(0.,0.), 
+										   maxCoord=(1.,1.)  )
+linearMesh   = elementMesh
+constantMesh = elementMesh.subMesh
+velocityField	= uw.fevariable.FeVariable( feMesh=linearMesh,   nodeDofCount=dim )
+pressureField	= uw.fevariable.FeVariable( feMesh=constantMesh, nodeDofCount=1 )
+temperatureField = uw.fevariable.FeVariable( feMesh=linearMesh,   nodeDofCount=1 )
+velocityField.data[:] = [0.,0.]
+pressureField.data[:] = 0.
+temperatureField.data[:] = 0.
+toptemp = 0.
+bottomtemp = 1.
+scaleFactor = bottomtemp - toptemp
+tempData = temperatureField.data
+perturbation_scale = 0.1
+for index, coord in 

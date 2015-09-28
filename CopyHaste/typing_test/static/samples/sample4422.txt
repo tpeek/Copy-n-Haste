@@ -1,0 +1,24 @@
+def main(argv=sys.argv[1:]):
+	parser = argparse.ArgumentParser(description='Manage builds')
+	parser.add_argument('--addr', default='127.0.0.1:5000')
+	parser.add_argument('--profile')
+	parser.add_argument('--no-debug', dest='debug', action='store_false',
+						default=True)
+	args = parser.parse_args(argv)
+	web(addr=args.addr, profile=args.profile, debug=args.debug)
+def web(addr, profile=None, debug=True):
+	host, port = addr.split(':')
+	if not host:
+		host = '127.0.0.1'
+	port = int(port)
+	addr = '{0}:{1}'.format(host, port)
+	app = create_app(SERVER_NAME=addr, DEBUG=debug)
+	if profile:
+		statprof.start()
+	print("Listening on http://{0}".format(addr))
+	try:
+		app.run(host, port)
+	finally:
+		if profile:
+			statprof.stop()
+			with open(profile, '

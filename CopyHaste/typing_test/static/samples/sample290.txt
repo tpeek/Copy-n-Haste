@@ -1,0 +1,20 @@
+
+LOG = logging.getLogger(__name__)
+class DriverFilter(filters.BaseHostFilter):
+	def host_passes(self, host_state, filter_properties):
+		stats = self._generate_stats(host_state, filter_properties)
+		LOG.debug("Checking host '%s'", stats['host_stats']['host'])
+		result = self._check_filter_function(stats)
+		LOG.debug("Result: %s", result)
+		LOG.debug("Done checking host '%s'", stats['host_stats']['host'])
+		return result
+	def _check_filter_function(self, stats):
+		if stats['filter_function'] is None:
+			LOG.debug("Filter function not set :: passing host")
+			return True
+		try:
+			filter_result = self._run_evaluator(stats['filter_function'],
+												stats)
+		except Exception as ex:
+			LOG.warning(_LW("Error in filtering function "
+							"

@@ -1,0 +1,22 @@
+kernels = ['linear', 'poly', 'rbf']
+def svm_fit(args):
+	svm, (i, j), X, Y = args
+	svm[i][j].fit(X, Y[:, j])
+def svm_predict_dist(args):
+	svm, (i, j), X = args
+	return svm[i][j].decision_function(X)
+def svm_predict_proba(args):
+	svm, (i, j), X = args
+	return svm[i][j].predict_proba(X)[..., 1]
+class SvmArray:
+	def __init__(self, D, proba=True):
+		self.D = D
+		self.svm = [[SVC(kernel=k, probability=proba) for _ in range(0, D)] for k in kernels]
+	def fit(self, X, Y):
+		coords = itertools.product(range(0, len(kernels)), range(0, self.D))
+		map(svm_fit, [(self.svm, c, X, Y) for c in coords])
+	def predict(self, X, out, kernel=None):
+		assert out == 'proba' or out == 'dist'
+		if kernel:
+			coords = itertools.product([kernel], range(0, self.D))
+		el

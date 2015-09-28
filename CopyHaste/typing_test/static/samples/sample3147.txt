@@ -1,0 +1,38 @@
+conn = sqlite3.connect('../blm.sqlite')
+c = conn.cursor()
+dbitems = {}
+c.execute('SELECT plssid, dm_id, date FROM All_Surveys')
+for i in c.fetchall():
+	dbitems[str(i[0])] = i[1:]
+s_ds = ogr.Open('cutline-map.shp')
+s_layer = s_ds.GetLayerByIndex(0)
+srs = s_layer.GetSpatialRef().Clone()
+srs.AutoIdentifyEPSG()
+driver = ogr.GetDriverByName("ESRI Shapefile")
+out_fn = "summary-maps/cutline-map.shp"
+driver.DeleteDataSource(out_fn)
+ds = driver.CreateDataSource(out_fn)
+layer = ds.CreateLayer("tiles", srs, ogr.wkbPolygon)
+field_name = ogr.FieldDefn("plssid", ogr.OFTString)
+field_name.SetWidth(16)
+layer.CreateField(field_name)
+field_name = ogr.FieldDefn("refed", ogr.OFTInteger)
+layer.CreateField(field_name)
+field_name = ogr.FieldDefn("dmid", ogr.OFTInteger)
+layer.CreateField(field_name)
+field_name = ogr.FieldDefn("year", ogr.OFTInteger)
+layer.CreateField(field_name)
+for cutline_feature in s_layer:
+	tile_id = cutline_feature.GetField('plssid')
+	dbitem = dbitems.get(tile_id, None)
+	poly = cutline_feature.GetGeometryRef().Clone()
+	feature = ogr.Feature(layer.GetLayerDefn())
+	feature.SetField("plssid", tile_id)
+	feature.SetField("refed", os.path.exists(tile_id + ".SID.points"))
+	if dbitem:
+		feature.SetField("dmid", int(dbitem[0]))
+		if dbitem[1]:
+			t = time.strptime(str(dbitem[1]).split(' ')[0], '%m/%d/%Y')
+			feature.SetField("year", t.tm_year)
+	feature.SetGeometry(poly)
+	layer.CreateFeature(feature)

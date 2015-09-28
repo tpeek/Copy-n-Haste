@@ -1,0 +1,26 @@
+def aa_seq_check(aa_seq):
+	aa_seq=''.join(aa_seq)
+	aa_seq=aa_seq.upper()
+	aa_seq=list(aa_seq)
+	for i in range(0,len(aa_seq)):
+		if aa_seq[i] in ['*','X','-']:
+			aa_seq[i]='-'
+		if aa_seq[i] not in ['W','L','P','H','Q','R','I','M','T','N','K','S','V','A','D','E','G','F','Y','C','-']:
+			print('The sequence entered contained symbols not included in the 1-letter IUPAC standard')
+			raise SystemExit
+	if aa_seq[len(aa_seq)-1]!='-':
+		aa_seq.append('-')
+	if aa_seq[0]!='M':
+		aa_sq=['M']
+		for aa in aa_seq:
+			aa_sq.append(aa)
+		aa_seq=aa_sq
+	return aa_seq
+
+def dna_seq_check(dna_seq):
+	dna_seq=''.join(dna_seq)
+	dna_seq=dna_seq.upper()
+	dna_seq=list(dna_seq)
+	for i in range(0,len(dna_seq)):
+		if dna_seq[i]=='U':
+			dna_seq[i]='T'

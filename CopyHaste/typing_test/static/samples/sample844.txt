@@ -1,0 +1,36 @@
+
+start_time = time.time()
+sent_word_net = load_sent_word_net()
+phase = "03"
+emo_repl = {
+	"&lt;3": " good ",
+	":d": " good ",
+	":dd": " good ",
+	"8)": " good ",
+	":-)": " good ",
+	":)": " good ",
+	";)": " good ",
+	"(-:": " good ",
+	"(:": " good ",
+	":/": " bad ",
+	":&gt;": " sad ",
+	":')": " sad ",
+	":-(": " bad ",
+	":(": " bad ",
+	":S": " bad ",
+	":-S": " bad ",
+}
+emo_repl_order = [k for (k_len, k) in reversed(
+	sorted([(len(k), k) for k in list(emo_repl.keys())]))]
+re_repl = {
+	r"\br\b": "are",
+	r"\bu\b": "you",
+	r"\bhaha\b": "ha",
+	r"\bhahaha\b": "ha",
+	r"\bdon't\b": "do not",
+	r"\bdoesn't\b": "does not",
+	r"\bdidn't\b": "did not",
+	r"\bhasn't\b": "has not",
+	r"\bhaven't\b": "have not",
+	r"\bhadn't\b": "had not",
+	r"\bwon't\b": "will not

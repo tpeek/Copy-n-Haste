@@ -1,0 +1,28 @@
+
+__metaclass__ = type
+__all__ = [
+	'Command',
+	'register_command',
+	'run'
+	]
+class OptionParser(optparse.OptionParser):
+	def exit(self, status=0, msg=None):
+		if msg:
+			sys.stderr.write(uencode(msg))
+		sys.exit(status)
+class Command:
+	doc = ''
+	name = None
+	usage_args = N_('[ options ... ]')
+	def __init__(self, options=[]):
+		self.options = options
+	def execute(self, config, args, help):
+		options, args = self.parse_args(args)
+		return self.run(config, options, args, help)
+	def parse_args(self, args):
+		self.parser = OptionParser(
+			usage='%%prog %s %s' % (self.name, _(self.usage_args)),
+			description=_(self.doc))
+		self.parser.add_options(self.options)
+		return self.parser.parse_args(args)
+	def run(self, config, options, args, help=None

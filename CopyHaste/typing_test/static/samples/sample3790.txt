@@ -1,0 +1,10 @@
+try:
+except ImportError:
+__addon__	 = xbmcaddon.Addon()
+__addonname__ = __addon__.getAddonInfo('name')
+__profile__	 = xbmc.translatePath(__addon__.getAddonInfo('profile'))
+cookieFile = __profile__ + 'cookies.funshion'
+CHANNEL_LIST = [['c-e794b5e5bdb1', '电影'], ['c-e794b5e8a786e589a7', '电视剧'], ['c-e58aa8e6bcab', '动漫'], ['c-e7bbbce889ba', '综艺'], ['c-e5beaee794b5e5bdb1', '微电影'], \
+ ['c-e99fb3e4b990', '音乐'], ['c-e7baaae5bd95e78987', '纪录片'], ['c-e5a8b1e4b990', '娱乐'], ['c-e4bd93e882b2', '体育'], ['c-e6909ee7ac91', '搞笑'], \
+ ['c-e696b0e997bb', '新闻'], ['c-e69785e6b8b8', '旅游'], ['c-e6b1bde8bda6', '汽车'], ['c-e6b8b8e6888f', '游戏'], ['c-e7be8ee5a5b3', '美女'], \
+ ['c-e697b6e5b09a', '时尚'], 

@@ -1,0 +1,33 @@
+
+	VolumeShareSlippage,
+	transact_partial,
+	check_order_triggers
+)
+	VERSION_LABEL
+)
+log = Logger('Blotter')
+ORDER_STATUS = Enum(
+	'OPEN',
+	'FILLED',
+	'CANCELLED',
+	'REJECTED',
+	'HELD',
+)
+class Blotter(object):
+	def __init__(self):
+		self.transact = transact_partial(VolumeShareSlippage(), PerShare())
+		self.open_orders = defaultdict(list)
+		self.orders = {}
+		self.new_orders = []
+		self.current_dt = None
+		self.max_shares = int(1e+11)
+	def __repr__(self):
+		return.strip().format(class_name=self.__class__.__name__,
+				   transact_partial=self.transact.args,
+				   open_orders=self.open_orders,
+				   orders=self.orders,
+				   new_orders=self.new_orders,
+				   current_dt=self.current_dt)
+	def set_date(self, dt):
+		self.current_dt = dt
+	def o

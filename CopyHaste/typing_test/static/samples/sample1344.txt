@@ -1,0 +1,25 @@
+
+def metzner_mcmc_slow(Z, n_samples, n_thin=1, random_state=None):
+	K_MINUS = 0.9
+	K_PLUS = 1.1
+	Z = np.asarray(Z)
+	n_states = Z.shape[0]
+	if not Z.ndim == 2 and Z.shape[1] == n_states:
+		raise ValueError("Z must be square. Z.shape=%s" % str(Z.shape))
+	K = 0.5 * (Z + Z.T) / np.sum(Z, dtype=float)
+	random = check_random_state(random_state)
+	n_accept = 0
+	for t in range(n_samples):
+		i, j = (random.rand(2) * n_states).astype(np.int)
+		
+		sc = np.sum(K)
+		if i == j:
+			a, b = max(-K[i,j], K_MINUS - sc), K_PLUS - sc
+		else:
+			a, b = max(-K[i,j], 0.5*(K_MINUS - sc)), 0.5*(K_PLUS - sc)
+		epsilon = random.uniform(a, b)
+		K_proposal = np.copy(K)
+		K_proposal[i, j] += epsilon
+		if i != j:
+			K_proposal[j, i] += epsilon
+		cutoff = np.exp(_logprob_T(

@@ -1,0 +1,20 @@
+localcache = {}
+class PlanetUpgrade(models.Model):
+  planet		  = models.ForeignKey('Planet')
+  instrumentality = models.ForeignKey('Instrumentality')
+  state		   = models.PositiveIntegerField(default=0)
+  raised		  = models.ForeignKey('Manifest')
+  states		  = ['Building','Active','Destroyed','Inactive','Damaged']
+  BUILDING   = 0 
+  ACTIVE	 = 1
+  DESTROYED  = 2
+  INACTIVE   = 3
+  DAMAGED	= 4
+  def currentcost(self,commodity):
+	cost = 0
+	if self.state in [PlanetUpgrade.BUILDING, PlanetUpgrade.DAMAGED]:
+	  onefifth		= getattr(self.instrumentality.required,commodity)/5
+	  alreadyraised   = getattr(self.raised,commodity)
+	  totalneeded	 = self.instrumentality.required
+	  if commodity == 'people' and \
+		 onefifth > (self.planet.resources.peopl

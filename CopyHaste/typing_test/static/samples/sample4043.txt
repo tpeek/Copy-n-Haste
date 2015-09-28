@@ -1,0 +1,26 @@
+file_open = None
+class ClassBrowser:
+	def __init__(self, flist, name, path, _htest=False):
+		global file_open
+		if not _htest:
+			file_open = PyShell.flist.open
+		self.name = name
+		self.file = os.path.join(path[0], self.name + ".py")
+		self._htest = _htest
+		self.init(flist)
+	def close(self, event=None):
+		self.top.destroy()
+		self.node.destroy()
+	def init(self, flist):
+		self.flist = flist
+		pyclbr._modules.clear()
+		self.top = top = ListedToplevel(flist.root)
+		top.protocol("WM_DELETE_WINDOW", self.close)
+		top.bind("<Escape>", self.close)
+		if self._htest:
+			top.geometry("+%d+%d" %
+				(flist.root.winfo_rootx(), flist.root.winfo_rooty() + 200))
+		self.settitle()
+		top.focus_set()
+		theme = idleConf.GetOption('main','Theme','name')
+		ba

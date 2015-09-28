@@ -1,0 +1,28 @@
+class MPSetting:
+	def __init__(self, name, type, default, label=None, tab=None,
+				 range=None, increment=None, format=None,
+				 digits=None, choice=None):
+		if label is None:
+			label = name
+		self.name = name
+		self.type = type
+		self.default = default
+		self.label = label
+		self.value = default
+		self.tab = tab
+		self.range = range
+		if range is not None:
+			(minv, maxv) = range
+		self.increment = increment
+		self.choice = choice
+		self.format = format
+		self.digits = digits
+	def set(self, value):
+		if value == 'None' and self.default is None:
+			value = None
+		if value is not None:
+			if self.type == bool:
+				if str(value).lower() in ['1', 'true', 'yes']:
+					value = True
+				elif str(value).lower() in ['0', 'false', 'no']:
+					val

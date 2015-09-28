@@ -1,0 +1,30 @@
+
+class global_flags(object):
+	def __init__(self):
+		self._flags = {}
+	def copy_
+		self._flags = copy.deepcopy(other._flags)
+	def __contains__(self, name):
+		if name in self._flags:
+			return len(self._flags[name]) > 0
+		return False
+	def __getitem__(self, name):
+		return self.get(name)
+	def get(self, name, default_value=None):
+		if name in self:
+			return self._flags[name][-1]
+		return default_value
+	def push(self, name, value):
+		if name in self._flags:
+			self._flags[name].append(value)
+		else:
+			self._flags[name] = [value]
+	def pop(self, name):
+		assert name in self._flags
+		val = self._flags[name].pop()
+		if len(self._flags[name]) == 0:
+			del self._flags[name]
+		return val
+flags = global_flags()
+_allow_multiprocessing = True
+def set_m

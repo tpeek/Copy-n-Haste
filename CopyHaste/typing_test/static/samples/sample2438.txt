@@ -1,0 +1,18 @@
+
+revision = '23e204cd1d91'
+down_revision = '14692efd261b'
+def upgrade():
+	op.create_table(
+		'category',
+		sa.Column('created_at', sa.DateTime(), nullable=False),
+		sa.Column('updated_at', sa.DateTime(), nullable=False),
+		sa.Column('deleted_at', sa.DateTime(), nullable=True),
+		sa.Column('id', sa.Integer(), nullable=False),
+		sa.Column('public_id', sa.BINARY(16), nullable=False),
+		sa.Column('namespace_id', sa.Integer(), nullable=False),
+		sa.Column('name', sa.String(length=191, collation='utf8mb4_bin'),
+				  nullable=True),
+		sa.Column('display_name', sa.String(length=191), nullable=False),
+		sa.Column('type_', sa.Enum('folder', 'label'), nullable=False),
+		sa.ForeignKeyConstraint(['namespace_id'], ['namespace.id'],
+								name='categor

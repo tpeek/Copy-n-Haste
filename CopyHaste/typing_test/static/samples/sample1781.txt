@@ -1,0 +1,25 @@
+__author__ = 'richard'
+plt.style.use('ggplot')
+ACF_THRESH = 0.5
+NLAGS = 70
+TRAJECTORY_DATA_REL_DIR = "data/experiments/trajectories/control_trajectories/"
+csv_list = i_o.get_csv_name_list(TRAJECTORY_DATA_REL_DIR)
+def arg_less(inarray,threshold):
+	filtered = np.nonzero(inarray<threshold)
+	try:
+		return filtered[0][0]
+	except IndexError:
+		return NLAGS
+def index_drop(df, thresh=ACF_THRESH, verbose=True):
+	if verbose is True:
+		print 'size/timesteps = ', df.size
+	indices = []
+	for label, col in df.iteritems():
+		if label in ['velocity_x', 'velocity_y', 'velocity_z']:
+			try:
+				ACF = acf(col, nlags = NLAGS)
+			except TypeError:
+				return 'explosion'
+			if verbose is True:
+				print label, arg_less(ACF, ACF_THRESH)
+			indices.append(arg_less(

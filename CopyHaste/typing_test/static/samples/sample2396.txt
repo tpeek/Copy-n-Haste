@@ -1,0 +1,22 @@
+
+	source_to_records
+)
+	treasury_mappings, get_treasury_date, get_treasury_rate
+)
+_CURVE_MAPPINGS = {
+	'date': (get_treasury_date, "Date"),
+	'1month': (get_treasury_rate, "V39063"),
+	'3month': (get_treasury_rate, "V39065"),
+	'6month': (get_treasury_rate, "V39066"),
+	'1year': (get_treasury_rate, "V39067"),
+	'2year': (get_treasury_rate, "V39051"),
+	'3year': (get_treasury_rate, "V39052"),
+	'5year': (get_treasury_rate, "V39053"),
+	'7year': (get_treasury_rate, "V39054"),
+	'10year': (get_treasury_rate, "V39055"),
+	'30year': (get_treasury_rate, "V39056"),
+}
+BILLS = ['V39063', 'V39065', 'V39066', 'V39067']
+BONDS = ['V39051', 'V39052', 'V39053', 'V39054', 'V39055', 'V39056']
+def get_treasury_source(start_date=None, end_date=None):
+	today = datetime.d

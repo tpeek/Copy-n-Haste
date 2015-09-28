@@ -1,0 +1,22 @@
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+TEST_DIR = os.path.join(
+	os.path.dirname(os.path.abspath(__file__)), 'swftests')
+class TestSWFInterpreter(unittest.TestCase):
+	pass
+def _make_testfunc(testfile):
+	m = re.match(r'^(.*)\.(as)$', testfile)
+	if not m:
+		return
+	test_id = m.group(1)
+	def test_func(self):
+		as_file = os.path.join(TEST_DIR, testfile)
+		swf_file = os.path.join(TEST_DIR, test_id + '.swf')
+		if ((not os.path.exists(swf_file)) or
+				os.path.getmtime(swf_file) < os.path.getmtime(as_file)):
+			try:
+				subprocess.check_call([
+					'mxmlc', '-output', swf_file,
+					'-static-link-runtime-shared-libraries', as_file])
+			except OSError as ose:
+				if ose.errno == errno.ENOENT:
+					print('mxm

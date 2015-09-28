@@ -1,0 +1,18 @@
+
+def create_date(month,year):
+	
+	date = dt.datetime(int(year), int(month), 1)
+	mdate = matplotlib.dates.date2num(date)
+	
+	return mdate
+pos = arange(0.5,2.5,0.5)
+ylabels = ['Thesis','Impacts','Structure','Climatology']
+task_dates = {}
+task_dates['Climatology'] = [create_date(5,2013),create_date(8,2013),create_date(10,2013)]
+task_dates['Structure'] = [create_date(10,2013),create_date(3,2014),create_date(5,2014)]
+task_dates['Impacts'] = [create_date(5,2014),create_date(12,2014),create_date(2,2015)]
+task_dates['Thesis'] = [create_date(2,2015),create_date(5,2015)]
+fig = plt.figure()
+ax = fig.add_axes([0.15,0.2,0.75,0.3])
+start_date,end_date = task_dates['Thesis']
+ax.barh(0.5, end_date - start_date, left=start_date, height=0.3, align='center', co

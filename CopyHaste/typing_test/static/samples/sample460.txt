@@ -1,0 +1,43 @@
+
+SYNTAX_GROUP_REGEX = re.compile(
+  r,
+  re.VERBOSE )
+KEYWORD_REGEX = re.compile( r'^[\w,]+$' )
+SYNTAX_ARGUMENT_REGEX = re.compile(
+  r"^\w+=.*$" )
+SYNTAX_ARGUMENTS = set([
+  'cchar',
+  'conceal',
+  'contained',
+  'containedin',
+  'nextgroup',
+  'skipempty',
+  'skipnl',
+  'skipwhite',
+  'transparent',
+  'concealends',
+  'contains',
+  'display',
+  'extend',
+  'fold',
+  'oneline',
+  'keepend',
+  'excludenl',
+])
+ALLOWED_SYNTAX_ARGUMENTS = set([
+  'contained',
+])
+ROOT_GROUPS = set([
+  'Statement',
+  'Boolean',
+  'Include',
+  'Type',
+  'Identifier',
+])
+class SyntaxGroup( object ):
+  def __init__( self, name, lines = None ):
+	self.name	 = name
+	self.lines	= lines if lines else []
+	self.children = []
+def SyntaxKeywordsForCurrentBuffer():
+  vim.com

@@ -1,0 +1,18 @@
+DISPLAY_NAME = "Display Name"
+MAXIMUM_ATTEMPTS = "Maximum Attempts"
+PROBLEM_WEIGHT = "Problem Weight"
+RANDOMIZATION = 'Randomization'
+SHOW_ANSWER = "Show Answer"
+SHOW_RESET_BUTTON = "Show Reset Button"
+TIMER_BETWEEN_ATTEMPTS = "Timer Between Attempts"
+MATLAB_API_KEY = "Matlab API key"
+@step('I have created a Blank Common Problem$')
+def i_created_blank_common_problem(step):
+	step.given('I am in Studio editing a new unit')
+	step.given("I have created another Blank Common Problem")
+@step('I have created a unit with advanced module "(.*)"$')
+def i_created_unit_with_advanced_module(step, advanced_module):
+	step.given('I am in Studio editing a new unit')
+	url = world.browser.url
+	step.given("I select the Advanced Settings")
+	change_value(step, AD

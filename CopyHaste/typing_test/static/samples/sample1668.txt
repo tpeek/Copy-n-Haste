@@ -1,0 +1,20 @@
+
+LastModifiedDate = '2015-01-25'
+ShortProgName = "TestBooksCodesRE"
+ProgName = "TestBooksCodes Regular Expressions"
+ProgVersion = '0.20'
+ProgNameVersion = '{} v{}'.format( ProgName, ProgVersion )
+ProgNameVersionDate = '{} {} {}'.format( ProgNameVersion, _("last modified"), LastModifiedDate )
+debuggingThisModule = False
+sys.path.append( '.' )
+sys.path.append( '..' )
+OSIS_BOOK_RE = '([1-5A-EG-JL-PRSTVWZ][BCEJKMPSTa-ehimoprsuxz](?:[AJMa-eghik-pr-v](?:[DEPacdeghklmnrstuvz](?:[Gachnrsz](?:[nrst][ah]?)?)?)?)?)'
+def doBBB():
+	print( "\ndoBBB" )
+	L0, L1, L2 = {}, {}, {}
+	for BBB in BibleOrgSysGlobals.BibleBooksCodes:
+		if BBB[0] in L0: L0[BBB[0]] += 1
+		else: L0[BBB[0]] = 1
+		if BBB[1] in L1: L1[BBB[1]] += 1
+		else: L1[BBB[1]] = 1
+		if BBB[2] in L2

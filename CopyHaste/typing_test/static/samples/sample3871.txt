@@ -1,0 +1,31 @@
+sys.path.append('../../')
+sys.path.append('../../storage')
+cgitb.enable(display=1)
+time_col = 'Timestamp'
+print 'Content-Type: text/html\n'
+form = cgi.FieldStorage()
+node_id = form.getlist('node_id')
+if len(node_id) > 0:
+	node_id = int(node_id[0])
+else:
+	node_id = 4
+dbtags = form.getlist('var')
+nhour = form.getlist('nhour')
+if len(nhour) > 0:
+	nhour = float(nhour[0])
+	avg = None
+else:
+	nhour = 7*24
+	avg = 'hourly'
+store = storage()
+tmp = read_disp_config()
+if len(dbtags) <= 0:
+	dbtags = tmp[node_id]['variable']
+units = get_unit(node_id,dbtags)
+linecolors = get_color(node_id,dbtags)
+data = []
+title_strs = []
+retrieved = store.read(node_id,variables=dbtags,nhour=nhour,avg=avg)
+for k,tag in enumerate(dbtags):
+	if retrieved is not None:
+		ts = 

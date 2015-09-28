@@ -1,0 +1,18 @@
+
+class randomStruct:
+	def __init__(self):
+		self.reward = 0
+class LinUCBStruct(LinUCBUserStruct):
+	def __init__(self, featureDimension, lambda_):
+		LinUCBUserStruct.__init__(self, featureDimension= featureDimension, lambda_ = lambda_)
+		self.reward = 0
+class CoLinUCBStruct(AsyCoLinUCBUserSharedStruct):
+	def __init__(self, featureDimension, lambda_, userNum, W):
+		AsyCoLinUCBUserSharedStruct.__init__(self, featureDimension = featureDimension, lambda_ = lambda_, userNum = userNum, W = W)
+		self.reward = 0  
+class GOBLinStruct(GOBLinSharedStruct):
+	def __init__(self, featureDimension, lambda_, userNum, W):
+		GOBLinSharedStruct.__init__(self, featureDimension = featureDimension, lambda_ = lambda_, userNum = userNum, W = W)
+		self.reward = 0
+	
+d

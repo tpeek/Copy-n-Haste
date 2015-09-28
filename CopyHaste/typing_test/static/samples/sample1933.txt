@@ -1,0 +1,16 @@
+
+kDERIVED_COLUMNS = [('Astronomy', ''), ('Biology', ''), ('Chemistry',
+''), ('Chemistry', 'chemistry)'), ('Earth Science', ''), ('Fine Arts',
+''), ('History', ''), ('Mathematics', ''), ('Other', ''), ('Physics',
+''), ('Social Studies', ''), ('Literature', ''), ('Literature',
+'film)'), ('Literature', 'novel)'), ('Literature', 'play)'),
+('Literature', 'mythology)'), ('Literature', 'miniseries)'),
+('Literature', 'essay)'), ('Literature', 'opera)'), ('Literature',
+'story)'), ('Literature', 'poem)'), ('Literature', 'serial)'),
+('Literature', 'manga)'), ('Literature', 'constellation)'),
+('Literature', 'musical)')]
+def load_mapping(match_filename):
+	res = {}
+	for ii in glob("%s*" % match_filename):
+		for jj in codecs.open(ii, 'r', 'utf-8'):
+			if 

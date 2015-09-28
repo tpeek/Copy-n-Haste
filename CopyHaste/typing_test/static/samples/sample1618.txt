@@ -1,0 +1,32 @@
+
+file = open(sys.argv[1]+'user_taggedartists-timestamps.dat', 'r')
+file.readline()
+raw_user_artist_tag = []
+max = 1000000
+for line in file:
+	max -= 1
+	if max<0:
+		break
+	arr = line.strip().split('\t')
+	t = {}
+	t['uid'] = int(arr[0])
+	t['aid'] = int(arr[1])
+	t['tid'] = int(arr[2])
+	t['tstamp'] = int(arr[3])
+	raw_user_artist_tag.append(t)
+	
+print 'raw event number: '+str(len(raw_user_artist_tag))
+tag_remove = Set([])
+vocab = {}
+tag2word = {}
+file = open(sys.argv[1]+'tags.dat', 'r')
+file.readline()
+for line in file:
+	arr = line.strip().split('\t')	
+	if not int(arr[0]) in  tag_remove:		
+		wlist = re.split(r"[ _-]+", arr[1])		
+		if not (int(arr[0])in tag2word):
+			tag2word[int(arr[0])] = wlist
+		for word in wlist:
+			if not word in vocab:
+				vo

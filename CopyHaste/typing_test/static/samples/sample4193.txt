@@ -1,0 +1,18 @@
+if __name__ == "__main__":
+	current_path = os.path.dirname(os.path.abspath(__file__))
+	python_path = os.path.abspath( os.path.join(current_path, os.pardir, os.pardir, 'python27', '1.0'))
+	noarch_lib = os.path.abspath( os.path.join(python_path, 'lib', 'noarch'))
+	sys.path.append(noarch_lib)
+	if sys.platform == "win32":
+		win32_lib = os.path.abspath( os.path.join(python_path, 'lib', 'win32'))
+		sys.path.append(win32_lib)
+	elif sys.platform.startswith("linux"):
+		linux_lib = os.path.abspath( os.path.join(python_path, 'lib', 'linux'))
+		sys.path.append(linux_lib)
+current_path = os.path.dirname(os.path.abspath(__file__))
+SSLError = OpenSSL.SSL.WantReadError
+if __name__ == "__main__":
+else:
+	class xlog():
+		@staticmethod
+		def debug(fmt, *args, *

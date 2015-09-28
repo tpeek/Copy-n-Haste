@@ -1,0 +1,28 @@
+scale_latlon = 1e-7
+scale_hdg = 1e-2
+scale_relative_alt = 1e-3
+class CameraViewModule(mp_module.MPModule):
+	def __init__(self, mpstate):
+		super(CameraViewModule, self).__init__(mpstate, "cameraview")
+		self.add_command('cameraview', self.cmd_cameraview, "camera view")
+		self.roll = 0
+		self.pitch = 0
+		self.yaw = 0
+		self.mount_roll = 0
+		self.mount_pitch = 0
+		self.mount_yaw = 0
+		self.height = 0
+		self.lat = 0
+		self.lon = 0
+		self.home_height = 0
+		self.hdg = 0
+		self.elevation_model = mp_elevation.ElevationModel()
+		self.camera_params = CameraParams()
+		self.view_settings = mp_settings.MPSettings(
+			[ ('r', float, 0.5),
+			  ('g', float, 0.5),
+			  ('b', float, 1.0),
+			])
+		self.update_col()
+	def update_col(self):
+		self.col = tuple(

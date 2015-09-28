@@ -1,0 +1,23 @@
+
+						unicode_literals, with_statement)
+class MemoizeTest(unittest.TestCase):
+  def test_function_application_positional(self):
+	calculations = []
+	@memoized
+	def multiply(first, second):
+	  calculations.append((first, second))
+	  return first * second
+	self.assertEqual(6, multiply(2, 3))
+	self.assertEqual(6, multiply(3, 2))
+	self.assertEqual(6, multiply(2, 3))
+	self.assertEqual([(2, 3), (3, 2)], calculations)
+  def test_function_application_kwargs(self):
+	calculations = []
+	@memoized()
+	def multiply(first, second):
+	  calculations.append((first, second))
+	  return first * second
+	self.assertEqual(6, multiply(first=2, second=3))
+	self.assertEqual(6, multiply(second=3, first=2))
+	self.assertEqual(6, multiply(first=2, second=3))
+	self.assert

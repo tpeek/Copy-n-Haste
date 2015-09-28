@@ -1,0 +1,77 @@
+__author__ = 'suchet'
+__date__ = '17/08/15'
+def watershed_segments(binary_image, min_peak_distance=10, min_joining_seg=150):
+	assert binary_image.dtype == 'uint8', 'Input image needs to be in uint8 format, currently in {}'.format(binary_image)
+	distance_to_edge = smoothed_edge_distance(binary_image)
+	local_maxi = peak_local_max(distance_to_edge, indices=False, min_distance=min_peak_distance,
+								labels=binary_image, exclude_border=False)
+	markers = ndimage.label(local_maxi)[0]
+	segments = watershed(-distance_to_edge, markers, mask=binary_image)
+	merged_segments = merge_segments(segments, min_size=min_joining_seg)
+	return merged_segments
+def crop_2d_data(data, crop_pixels=32):
+	data_out = data[crop_pixels:-crop_pixels, crop_pixels:-crop_pixels]
+	return data_out
+def get_blob_segments(image, min_joint_area, crop_pixels, min_area):
+	segments = watershed_segments(image, min_joining_seg=min_joint_area)
+	segments = crop_2d_data(segments, crop_pixels=crop_pixels)
+	segments = remove_small_segments(segments, min_size=min_area)
+	return segments
+def smoothed_edge_distance(binary_image, sigma=[1, 1]):
+	distance = ndimage.distance_transform_edt(binary_image)
+	distance_smoothed = ndimage.gaussian_filter(distance, sigma=sigma, order=0)
+	distance_smoothed[distance == 0] = 0
+	return distance_smoothed
+def merge_segments(segments, min_size=None):
+	merged_segments = segments.copy()
+	k = region_graph(segments)
+	seg_pairs = k[k[:,0]!=0,:]
+	seg_counts = np.bincount(segments.ravel())
+	for seg_idx in range(seg_pairs.shape[0]):
+		seg_label = seg_pairs[seg_idx, 0]
+		if seg_counts[seg_label] < min_size:
+			merged_segments[merged_segments == seg_label] = seg_pairs[seg_idx, 1]
+	return merged_segments
+def region_graph(regions):
+	edges = make_grid_edges(regions)
+	n_vertices = np.max(regions) + 1
+	crossings = edges[regions.ravel()[edges[:, 0]]
+					  != regions.ravel()[edges[:, 1]]]
+	edges = regions.ravel()[crossings]
+	edges = np.sort(edges, axis=1)
+	crossing_hash = (edges[:, 0] + n_vertices * edges[:, 1])
+	unique_hash = np.unique(crossing_hash)
+	unique_crossings = np.c_[unique_hash % n_vertices,
+							 unique_hash // n_vertices]
+	return unique_crossings
+def remove_small_segments(segments, min_size=None):
+	rseg = segments.copy()
+	unique_labels = np.unique(rseg)[1:]
+	for lbl in unique_labels:
+		if (rseg == lbl).sum() < min_size:
+			rseg[rseg == lbl] = 0
+	return rseg
+def segment_centroid_matching(reference_segment_image, test_segment_image, min_dist=None):
+	ref_segments = np.unique(reference_segment_image)
+	test_segments = np.unique(test_segment_image)
+	if (ref_segments.size == 1) or (test_segments.size == 1):
+		tps, fps, fns = [], [], []
+		if ref_segments.size == 1:
+			fps = test_segments[1:]
+		if test_segments.size == 1:
+			fns = ref_segments[1:]
+		return tps, fps, fns
+	ref_props = regionprops(reference_segment_image)
+	test_props = regionprops(test_segment_image)
+	ref_labels = np.array([ref_props[idx].label for idx in range(len(ref_props))])
+	test_labels = np.array([test_props[idx].label for idx in range(len(test_props))])
+	ref_centroids = [ref_props[idx].centroid for idx in range(len(ref_props))]
+	test_centroids = [test_props[idx].centroid for idx in range(len(test_props))]
+	nbrs = NearestNeighbors(n_neighbors=1, algorithm='kd_tree').fit(ref_centroids)
+	distances, indices = nbrs.kneighbors(test_centroids)
+	tp = 1*(distances[:,0] <= min_dist)
+	tps = test_labels[np.where(tp)]
+	fp = 1*(distances[:,0] > min_dist)
+	fps = test_labels[np.where(fp)]
+	fns = np.setdiff1d(ref_labels, ref_labels[np.unique(indices[:,0])])
+	return tps, fps, fns

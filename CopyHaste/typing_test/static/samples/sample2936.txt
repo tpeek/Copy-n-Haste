@@ -1,0 +1,726 @@
+sys.path.append( '../pymod' )
+gdaltest_list = []
+init_list = [ \
+	('byte.tif', 1, 4672, None),
+	('int10.tif', 1, 4672, None),
+	('int12.tif', 1, 4672, None),
+	('int16.tif', 1, 4672, None),
+	('uint16.tif', 1, 4672, None),
+	('int24.tif', 1, 4672, None),
+	('int32.tif', 1, 4672, None),
+	('uint32.tif', 1, 4672, None),
+	('float16.tif', 1, 4672, None),
+	('float24.tif', 1, 4672, None),
+	('float32.tif', 1, 4672, None),
+	('float32_minwhite.tif', 1, 1, None),
+	('float64.tif', 1, 4672, None),
+	('cint16.tif', 1, 5028, None),
+	('cint32.tif', 1, 5028, None),
+	('cfloat32.tif', 1, 5028, None),
+	('cfloat64.tif', 1, 5028, None),
+	('separate_tiled.tif', 2, 15234, None), 
+	('seperate_strip.tif', 2, 15234, None),
+	('contig_tiled.tif', 2, 15234, None),
+	('contig_strip.tif', 2, 15234, None),
+	('empty1bit.tif', 1, 0, None)]
+def tiff_read_off():
+	ds = gdal.Open('GTIFF_DIR:off:408:data/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+		return 'fail'
+	ds = gdal.Open('GTIFF_DIR:1:data/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+		return 'fail'
+	gt = ds.GetGeoTransform()
+	if gt != (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0):
+		gdaltest.post_reason('did not get expected geotransform')
+		print(gt)
+		return 'fail'
+	return 'success'
+def tiff_check_alpha():
+	
+	ds = gdal.Open('data/stefan_full_greyalpha.tif')
+	if ds.GetRasterBand(2).GetRasterColorInterpretation()!= gdal.GCI_AlphaBand:
+		gdaltest.post_reason( 'Wrong color interpretation (stefan_full_greyalpha).')
+		print(ds.GetRasterBand(2).GetRasterColorInterpretation())
+		return 'fail'
+	ds = None
+	
+	ds = gdal.Open('data/stefan_full_rgba.tif')
+	if ds.GetRasterBand(4).GetRasterColorInterpretation()!= gdal.GCI_AlphaBand:
+		gdaltest.post_reason( 'Wrong color interpretation (stefan_full_rgba).')
+		print(ds.GetRasterBand(4).GetRasterColorInterpretation())
+		return 'fail'
+	ds = None
+	
+	ds = gdal.Open('data/stefan_full_rgba_photometric_rgb.tif')
+	if ds.GetRasterBand(4).GetRasterColorInterpretation()!= gdal.GCI_Undefined:
+		gdaltest.post_reason( 'Wrong color interpretation (stefan_full_rgba_photometric_rgb).')
+		print(ds.GetRasterBand(4).GetRasterColorInterpretation())
+		return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_cmyk_rgba():
+	ds = gdal.Open('data/rgbsmall_cmyk.tif')
+	md = ds.GetMetadata('IMAGE_STRUCTURE')
+	if 'SOURCE_COLOR_SPACE' not in md or md['SOURCE_COLOR_SPACE'] != 'CMYK':
+		print('bad value for IMAGE_STRUCTURE[SOURCE_COLOR_SPACE]')
+		return 'fail'
+	if ds.GetRasterBand(1).GetRasterColorInterpretation()!= gdal.GCI_RedBand:
+		gdaltest.post_reason( 'Wrong color interpretation.')
+		print(ds.GetRasterBand(1).GetRasterColorInterpretation())
+		return 'fail'
+	if ds.GetRasterBand(4).GetRasterColorInterpretation()!= gdal.GCI_AlphaBand:
+		gdaltest.post_reason( 'Wrong color interpretation (alpha).')
+		print(ds.GetRasterBand(4).GetRasterColorInterpretation())
+		return 'fail'
+	if ds.GetRasterBand(1).Checksum() != 23303:
+		print('Expected checksum = %d. Got = %d' % (23303, ds.GetRasterBand(1).Checksum()))
+		return 'fail'
+	return 'success'
+def tiff_read_cmyk_raw():
+	ds = gdal.Open('GTIFF_RAW:data/rgbsmall_cmyk.tif')
+	if ds.GetRasterBand(1).GetRasterColorInterpretation()!= gdal.GCI_CyanBand:
+		gdaltest.post_reason( 'Wrong color interpretation.')
+		print(ds.GetRasterBand(1).GetRasterColorInterpretation())
+		return 'fail'
+	if ds.GetRasterBand(1).Checksum() != 29430:
+		print('Expected checksum = %d. Got = %d' % (29430, ds.GetRasterBand(1).Checksum()))
+		return 'fail'
+	return 'success'
+def tiff_read_ojpeg():
+	md = gdal.GetDriverByName('GTiff').GetMetadata()
+	if md['DMD_CREATIONOPTIONLIST'].find('JPEG') == -1:
+		return 'skip'
+	gdal.PushErrorHandler('CPLQuietErrorHandler')
+	ds = gdal.Open('data/zackthecat.tif')
+	gdal.PopErrorHandler()
+	if ds is None:
+		if gdal.GetLastErrorMsg().find('Cannot open TIFF file due to missing codec') == 0:
+			return 'skip'
+		else:
+			print(gdal.GetLastErrorMsg())
+			return 'fail'
+	gdal.PushErrorHandler('CPLQuietErrorHandler')
+	got_cs = ds.GetRasterBand(1).Checksum()
+	gdal.PopErrorHandler()
+	expected_cs = 61570
+	if got_cs != expected_cs:
+		print('Expected checksum = %d. Got = %d' % (expected_cs, got_cs))
+		return 'fail'
+	return 'success'
+def tiff_read_gzip():
+	try:
+		os.remove('data/byte.tif.gz.properties')
+	except:
+		pass
+	ds = gdal.Open('/vsigzip/./data/byte.tif.gz')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	try:
+		os.stat('data/byte.tif.gz.properties')
+		gdaltest.post_reason('did not expect data/byte.tif.gz.properties')
+		return 'fail'
+	except:
+		return 'success'
+def tiff_read_zip_1():
+	ds = gdal.Open('/vsizip/./data/byte.tif.zip/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_zip_2():
+	ds = gdal.Open('/vsizip/./data/byte.tif.zip')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_zip_3():
+	ds = gdal.Open('/vsizip/./data/onefileinsubdir.zip/onefileinsubdir/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_zip_4():
+	ds = gdal.Open('/vsizip/./data/onefileinsubdir.zip')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_zip_5():
+	ds = gdal.Open('/vsizip/./data/twofileinsubdir.zip/twofileinsubdir/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_tar_1():
+	ds = gdal.Open('/vsitar/./data/byte.tar/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_tar_2():
+	ds = gdal.Open('/vsitar/./data/byte.tar')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_tgz_1():
+	ds = gdal.Open('/vsitar/./data/byte.tgz/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_tgz_2():
+	ds = gdal.Open('/vsitar/./data/byte.tgz')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_grads():
+	ds = gdal.Open('data/test_gf.tif')
+	srs = ds.GetProjectionRef()
+	if srs.find('PARAMETER["latitude_of_origin",46.8]') == -1:
+		print(srs)
+		gdaltest.post_reason( 'Did not get expected latitude of origin.' )
+		return 'fail'
+	return 'success'
+def tiff_citation():
+	build_info = gdal.VersionInfo('BUILD_INFO')
+	if build_info.find('ESRI_BUILD=YES') == -1:
+		return 'skip'
+		
+	ds = gdal.Open('data/citation_mixedcase.tif')
+	wkt = ds.GetProjectionRef()
+	expected_wkt =
+	if wkt != expected_wkt:
+		print('got: ', wkt)
+		gdaltest.post_reason( 'Erdas citation processing failing?' )
+		return 'fail'
+	return 'success'
+def tiff_linearparmunits():
+	
+	ds = gdal.Open('data/spaf27_correct.tif')
+	wkt = ds.GetProjectionRef()
+	ds = None
+	srs = osr.SpatialReference( wkt )
+	
+	fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
+	if abs(fe-2000000.0) > 0.001:
+		gdaltest.post_reason( 'did not get expected false easting (1)' )
+		return 'fail'
+	
+	ds = gdal.Open('data/spaf27_brokengdal.tif')
+	wkt = ds.GetProjectionRef()
+	ds = None
+	srs = osr.SpatialReference( wkt )
+	
+	fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
+	if abs(fe-609601.219202438) > 0.001:
+		gdaltest.post_reason( 'did not get expected false easting (2)' )
+		return 'fail'
+	
+	ds = gdal.Open('data/spaf27_epsg.tif')
+	wkt = ds.GetProjectionRef()
+	ds = None
+	srs = osr.SpatialReference( wkt )
+	
+	fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
+	if abs(fe-2000000.0) > 0.001:
+		gdaltest.post_reason( 'did not get expected false easting (3)' )
+		return 'fail'
+	
+	return 'success'
+def tiff_linearparmunits2():
+	gdal.SetConfigOption( 'GTIFF_LINEAR_UNITS', 'BROKEN' )
+	
+	ds = gdal.Open('data/spaf27_correct.tif')
+	wkt = ds.GetProjectionRef()
+	ds = None
+	srs = osr.SpatialReference( wkt )
+	
+	fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
+	if abs(fe-6561666.66667) > 0.001:
+		gdaltest.post_reason( 'did not get expected false easting (1)' )
+		return 'fail'
+	
+	ds = gdal.Open('data/spaf27_markedcorrect.tif')
+	wkt = ds.GetProjectionRef()
+	ds = None
+	srs = osr.SpatialReference( wkt )
+	
+	fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
+	if abs(fe-2000000.0) > 0.001:
+		gdaltest.post_reason( 'did not get expected false easting (2)' )
+		return 'fail'
+	
+	ds = gdal.Open('data/spaf27_brokengdal.tif')
+	wkt = ds.GetProjectionRef()
+	ds = None
+	srs = osr.SpatialReference( wkt )
+	
+	fe = srs.GetProjParm(osr.SRS_PP_FALSE_EASTING)
+	if abs(fe-2000000.0) > 0.001:
+		gdaltest.post_reason( 'did not get expected false easting (3)' )
+		return 'fail'
+	
+	gdal.SetConfigOption( 'GTIFF_LINEAR_UNITS', 'DEFAULT' )
+	
+	return 'success'
+def tiff_g4_split():
+	if not 'GetBlockSize' in dir(gdal.Band):
+		return 'skip'
+	
+	ds = gdal.Open('data/slim_g4.tif')
+	(blockx, blocky) = ds.GetRasterBand(1).GetBlockSize()
+	
+	if blocky != 1:
+		gdaltest.post_reason( 'Did not get scanline sized blocks.' )
+		return 'fail'
+	cs = ds.GetRasterBand(1).Checksum()
+	if cs != 3322:
+		print(cs)
+		gdaltest.post_reason( 'Got wrong checksum' )
+		return 'fail'
+	
+	return 'success'
+def tiff_multi_images():
+	ds = gdal.Open('data/twoimages.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	md = ds.GetMetadata('SUBDATASETS')
+	if md['SUBDATASET_1_NAME'] != 'GTIFF_DIR:1:data/twoimages.tif':
+		print(md)
+		gdaltest.post_reason( 'did not get expected subdatasets metadata.' )
+		return 'fail'
+	
+	ds = None
+	ds = gdal.Open('GTIFF_DIR:1:data/twoimages.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	ds = gdal.Open('GTIFF_DIR:2:data/twoimages.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_vsimem():
+	try:
+		gdal.FileFromMemBuffer
+	except:
+		return 'skip'
+	content = open('data/byte.tif', mode='rb').read()
+	gdal.FileFromMemBuffer('/vsimem/tiffinmem', content)
+	ds = gdal.Open('/vsimem/tiffinmem', gdal.GA_Update)
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds.GetRasterBand(1).Fill(0)
+	ds = None
+	ds = gdal.Open('/vsimem/tiffinmem')
+	if ds.GetRasterBand(1).Checksum() != 0:
+			print('Expected checksum = %d. Got = %d' % (0, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	ds = gdal.Open('/vsimem\\tiffinmem')
+	if ds.GetRasterBand(1).Checksum() != 0:
+			print('Expected checksum = %d. Got = %d' % (0, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	ds = None
+	gdal.Unlink('/vsimem/tiffinmem')
+	return 'success'
+def tiff_vsizip_and_mem():
+	try:
+		gdal.FileFromMemBuffer
+	except:
+		return 'skip'
+	content = open('data/byte.tif.zip', mode='rb').read()
+	gdal.FileFromMemBuffer('/vsimem/tiffinmem.zip', content)
+	ds = gdal.Open('/vsizip/vsimem/tiffinmem.zip/byte.tif')
+	if ds.GetRasterBand(1).Checksum() != 4672:
+			print('Expected checksum = %d. Got = %d' % (4672, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	gdal.Unlink('/vsimem/tiffinmem.zip')
+	return 'success'
+def tiff_ProjectedCSTypeGeoKey_only():
+	ds = gdal.Open('data/ticket3019.tif')
+	if ds.GetProjectionRef().find('WGS 84 / UTM zone 31N') == -1:
+		print(ds.GetProjectionRef())
+		return 'fail'
+	ds = None
+	return 'success'
+def tiff_12bitjpeg():
+	old_accum = gdal.GetConfigOption( 'CPL_ACCUM_ERROR_MSG', 'OFF' )
+	gdal.SetConfigOption( 'CPL_ACCUM_ERROR_MSG', 'ON' )
+	gdal.ErrorReset()
+	gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
+	try:
+		os.unlink('data/mandrilmini_12bitjpeg.tif.aux.xml')
+	except:
+		pass
+	try:
+		ds = gdal.Open('data/mandrilmini_12bitjpeg.tif')
+		ds.GetRasterBand(1).ReadRaster(0,0,1,1)
+	except:
+		ds = None
+	gdal.PopErrorHandler()
+	gdal.SetConfigOption( 'CPL_ACCUM_ERROR_MSG', old_accum )
+	if gdal.GetLastErrorMsg().find(
+				   'Unsupported JPEG data precision 12') != -1:
+		sys.stdout.write('(12bit jpeg not available) ... ')
+		return 'skip'
+	elif ds is None:
+		gdaltest.post_reason( 'failed to open 12bit jpeg file with unexpected error' )
+		return 'fail'
+	try:
+		stats = ds.GetRasterBand(1).GetStatistics( 0, 1 )
+	except:
+		pass
+	
+	if stats[2] < 2150 or stats[2] > 2180 or str(stats[2]) == 'nan':
+		gdaltest.post_reason( 'did not get expected mean for band1.')
+		print(stats)
+		return 'fail'
+	ds = None
+	os.unlink('data/mandrilmini_12bitjpeg.tif.aux.xml')
+	return 'success'
+def tiff_read_stats_
+	try:
+		os.remove('data/byte.tif.aux.xml')
+	except:
+		pass
+	ds = gdal.Open('data/byte.tif')
+	md = ds.GetRasterBand(1).GetMetadata()
+	if 'STATISTICS_MINIMUM' in md:
+		gdaltest.post_reason('Unexpected presence of STATISTICS_MINIMUM')
+		return 'fail'
+	stats = ds.GetRasterBand(1).GetStatistics(0, 1)
+	if stats[0] != 74.0 or stats[1] != 255.0:
+		print(stats)
+		return 'fail'
+	ds = None
+	try:
+		os.stat('data/byte.tif.aux.xml')
+	except:
+		gdaltest.post_reason('Expected generation of data/byte.tif.aux.xml')
+		return 'fail'
+	ds = gdal.Open('data/byte.tif')
+	stats = ds.GetRasterBand(1).GetStatistics(0, 0)
+	if stats[0] != 74.0 or stats[1] != 255.0:
+		print(stats)
+		return 'fail'
+	ds = None
+	try:
+		os.remove('data/byte.tif.aux.xml')
+	except:
+		pass
+	return 'success'
+def tiff_read_
+	
+	ds = gdal.GetDriverByName('GTiff').Create('tmp/tiff_read_
+	ds = None
+	
+	f = open('tmp/tiff_read_
+	f.write()
+	f.close()
+	ds = gdal.Open('tmp/tiff_read_
+	gt = ds.GetGeoTransform()
+	wkt = ds.GetProjectionRef()
+	ds = None
+	gdal.GetDriverByName('GTiff').Delete('tmp/tiff_read_
+	try:
+		os.stat('tmp/tiff_read_
+		gdaltest.post_reason('did not expect to find .tab file at that point')
+		return 'fail'
+	except:
+		pass
+	if gt != (400000.0, 25.0, 0.0, 1300000.0, 0.0, -25.0):
+		gdaltest.post_reason('did not get expected geotransform')
+		print(gt)
+		return 'fail'
+	if wkt.find('OSGB_1936') == -1:
+		gdaltest.post_reason('did not get expected SRS')
+		print(wkt)
+		return 'fail'
+	return 'success'
+def tiff_read_pixelispoint():
+	gdal.SetConfigOption( 'GTIFF_POINT_GEO_IGNORE', 'FALSE' )
+	ds = gdal.Open( 'data/byte_point.tif' )
+	gt = ds.GetGeoTransform()
+	ds = None
+	gt_expected = (440690.0, 60.0, 0.0, 3751350.0, 0.0, -60.0)
+	if gt != gt_expected:
+		print(gt)
+		gdaltest.post_reason( 'did not get expected geotransform' )
+		return 'fail'
+	gdal.SetConfigOption( 'GTIFF_POINT_GEO_IGNORE', 'TRUE' )
+	ds = gdal.Open( 'data/byte_point.tif' )
+	gt = ds.GetGeoTransform()
+	ds = None
+	gt_expected = (440720.0, 60.0, 0.0, 3751320.0, 0.0, -60.0)
+	if gt != gt_expected:
+		print(gt)
+		gdaltest.post_reason( 'did not get expected geotransform with GTIFF_POINT_GEO_IGNORE TRUE' )
+		return 'fail'
+	
+	gdal.SetConfigOption( 'GTIFF_POINT_GEO_IGNORE', 'FALSE' )
+	return 'success'
+def tiff_read_geomatrix():
+	gdal.SetConfigOption( 'GTIFF_POINT_GEO_IGNORE', 'FALSE' )
+	ds = gdal.Open( 'data/geomatrix.tif' )
+	gt = ds.GetGeoTransform()
+	ds = None
+	gt_expected = (1841001.75, 1.5, -5.0, 1144003.25, -5.0, -1.5)
+	if gt != gt_expected:
+		print(gt)
+		gdaltest.post_reason( 'did not get expected geotransform' )
+		return 'fail'
+	gdal.SetConfigOption( 'GTIFF_POINT_GEO_IGNORE', 'TRUE' )
+	ds = gdal.Open( 'data/geomatrix.tif' )
+	gt = ds.GetGeoTransform()
+	ds = None
+	gt_expected = (1841000.0, 1.5, -5.0, 1144000.0, -5.0, -1.5)
+	if gt != gt_expected:
+		print(gt)
+		gdaltest.post_reason( 'did not get expected geotransform with GTIFF_POINT_GEO_IGNORE TRUE' )
+		return 'fail'
+	
+	gdal.SetConfigOption( 'GTIFF_POINT_GEO_IGNORE', 'FALSE' )
+	return 'success'
+def tiff_read_corrupted_gtiff():
+	gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
+	ds = gdal.Open('data/corrupted_gtiff_tags.tif')
+	gdal.PopErrorHandler()
+	ds = None
+	err_msg = gdal.GetLastErrorMsg()
+	if err_msg.find('IO error during') == -1 and \
+	   err_msg.find('Error fetching data for field') == -1:
+		gdaltest.post_reason( 'did not get expected error message' )
+		print(err_msg)
+		return 'fail'
+	return 'success'
+def tiff_read_tag_without_null_byte():
+	ds = gdal.Open('data/tag_without_null_byte.tif')
+	if gdal.GetLastErrorType() != 0:
+		gdaltest.post_reason( 'should have not emitted a warning, but only a CPLDebug() message' )
+		return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_buggy_packbits():
+	old_val = gdal.GetConfigOption('GTIFF_IGNORE_READ_ERRORS')
+	gdal.SetConfigOption('GTIFF_IGNORE_READ_ERRORS', None)
+	ds = gdal.Open('data/byte_buggy_packbits.tif')
+	gdal.SetConfigOption('GTIFF_IGNORE_READ_ERRORS', old_val)
+	gdal.PushErrorHandler('CPLQuietErrorHandler')
+	ret = ds.ReadRaster(0,0,20,20)
+	gdal.PopErrorHandler()
+	if ret is not None:
+		gdaltest.post_reason('did not expected a valid result')
+		return 'fail'
+	ds = None
+	gdal.SetConfigOption('GTIFF_IGNORE_READ_ERRORS', 'YES')
+	ds = gdal.Open('data/byte_buggy_packbits.tif')
+	gdal.SetConfigOption('GTIFF_IGNORE_READ_ERRORS', old_val)
+	gdal.PushErrorHandler('CPLQuietErrorHandler')
+	ret = ds.ReadRaster(0,0,20,20)
+	gdal.PopErrorHandler()
+	if ret is None:
+		gdaltest.post_reason('expected a valid result')
+		return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_rpc_txt():
+	shutil.copy('data/byte.tif', 'tmp/test.tif')
+	shutil.copy('data/test_rpc.txt', 'tmp/test_rpc.txt')
+	ds = gdal.Open('tmp/test.tif')
+	rpc_md = ds.GetMetadata('RPC')
+	ds = None
+	os.remove('tmp/test.tif')
+	os.remove('tmp/test_rpc.txt')
+	if not 'HEIGHT_OFF' in rpc_md:
+		return 'fail'
+	return 'success'
+def tiff_small():
+	content = '\x49\x49\x2A\x00\x08\x00\x00\x00\x04\x00\x00\x01\x03\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01\x01\x03\x00\x01\x00\x00\x00\x01\x00\x00\x00\x11\x01\x04\x00\x01\x00\x00\x00\x00\x00\x00\x00\x17\x01\x04\x00\x01\x00\x00\x00\x01\x00\x00\x00'
+	gdal.FileFromMemBuffer('/vsimem/small.tif', content)
+	ds = gdal.Open('/vsimem/small.tif')
+	if ds.GetRasterBand(1).Checksum() != 0:
+			print('Expected checksum = %d. Got = %d' % (0, ds.GetRasterBand(1).Checksum()))
+			return 'fail'
+	gdal.Unlink('/vsimem/small.tif')
+	return 'success'
+def tiff_dos_strip_chop():
+	gdal.PushErrorHandler('CPLQuietErrorHandler')
+	ds = gdal.Open('data/tiff_dos_strip_chop.tif')
+	gdal.PopErrorHandler()
+	ds = None
+	return 'success'
+def tiff_read_exif_and_gps():
+	ds = gdal.Open('data/exif_and_gps.tif')
+	exif_md = ds.GetMetadata('EXIF')
+	ds = None
+	if exif_md is None or len(exif_md) == 0:
+		gdaltest.post_reason('failed')
+		return 'fail'
+	ds = gdal.Open('data/exif_and_gps.tif')
+	EXIF_GPSVersionID = ds.GetMetadataItem('EXIF_GPSVersionID', 'EXIF')
+	ds = None
+	if EXIF_GPSVersionID is None:
+		gdaltest.post_reason('failed')
+		return 'fail'
+	ds = gdal.Open('data/byte.tif')
+	exif_md = ds.GetMetadata('EXIF')
+	ds = None
+	if not (exif_md is None or len(exif_md) == 0):
+		gdaltest.post_reason('failed')
+		return 'fail'
+	return 'success'
+def tiff_jpeg_rgba_pixel_interleaved():
+	md = gdal.GetDriverByName('GTiff').GetMetadata()
+	if md['DMD_CREATIONOPTIONLIST'].find('JPEG') == -1:
+		return 'skip'
+	ds = gdal.Open('data/stefan_full_rgba_jpeg_contig.tif')
+	md = ds.GetMetadata('IMAGE_STRUCTURE')
+	if md['INTERLEAVE'] != 'PIXEL':
+		gdaltest.post_reason('failed')
+		return 'fail'
+	expected_cs = [16404, 62700, 37913, 14174]
+	for i in range(4):
+		cs = ds.GetRasterBand(i+1).Checksum()
+		if cs != expected_cs[i]:
+			gdaltest.post_reason('failed')
+			return 'fail'
+		if ds.GetRasterBand(i+1).GetRasterColorInterpretation() != gdal.GCI_RedBand + i:
+			gdaltest.post_reason('failed')
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_jpeg_rgba_band_interleaved():
+	md = gdal.GetDriverByName('GTiff').GetMetadata()
+	if md['DMD_CREATIONOPTIONLIST'].find('JPEG') == -1:
+		return 'skip'
+	ds = gdal.Open('data/stefan_full_rgba_jpeg_separate.tif')
+	md = ds.GetMetadata('IMAGE_STRUCTURE')
+	if md['INTERLEAVE'] != 'BAND':
+		gdaltest.post_reason('failed')
+		return 'fail'
+	expected_cs = [16404, 62700, 37913, 14174]
+	for i in range(4):
+		cs = ds.GetRasterBand(i+1).Checksum()
+		if cs != expected_cs[i]:
+			gdaltest.post_reason('failed')
+			return 'fail'
+		if ds.GetRasterBand(i+1).GetRasterColorInterpretation() != gdal.GCI_RedBand + i:
+			gdaltest.post_reason('failed')
+			return 'fail'
+	ds = None
+	return 'success'
+def tiff_read_online_1():
+	md = gdal.GetDriverByName('GTiff').GetMetadata()
+	if md['DMD_CREATIONOPTIONLIST'].find('JPEG') == -1:
+		return 'skip'
+	if not gdaltest.download_file('http://trac.osgeo.org/gdal/raw-attachment/ticket/3259/imgpb17.tif', 'imgpb17.tif'):
+		return 'skip'
+		
+	ds = gdal.Open('tmp/cache/imgpb17.tif')
+	gdal.ErrorReset()
+	cs = ds.GetRasterBand(1).Checksum()
+	ds = None
+	
+	if gdal.GetLastErrorMsg() != '':
+		return 'fail'
+	
+	if cs != 62628:
+		print(cs)
+		return 'fail'
+	return 'success'
+def tiff_read_online_2():
+	if gdal.GetDriverByName('HTTP') is None:
+		return 'skip'
+	if gdaltest.gdalurlopen('http://download.osgeo.org/gdal/data/gtiff/utm.tif') is None:
+		print('cannot open URL')
+		return 'skip'
+	gdal.SetConfigOption('GTIFF_DIRECT_IO', 'YES')
+	gdal.SetConfigOption('CPL_VSIL_CURL_ALLOWED_EXTENSIONS', '.tif')
+	gdal.SetConfigOption('GDAL_DISABLE_READDIR_ON_OPEN', 'EMPTY_DIR')
+	ds = gdal.Open('/vsicurl/http://download.osgeo.org/gdal/data/gtiff/utm.tif')
+	gdal.SetConfigOption('GTIFF_DIRECT_IO', None)
+	gdal.SetConfigOption('CPL_VSIL_CURL_ALLOWED_EXTENSIONS', None)
+	gdal.SetConfigOption('GDAL_DISABLE_READDIR_ON_OPEN', None)
+	if ds is None:
+		gdaltest.post_reason('could not open dataset')
+		return 'fail'
+	subsampled_data = ds.ReadRaster(0, 0, 512, 512, 128, 128)
+	ds = None
+	ds = gdal.GetDriverByName('MEM').Create('', 128,128)
+	ds.WriteRaster(0, 0, 128, 128, subsampled_data)
+	cs = ds.GetRasterBand(1).Checksum()
+	ds = None
+	if cs != 54935:
+		gdaltest.post_reason('wrong checksum')
+		print(cs)
+		return 'fail'
+	return 'success'
+for item in init_list:
+	ut = gdaltest.GDALTest( 'GTiff', item[0], item[1], item[2] )
+	if ut is None:
+		print( 'GTiff tests skipped' )
+		sys.exit()
+	gdaltest_list.append( (ut.testOpen, item[0]) )
+gdaltest_list.append( (tiff_read_off) )
+gdaltest_list.append( (tiff_check_alpha) )
+gdaltest_list.append( (tiff_read_cmyk_rgba) )
+gdaltest_list.append( (tiff_read_cmyk_raw) )
+gdaltest_list.append( (tiff_read_ojpeg) )
+gdaltest_list.append( (tiff_read_gzip) )
+gdaltest_list.append( (tiff_read_zip_1) )
+gdaltest_list.append( (tiff_read_zip_2) )
+gdaltest_list.append( (tiff_read_zip_3) )
+gdaltest_list.append( (tiff_read_zip_4) )
+gdaltest_list.append( (tiff_read_zip_5) )
+gdaltest_list.append( (tiff_read_tar_1) )
+gdaltest_list.append( (tiff_read_tar_2) )
+gdaltest_list.append( (tiff_read_tgz_1) )
+gdaltest_list.append( (tiff_read_tgz_2) )
+gdaltest_list.append( (tiff_grads) )
+gdaltest_list.append( (tiff_citation) )
+gdaltest_list.append( (tiff_linearparmunits) )
+gdaltest_list.append( (tiff_linearparmunits2) )
+gdaltest_list.append( (tiff_g4_split) )
+gdaltest_list.append( (tiff_multi_images) )
+gdaltest_list.append( (tiff_vsimem) )
+gdaltest_list.append( (tiff_vsizip_and_mem) )
+gdaltest_list.append( (tiff_ProjectedCSTypeGeoKey_only) )
+gdaltest_list.append( (tiff_12bitjpeg) )
+gdaltest_list.append( (tiff_read_stats_
+gdaltest_list.append( (tiff_read_
+gdaltest_list.append( (tiff_read_pixelispoint) )
+gdaltest_list.append( (tiff_read_geomatrix) )
+gdaltest_list.append( (tiff_read_corrupted_gtiff) )
+gdaltest_list.append( (tiff_read_tag_without_null_byte) )
+gdaltest_list.append( (tiff_read_buggy_packbits) )
+gdaltest_list.append( (tiff_read_rpc_txt) )
+gdaltest_list.append( (tiff_small) )
+gdaltest_list.append( (tiff_dos_strip_chop) )
+gdaltest_list.append( (tiff_read_exif_and_gps) )
+gdaltest_list.append( (tiff_jpeg_rgba_pixel_interleaved) )
+gdaltest_list.append( (tiff_jpeg_rgba_band_interleaved) )
+gdaltest_list.append( (tiff_read_online_1) )
+gdaltest_list.append( (tiff_read_online_2) )
+if __name__ == '__main__':
+	gdaltest.setup_run( 'tiff_read' )
+	gdaltest.run_tests( gdaltest_list )
+	gdaltest.summarize()

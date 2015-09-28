@@ -1,0 +1,25 @@
+if __name__ == "__main__":
+	if len(sys.argv) != 4:
+		print(, file=sys.stderr)
+		exit(-1)
+	host = sys.argv[1]
+	keyspace = sys.argv[2]
+	cf = sys.argv[3]
+	sc = SparkContext(appName="CassandraInputFormat")
+	conf = {"cassandra.input.thrift.address": host,
+			"cassandra.input.thrift.port": "9160",
+			"cassandra.input.keyspace": keyspace,
+			"cassandra.input.columnfamily": cf,
+			"cassandra.input.partitioner.class": "Murmur3Partitioner",
+			"cassandra.input.page.row.size": "3"}
+	cass_rdd = sc.newAPIHadoopRDD(
+		"org.apache.cassandra.hadoop.cql3.CqlPagingInputFormat",
+		"java.util.Map",
+		"java.util.Map",
+		keyConverter="org.apache.spark.examples.pythonconverters.CassandraCQLKeyConverter",
+		valueConverter="org.apache.spark.examples.pythonconverters.CassandraCQLValueConverter",
+		conf=conf)
+	output = cass_rdd.collect()
+	for (k, v) in output:
+		print((k, v))
+	sc.stop()

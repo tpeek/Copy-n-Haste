@@ -1,0 +1,392 @@
+CFGFILE			 = os.environ["SRCDIR"] + "/filter/source/config/tools/merge/FCFGMerge.cfg"
+PROP_XMLVERSION	  = "xmlversion"
+PROP_XMLENCODING	 = "xmlencoding"
+PROP_XMLPATH		 = "xmlpath"
+PROP_XMLPACKAGE	  = "xmlpackage"
+PROP_SETNAME_TYPES	= "setname_types"
+PROP_SETNAME_FILTERS  = "setname_filters"
+PROP_SETNAME_LOADERS  = "setname_frameloaders"
+PROP_SETNAME_HANDLERS = "setname_contenthandlers"
+PROP_SUBDIR_TYPES	= "subdir_types"
+PROP_SUBDIR_FILTERS  = "subdir_filters"
+PROP_SUBDIR_LOADERS  = "subdir_frameloaders"
+PROP_SUBDIR_HANDLERS = "subdir_contenthandlers"
+PROP_EXTENSION_XCU   = "extension_xcu"
+PROP_EXTENSION_PKG   = "extension_pkg"
+PROP_DELIMITER	   = "delimiter"
+PROP_TRIM			= "trim"
+PROP_DECODE		  = "decode"
+PROP_FRAGMENTSDIR	= "fragmentsdir"
+PROP_TEMPDIR		 = "tempdir"
+PROP_OUTDIR		  = "outdir"
+PROP_PKG			 = "pkg"
+PROP_TCFG			= "tcfg"
+PROP_FCFG			= "fcfg"
+PROP_LCFG			= "lcfg"
+PROP_CCFG			= "ccfg"
+PROP_LANGUAGEPACK	= "languagepack"
+PROP_VERBOSE		 = "verbose"
+PROP_SHARE_SUBDIR_NAME = "share_subdir_name"
+PROP_ITEMS		   = "items"
+__all__ = ['Properties']
+def dec2hex(n):
+	h = hex(n)[2:].upper()
+	return '\\u' + '0' * (4 - len(h)) + h
+def escapestr(s):
+	buff = []
+	for c in s:
+		if c == '\\':
+			buff.append('\\\\')
+		elif c == '\t':
+			buff.append('\\t')
+		elif c == '\n':
+			buff.append('\\n')
+		elif c == '\r':
+			buff.append('\\r')
+		elif c == ' ':
+			buff.append('\\ ')
+		elif c == "'":
+			buff.append("\\'")
+		elif c == '"':
+			buff.append('\\"')
+		elif c == '
+			buff.append('\\
+		elif c == '!':
+			buff.append('\\!')
+		elif c == '=':
+			buff.append('\\=')
+		elif 32 <= ord(c) <= 126:
+			buff.append(c)
+		else:
+			buff.append(dec2hex(c))
+	return ''.join(buff)
+def unescapestr(line):
+	buff = []
+	escape = 0
+	for i in range(len(line)):
+		c = line[i]
+		if c == '\\':
+			if escape:
+				escape = 0
+				buff.append('\\')
+				continue
+			else:
+				if i == len(line) - 1:
+					buff.append('\\')
+					break
+				else:
+					escape = 1
+					continue
+		elif c == 'n':
+			if escape:
+				escape = 0
+				buff.append('\n')
+				continue
+		elif c == 'r':
+			if escape:
+				escape = 0
+				buff.append('\r')
+				continue
+		elif c == 't':
+			if escape:
+				escape = 0
+				buff.append('\t')
+				continue
+		buff.append(c)
+		if escape:
+			escape = 0
+	return ''.join(buff)
+class Properties(dict):
+	def __init__(self, defaults={}):
+		dict.__init__(self)
+		for n,v in list(defaults.items()):
+			self[n] = v
+	def __getittem__(self,key):
+		try:
+			return dict.__getittem__(self,key)
+		except KeyError:
+			return None
+	def read(self,filename):
+		f = None
+		try:
+			f = open(filename)
+			self.load(f)
+		finally:
+			if f:
+				f.close()
+	def load(self, buff):
+		props = readprops(buff)
+		for n,v in list(props.items()):
+			self[n] = v
+def readprops(buff):
+	name,value = None,''
+	props = {}
+	continued = 0
+	while 1:
+		line = buff.readline()
+		if not line:
+			break
+		line = line.strip()
+		if not line:
+			continue
+		if line[0] in ('
+			continue
+		i,escaped = 0,0
+		while i < len(line):
+			c = line[i]
+			if c == '\\':
+				if escaped:
+					escaped = 0
+				else:
+					escaped = 1
+				i += 1
+				continue
+			elif c in (' ', '\t', ':', '=') and not escaped:
+				name = unescapestr(line[:i])
+				break
+			if escaped:
+				escaped = 0
+			i += 1
+		if name is None:
+			name = unescapestr(line.lstrip())
+		while line[i:i + 1] in ('\t', ' ', ':', '='):
+			i += 1
+		value = unescapestr(line[i:].strip())
+		while value[-1:] == '\\':
+			value = value[:-1]
+			line = buff.readline()
+			if not line:
+				break
+			value += unescapestr(line.strip())
+		props[name] = value
+	return props
+def run(sCmdLine):
+	aCfg = ConfigHelper(CFGFILE, sCmdLine)
+	if aCfg.getValueWithDefault(PROP_VERBOSE,None) == None:
+		sys.stdout=None
+	printCopyright()
+	if aCfg.isHelp():
+		printHelp()
+		sys.exit(-1)
+	aMerger = Merger(aCfg)
+	aMerger.merge()
+	sys.exit(0)
+def printOut(s):
+	if sys.stdout is None:
+		return
+	print(s)
+def printCopyright():
+	printOut("FCFGMerge")
+	printOut("Copyright: 2003 by Red Hat, Inc., based on FCFGMerge.java` by Sun")
+	printOut("All Rights Reserved.")
+def printHelp():
+	printOut("____________________________________________________________")
+	printOut("usage: FCFGMerge cfg=<file name>"							)
+	printOut("parameters:"												 )
+	printOut("\tcfg=<file name>"										   )
+	printOut("\t\tmust point to a system file, which contains"			 )
+	printOut("\t\tall necessary configuration data for the merge process.")
+	printOut("\tFurther cou can specify every parameter allowed in the"	)
+	printOut("\tconfig file as command line parameter too, to overwrite"   )
+	printOut("\tthe value
+def StringTokenizer(mstring, separators, isSepIncluded = 0):
+	token = ''
+	tokenList = []
+	for c in mstring:
+		if c in separators:
+			if token != '':
+				tokenList.append(token)
+				token = ''
+				if isSepIncluded:
+					tokenList.append(c)
+		else:
+			token += c
+	if token:
+		tokenList.append(token)
+	return tokenList
+class ConfigHelper:
+	def __init__(self, sPropFile, lCommandLineArgs):
+		self.m_bEmpty = 1
+		if sPropFile is not None and len(sPropFile) > 0:
+			self.props = Properties()
+			self.props.read(sPropFile)
+		count = 0
+		if lCommandLineArgs is not None:
+			count = len(lCommandLineArgs)
+		self.m_bEmpty = (count < 1)
+		for arg in range(count):
+			pos = lCommandLineArgs[arg].find('=')
+			if pos != -1:
+				sArg   = lCommandLineArgs[arg][0:pos]
+				sValue = lCommandLineArgs[arg][pos + 1:]
+				self.props[sArg] = sValue
+				continue
+			pos = lCommandLineArgs[arg].rfind('-')
+			if pos == -1:
+				pos = lCommandLineArgs[arg].rfind('/')
+			if pos != -1:
+				sArg = lCommandLineArgs[arg][pos + 1:]
+				self.props[sArg] = 1
+				continue
+			raise Exception("Invalid command line detected. The argument \"" + \
+				lCommandLineArgs[arg] + "\" use an unsupported format.")
+	def isHelp(self):
+		return ("help" in self.props) or ("?" in self.props) or ("?" in self.props)
+	def getValue(self, sProp):
+		if sProp not in self.props:
+			raise Exception("The requested config value \"" + sProp + "\" "\
+				"does not exists!");
+		return self.props[sProp];
+	def getValueWithDefault(self, sProp, default):
+		if sProp not in self.props:
+			return default;
+		return self.props[sProp];
+	def getStringList(self, sProp, sDelimiter, bTrim, bDecode):
+		if sProp not in self.props:
+			raise Exception("The requested config value \"" + sProp + "\" does "\
+				"not exists!");
+		sValue = self.props[sProp]
+		lValue = []
+		lTokens = StringTokenizer(sValue, sDelimiter)
+		for sToken in lTokens:
+			if bTrim:
+				sToken = sToken.strip()
+			if ((bDecode) and (sToken.find("\"") == 0) and \
+				(sToken.rfind("\"") == len(sToken) - 1)):
+				sToken = sToken[1, len(sToken) - 1]
+			lValue.append(sToken)
+		return lValue
+def generateHeader(sVersion, sEncoding, sPath, sPackage, bLanguagePack):
+	sHeader = "<?xml version=\""
+	sHeader += sVersion
+	sHeader += "\" encoding=\""
+	sHeader += sEncoding
+	sHeader += "\"?>\n"
+	if bLanguagePack:
+		sHeader += "<oor:component-data oor:package=\""
+		sHeader += sPath
+		sHeader += "\" oor:name=\""
+		sHeader += sPackage
+		sHeader += "\" xmlns:install=\"http://openoffice.org/2004/installation\""
+		sHeader += " xmlns:oor=\"http://openoffice.org/2001/registry\""
+		sHeader += " xmlns:xs=\"http://www.w3.org/2001/XMLSchema\""
+		sHeader += " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+	else:
+		sHeader += "<oor:component-data xmlns:oor=\"http://openoffice.org/2001/registry\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" oor:package=\""
+		sHeader += sPath
+		sHeader += "\" oor:name=\""
+		sHeader += sPackage
+		sHeader += "\">\n"
+	return sHeader
+def generateFooter():
+	return "</oor:component-data>\n"
+class Merger:
+	def __init__(self, aCfg):
+		self.m_aCfg = aCfg
+		self.m_aFragmentsDir = self.m_aCfg.getValue(PROP_FRAGMENTSDIR)
+		sDelimiter = self.m_aCfg.getValue(PROP_DELIMITER)
+		bTrim = self.m_aCfg.getValue(PROP_TRIM)
+		bDecode = self.m_aCfg.getValue(PROP_DECODE)
+		try:
+			aFcfg = ConfigHelper(self.m_aCfg.getValue(PROP_TCFG), None)
+			self.m_lTypes = aFcfg.getStringList(PROP_ITEMS, sDelimiter, bTrim, bDecode)
+		except:
+			self.m_lTypes = []
+		try:
+			aFcfg = ConfigHelper(self.m_aCfg.getValue(PROP_FCFG), None)
+			self.m_lFilters = aFcfg.getStringList(PROP_ITEMS, sDelimiter, bTrim, bDecode)
+		except:
+			self.m_lFilters = []
+		try:
+			aFcfg = ConfigHelper(self.m_aCfg.getValue(PROP_LCFG), None)
+			self.m_lLoaders = aFcfg.getStringList(PROP_ITEMS, sDelimiter, bTrim, bDecode)
+		except:
+			self.m_lLoaders = []
+		try:
+			aFcfg = ConfigHelper(self.m_aCfg.getValue(PROP_CCFG), None)
+			self.m_lHandlers = aFcfg.getStringList(PROP_ITEMS, sDelimiter, bTrim, bDecode)
+		except:
+			self.m_lHandlers = []
+	def merge(self):
+		sPackage = self.m_aCfg.getValue(PROP_PKG)
+		printOut("create package \"" + sPackage + "\" ...")
+		printOut("generate package header ... ")
+		sBuffer = generateHeader(\
+				self.m_aCfg.getValue(PROP_XMLVERSION ),\
+				self.m_aCfg.getValue(PROP_XMLENCODING),\
+				self.m_aCfg.getValue(PROP_XMLPATH	),\
+				self.m_aCfg.getValue(PROP_XMLPACKAGE ),\
+				self.m_aCfg.getValueWithDefault(PROP_LANGUAGEPACK, False))
+		nItemCount = 0
+		for i in range(4):
+			sSetName = None
+			sSubDir = None
+			lFragments = None
+			try:
+				if i == 0:
+					printOut("generate set for types ... ")
+					sSetName = self.m_aCfg.getValue(PROP_SETNAME_TYPES)
+					sSubDir = self.m_aCfg.getValue(PROP_SUBDIR_TYPES)
+					lFragments = self.m_lTypes
+				elif i == 1:
+					printOut("generate set for filter ... ")
+					sSetName = self.m_aCfg.getValue(PROP_SETNAME_FILTERS)
+					sSubDir = self.m_aCfg.getValue(PROP_SUBDIR_FILTERS)
+					lFragments = self.m_lFilters
+				elif i == 2:
+					printOut("generate set for frame loader ... ")
+					sSetName = self.m_aCfg.getValue(PROP_SETNAME_LOADERS)
+					sSubDir = self.m_aCfg.getValue(PROP_SUBDIR_LOADERS)
+					lFragments = self.m_lLoaders
+				elif i == 3:
+					printOut("generate set for content handler ... ")
+					sSetName = self.m_aCfg.getValue(PROP_SETNAME_HANDLERS)
+					sSubDir = self.m_aCfg.getValue(PROP_SUBDIR_HANDLERS)
+					lFragments = self.m_lHandlers
+			except:
+				continue
+			nItemCount = nItemCount + len(lFragments)
+			sBuffer = sBuffer + self.getFragments(\
+				os.path.join(self.m_aFragmentsDir, sSubDir), \
+				sSetName, lFragments, 1)
+		printOut("generate package footer ... ")
+		sBuffer = sBuffer + generateFooter()
+		if nItemCount < 1:
+			printOut("Package is empty and will not result into a xml file on "\
+				"disk!? Please check configuration file.")
+			return
+		printOut("package contains " + str(nItemCount) + " items")
+		aPackage = codecs.open(sPackage, 'w', "utf-8")
+		printOut("write temp package \"" + sPackage)
+		aPackage.write(sBuffer)
+		aPackage.close()
+	def getFragments(self, aDir, sSetName, lFragments, nPrettyTabs):
+		sBuffer = '' 
+		sExtXcu = self.m_aCfg.getValue(PROP_EXTENSION_XCU);
+		sShareSubdirName = self.m_aCfg.getValue(PROP_SHARE_SUBDIR_NAME)
+		if len(sShareSubdirName) < 1:
+			raise Exception("no share subdir set")
+		if len(lFragments) < 1:
+			return sBuffer
+		for tabs in range(nPrettyTabs):
+			sBuffer = sBuffer + "\t"
+		sBuffer = sBuffer + "<node oor:name=\"" + sSetName + "\">\n"
+		nPrettyTabs = nPrettyTabs + 1
+		for sFragment in lFragments:
+			sFragPath = os.path.join(aDir, sFragment + "." + sExtXcu)
+			try:
+				aFragmentFile = codecs.open(sFragPath, "r", "utf-8")
+			except:
+				raise Exception("fragment \"" + sFragPath + "\" does not exists.")
+			printOut("merge fragment \"" + sFragPath + "\" ...")
+			data = aFragmentFile.read()
+			aFragmentFile.close()
+			data = data.replace("$(share_subdir_name)", sShareSubdirName)
+			sBuffer = sBuffer + data
+			sBuffer = sBuffer + "\n"
+		nPrettyTabs = nPrettyTabs - 1
+		for tabs in range(nPrettyTabs):
+			sBuffer = sBuffer + "\t"
+		sBuffer = sBuffer + "</node>\n"
+		return sBuffer
+run(sys.argv)

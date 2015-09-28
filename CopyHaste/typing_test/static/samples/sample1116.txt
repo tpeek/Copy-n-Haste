@@ -1,0 +1,29 @@
+
+
+def test_execution(point, port, full_deck):
+	socket_tmp = socket.socket()
+
+	total = 10
+	attempt = 0
+	while True:
+		try:
+			socket_tmp.connect(("localhost", port))
+			break
+		except socket_error as e:
+			attempt += 1
+			if e.errno == errno.ECONNREFUSED:
+				time.sleep(1)
+			if attempt > total:
+				raise ValueError("Could not connect to port "+str(port))
+
+	socket_tmp.send("VERSION:2.0.0\r\n")
+
+	try:
+		while True:
+			message = socket_tmp.recv(1000)
+			message = message.replace("\r\n", "")
+			partial_messages = message.split("MATCHSTATE")
+			if partial_messages[-1]:
+				last_message = partial_messages[-1]
+			match_state = MatchState(last_message, PokerConfig.CONFIG['small_bet'], PokerConfig.CONFIG['big_bet'])
+			acti

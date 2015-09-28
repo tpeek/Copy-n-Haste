@@ -1,0 +1,27 @@
+
+BASE = os.path.dirname(__file__)
+class SelectClient(Gtk.EventBox):
+	__gsignals__ = {
+	"accion": (GObject.SIGNAL_RUN_FIRST,
+		GObject.TYPE_NONE, (GObject.TYPE_STRING,
+		GObject.TYPE_PYOBJECT))}
+	def __init__(self):
+		Gtk.EventBox.__init__(self)
+		self.game_dict = {
+			'nick': "",
+			'tanque': "",
+			'server': ""
+			}
+		self.set_border_width(10)
+		self.lista_tanques = Lista()
+		self.tanqueview = Gtk.Image()
+		tabla = Gtk.Table(columns=4, rows=6, homogeneous=True)
+		frame = Gtk.Frame()
+		frame.set_label(" Selecciona tu Tanque: ")
+		frame.set_border_width(4)
+		event = Gtk.EventBox()
+		event.set_border_width(4)
+		frame.add(event)
+		self.lista_tanques.set_headers_visible(False)
+		scroll = Gtk.ScrolledWindow()
+		scroll.set_policy(Gtk.PolicyType.A

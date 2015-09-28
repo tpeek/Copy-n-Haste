@@ -1,0 +1,24 @@
+parser = optparse.OptionParser('Usage: %prog [-d <subtrahend>] [-P|-C|-S|-R|...] '
+							   '[-m <message>] [-r] [-q] <name>')
+parser.add_option('-d', '--diff',
+				  dest='subtrahend',
+				  default=None,
+				  help='blueprint to subtract
+parser.add_option('-P', '--puppet',
+				  dest='generate',
+				  action='store_const',
+				  const='puppet',
+				  help='generate a Puppet module')
+parser.add_option('-C', '--chef',
+				  dest='generate',
+				  action='store_const',
+				  const='chef',
+				  help='generate a Chef cookbook')
+parser.add_option('-S', '--sh',
+				  dest='generate',
+				  action='store_const',
+				  const='sh',
+				  help='generate POSIX shell code')
+parser.add_option('-R', '--rules',
+				  dest='generate',
+				  action='stor

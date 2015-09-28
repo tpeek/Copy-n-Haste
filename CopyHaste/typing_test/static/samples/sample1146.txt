@@ -1,0 +1,15 @@
+
+class Ui_change_interface(object):
+	def setupUi(self, change_interface):
+		change_interface.setObjectName("change_interface")
+		change_interface.resize(400, 243)
+		self.verticalLayoutWidget = QtGui.QWidget(change_interface)
+		self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 381, 227))
+		self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+		self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+		self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+		self.verticalLayout.setObjectName("verticalLayout")
+		self.formLayout = QtGui.QFormLayout()
+		self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
+		self.formLayout.setObjectName("formLayout")
+		self.label = QtGui.QLabel(self.verticalLayo

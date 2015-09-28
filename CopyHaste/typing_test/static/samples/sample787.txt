@@ -1,0 +1,25 @@
+
+__author__ = 'Stephen Webb, David Bruhwiler'
+__copyright__ = "Copyright &copy RadiaBeam Technologies 2013, all rights " \
+				"reserved"
+__version__ = "1.0"
+__email__ = "swebb@radiasoft.net"
+failed = False
+try:
+	print 'testing laser heater system... '
+	mpl.rc('text', usetex=True)
+	tol = 1.e-8
+	gamma0 = 264.188
+	lambdaw = 0.05
+	B0	  = 0.33
+	length  = .5
+	laserP  = 1.2e6
+	lambda0 = 783.3e-9
+	lambdaR = 5.5
+	pol	 = [1., 0., 0.]
+	Kw = consts.e*B0*lambdaw/(consts.m_e*consts.c*2*consts.pi)
+	resonantLambda = lambdaw*(1 + Kw**2/2)/(2.*gamma0**2)
+	print '!------'
+	print ' Simulating laser heater with laser wavelength', lambda0*10**9, 'nm'
+	print 'and undulator resonant wavelength', resonantLambda*10**9, 'nm'
+	waistX = np.sqrt(lambdaR * lambda0/np.pi

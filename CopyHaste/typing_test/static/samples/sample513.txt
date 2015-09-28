@@ -1,0 +1,11 @@
+
+class Migration(SchemaMigration):
+	def forwards(self, orm):
+		db.alter_column('core_download', 'file_store_item_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['file_store.FileStoreItem'], null=True))
+		db.alter_column('core_download', 'analysis_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['core.Analysis'], null=True))
+	def backwards(self, orm):
+		db.alter_column('core_download', 'file_store_item_id', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['file_store.FileStoreItem']))
+		db.alter_column('core_download', 'analysis_id', self.gf('django.db.models.fields.related.ForeignKey')(default=None, to=orm['core.Analysis']))
+	models = {
+		'auth.group': {
+			'Meta': {'object_name':

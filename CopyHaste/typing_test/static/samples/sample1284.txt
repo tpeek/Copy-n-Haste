@@ -1,0 +1,22 @@
+
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def switch_regular_axes(data, lats_in, lons_in, lat_axis_out, lon_axis_out, new_np, 
+						pm_point=(0, 0), invert=False, euler=None):
+	if euler:
+		phi, theta, psi = euler
+	else:
+		phi, theta, psi = north_pole_to_rotation_angles(new_np[0], new_np[1], prime_meridian_point=pm_point)
+	
+	lats_in_rot, lons_in_rot = rotate_spherical(lats_in, lons_in, phi, theta, psi, invert=invert)
+	ntimes = numpy.shape(data)[0]
+	grid_instance = css.Cssgrid(lats_i

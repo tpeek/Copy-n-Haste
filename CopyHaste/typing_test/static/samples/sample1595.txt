@@ -1,0 +1,21 @@
+
+error_logo = os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
+class DaclipsResolver(Plugin, UrlResolver, PluginSettings):
+	implements = [UrlResolver, PluginSettings]
+	name = "daclips"
+	domains = [ "daclips.in", "daclips.com" ]
+	def __init__(self):
+		p = self.get_setting('priority') or 100
+		self.priority = int(p)
+		self.net = Net()
+		self.pattern = 'http://((?:www.)?daclips.(?:in|com))/([0-9a-zA-Z]+)'
+	def get_media_url(self, host, media_id):
+		web_url = self.get_url(host, media_id)
+		try:
+			resp = self.net.http_GET(web_url)
+			html = resp.content
+			r = re.findall(r'<span class="t" id="head_title">404 - File Not Found</span>',html)
+			if r:
+				raise Exception ('File Not Found or removed')
+			post_url = resp.get_url()
+	

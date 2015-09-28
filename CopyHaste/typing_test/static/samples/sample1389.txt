@@ -1,0 +1,19 @@
+
+def coherance_test(stream, stations, nodes, lags, wlen):
+	wlen = int(wlen * stream[0].stats.sampling_rate)
+	dailycoherance=np.array([np.array([np.nan]*(len(stream[0].data)-wlen))]\
+			*len(nodes), dtype=np.float32)
+	copyof_stream=deepcopy(stream)
+	for i in xrange(len(nodes)):
+		sys.stdout.write("\r"+str(float(i)/len(nodes)*100)+"% \r")
+		sys.stdout.flush()
+		for j in xrange(len(stations)):
+			st = copyof_stream.select(station = stations[j])
+			for tr in st:
+				tr.data = tr.data[int(lags[j][i]*tr.stats.sampling_rate):]
+				pad = np.zeros(int(lags[j][i]*tr.stats.sampling_rate))
+				tr.data = np.concatenate((pad, tr.data))
+		for j in xrange(len(dailycoherance[i])):
+			window = deepcopy(copyof_stream)
+			for tr in window:
+				tr.data = tr.dat

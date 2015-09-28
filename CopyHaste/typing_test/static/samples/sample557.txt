@@ -1,0 +1,28 @@
+
+def get_utc_
+	local = pytz.timezone('US/Eastern')
+	local_dt = naive.replace(tzinfo=local)
+	utc_dt = local_dt.astimezone(pytz.utc)
+	return utc_dt
+def get_exchange_time_
+	dt = utc_dt.replace(tzinfo=pytz.utc)
+	local = pytz.timezone('US/Eastern')
+	dt = dt.astimezone(local)
+	return dt
+def guarded_conversion(conversion, str_val):
+	if str_val in (None, ""):
+		return None
+	return conversion(str_val)
+def safe_int(str_val):
+	f = float(str_val)
+	i = int(f)
+	return i
+def date_conversion(date_str, date_pattern='%m/%d/%Y', to_utc=True):
+	dt = datetime.datetime.strptime(date_str, date_pattern)
+	if to_utc:
+		dt = get_utc_
+	else:
+		dt = dt.replace(tzinfo=pytz.utc)
+	return dt
+Mapping = namedtuple('Mapping', ['conversion', 'source'])
+def apply_mapping(mappin

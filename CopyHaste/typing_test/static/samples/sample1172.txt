@@ -1,0 +1,24 @@
+
+
+def main(gis_ws, cdl_year, huc=8, overwrite_flag=False, cleanup_flag=False):
+	logging.info('\nCalculating ET-Demands Zonal Stats')
+	dem_elev_units = 'METERS'
+	cell_elev_units = 'FEET'
+	if huc == 10:
+		zone_path = os.path.join(gis_ws, 'huc10', 'wbdhu10_albers.shp')
+		zone_field = 'HUC10'
+		cell_name_fmt = 'HUC10 '
+	elif huc == 8:
+		zone_path = os.path.join(gis_ws, 'huc8', 'wbdhu8_albers.shp')
+		zone_field = 'HUC8'
+		cell_name_fmt = 'HUC8 '
+
+	gdb_flag = False
+	if gdb_flag:
+		gdb_path = os.path.join(os.path.dirname(gis_ws), 'et-demands_py\et_demands.gdb')
+		et_cells_path = os.path.join(gdb_path, 'et_cells')
+	else:
+		et_cells_path = os.path.join(gis_ws, 'ETCells.shp')
+
+	cdl_ws = os.path.join(gis_ws, 'cdl')
+	dem_ws = os.path.

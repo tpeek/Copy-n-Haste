@@ -1,0 +1,23 @@
+
+LOCAL_MODULES = [
+	]
+sys.path.insert(0, sys.argv[2])
+pybindgen.settings.deprecated_virtuals = False
+this_script_dir = os.path.dirname(os.path.abspath(sys.argv[0]))
+class ErrorHandler(pybindgen.settings.ErrorHandler):
+	def handle_error(self, wrapper, exception, traceback_):
+		print >> sys.stderr
+		print >> sys.stderr, "---- location:"
+		traceback.print_stack()
+		print >> sys.stderr, "---- error:"
+		traceback.print_tb(traceback_)
+		try:
+			stack = wrapper.stack_where_defined
+		except AttributeError:
+			print >> sys.stderr, "??:??: %s / %r" % (wrapper, exception)
+		else:
+			stack = list(stack)
+			stack.reverse()
+			for (filename, line_number, function_name, text) in stack:
+				file_dir = os.path.dirname(os.path.abspath(filename))
+				if file_

@@ -1,0 +1,31 @@
+
+try:
+except ImportError:
+class TestNetflix (TestCase) :
+	def test_read_1 (self) :
+		s = "1:\n"
+		i, j = netflix_read(s)
+		self.assertEqual(i,  1)
+		self.assertEqual(j, ":")
+	def test_read_2 (self) :
+		s = "2488120\n"
+		i, j = netflix_read(s)
+		self.assertEqual(i, 2488120)
+		self.assertEqual(j, "")
+	def test_read_3 (self) :
+		s = "1904905\n"
+		i, j = netflix_read(s)
+		self.assertNotEqual(i, 1904906)
+	def test_eval_1 (self) :
+		v = netflix_eval(3.49, 4.63)
+		self.assertEqual(v, 4)
+	def test_eval_2 (self) :
+		v = netflix_eval(3.49, 4.00)
+		self.assertEqual(v, 4)
+	def test_eval_3 (self) :
+		v = netflix_eval(4.19, 3.79)
+		self.assertEqual(v, 4)
+	def test_eval_4 (self) :
+		v = netflix_eval(3.30, 4.38)
+		self.assertEqual(v, 4)
+	def test_eval_5 (s

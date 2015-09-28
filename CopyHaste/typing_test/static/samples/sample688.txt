@@ -1,0 +1,23 @@
+
+def add_string(search_params, key, value):
+	if value is None or len(value) == 0 or value.isspace():
+		return
+	search_params[key] = value.strip()
+def add_bool(search_params, key, value):
+	if value is None or len(value) == 0 or value.isspace():
+		return
+	search_params[key] = value.strip().lower() in ['true', '1', 'selected', 'on']
+def add_int(search_params, key, value, min_value=None, max_value=None):
+	if value is None:
+		return
+	try:
+		value_int = int(value)
+		if min_value is not None and value_int < min_value:
+			return
+		if max_value is not None and value_int > max_value:
+			return
+		search_params[key] = value_int
+	except ValueError:
+		return
+def add_int_set(search_params, key, value_list, min_value=None, max_value=None):
+	if value_list i

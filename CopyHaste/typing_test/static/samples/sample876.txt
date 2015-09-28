@@ -1,0 +1,32 @@
+
+missing = collections.defaultdict(list)
+def report_missing(target, filename, position):
+	missing[filename].append((position, target))
+new_labels = set()
+def generate_label(target):
+	n = 0
+	while True:
+		if n:
+			label = "_call_{}_{}".format(target, n)
+		else:
+			label = "_call_{}".format(target)
+		if not renpy.exports.has_label(label) and not (label in new_labels):
+			break
+		n += 1
+	new_labels.add(label)
+	return label
+def process_file(fn):
+	if not os.path.exists(fn):
+		return
+	edits = missing[fn]
+	edits.sort()
+	with codecs.open(fn, "r", "utf-8") as f:
+		data = f.read()
+	consumed = 0
+	output = u""
+	for position, target in edits:
+		output += data[consumed:position]
+		consumed = position
+		output += "
+	output += data[consumed:]
+	with codecs.

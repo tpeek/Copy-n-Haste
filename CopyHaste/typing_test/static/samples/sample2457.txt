@@ -1,0 +1,31 @@
+
+	DictProperty,
+	NumericProperty,
+	ObjectProperty,
+	OptionProperty,
+	ListProperty,
+	ReferenceListProperty,
+	StringProperty
+)
+class SwatchButton(ToggleButton):
+	name = StringProperty()
+	tex = ObjectProperty()
+	def on_state(self, *args):
+		if self.state == 'down':
+			assert(self not in self.parent.selection)
+			if self.parent.selection_mode == 'single':
+				for wid in self.parent.selection:
+					if wid is not self:
+						wid.state = 'normal'
+				self.parent.selection = [self]
+			else:
+				self.parent.selection.append(self)
+		else:
+			if self in self.parent.selection:
+				self.parent.selection.remove(self)
+kv =
+Builder.load_string(kv)
+class Pallet(StackLayout):
+	atlas = ObjectProperty()
+	filename = StringProperty()
+	swatches = DictProperty({})

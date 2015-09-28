@@ -1,0 +1,23 @@
+
+_idpattern = re.compile(
+	r'(?P<title>.+) (\((?P<id>[\w\.]+)( (?P<descr>\w+))?\))$')
+collection_template =
+ABOUT=
+project_template =
+section_template = '<section title="%(title)s" ref="%(ref)s"/>'
+file_template = ' '*12 + '<file>%(filename)s</file>'
+class QtHelpBuilder(StandaloneHTMLBuilder):
+	name = 'qthelp'
+	copysource = False
+	supported_image_types = ['image/svg+xml', 'image/png', 'image/gif',
+							 'image/jpeg']
+	add_permalinks = False
+	embedded = True
+	def init(self):
+		StandaloneHTMLBuilder.init(self)
+		self.out_suffix = '.html'
+		self.link_suffix = '.html'
+	def handle_finish(self):
+		self.build_qhcp(self.outdir, self.config.qthelp_basename)
+		self.build_qhp(self.outdir, self.config.qthelp_basename)
+		self.build_qhc(self.outdir, se

@@ -1,0 +1,17 @@
+class Hdr_Manager(gui.QDialog):
+	def __init__(self):
+		super(Hdr_Manager, self).__init__()
+		self.hdr = mari.lights.list()[4]
+		self.hdr_path = "Z:\\Groupes-cours\\NAND999-A15-N01\\Nature\\_pipeline\\_utilities\\_soft\\_prefs\\houdini\\houdini14.0\\ressources\\HDR"
+		self.thumb_path = "Z:\\Groupes-cours\\NAND999-A15-N01\\Nature\\_pipeline\\_utilities\\_soft\\_prefs\\houdini\\houdini14.0\\ressources\\HDR\\thumb"
+		self.hdr_list = []
+		self.UI()
+		self.show()
+	def UI(self):
+		self.setWindowTitle("HDR Choice")
+		main_layout = gui.QHBoxLayout(self)
+		self.left_group = gui.QGroupBox(self)
+		self.left_group_layout = gui.QGridLayout(self)
+		self.left_group.setLayout(self.left_group_layout)
+		self.hdr_combobox = gui.QComboBox()
+		os.chdir(self.hdr_

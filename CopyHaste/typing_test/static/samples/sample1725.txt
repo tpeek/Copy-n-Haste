@@ -1,0 +1,21 @@
+
+__all__ = ["warn", "showwarning", "formatwarning", "filterwarnings",
+		   "resetwarnings", "catch_warnings"]
+def warnpy3k(message, category=None, stacklevel=1):
+	if sys.py3kwarning:
+		if category is None:
+			category = DeprecationWarning
+		warn(message, category, stacklevel+1)
+def _show_warning(message, category, filename, lineno, file=None, line=None):
+	if file is None:
+		file = sys.stderr
+	try:
+		file.write(formatwarning(message, category, filename, lineno, line))
+	except IOError:
+		pass
+showwarning = _show_warning
+def formatwarning(message, category, filename, lineno, line=None):
+	s =  "%s:%s: %s: %s\n" % (filename, lineno, category.__name__, message)
+	line = linecache.getline(filename, lineno) if line is None else line
+	if line:
+		line

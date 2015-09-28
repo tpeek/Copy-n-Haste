@@ -1,0 +1,26 @@
+__version__ = '0.2.1'
+
+HTML_PATH = '.\\programs\\graphic-design.htm'
+CSV_FILES = ('.\\_assets\\first_semester.csv',
+			 '.\\_assets\\second_semester.csv')
+SP_INC = 2
+
+def create_row(row_data, **kwargs):	
+	sp = ' ' * kwargs.get('line_space', 0)
+	output = sp + '<tr>\n'
+	sp += SP_INC * ' '
+	 
+	if kwargs.get('is_header', False):
+		for item in row_data:
+			output += sp + '<th>' + item + '</th>\n'
+	else:	  
+		first_col = row_data[0].split(' ', 1)
+		output += sp + '<td><strong>' + first_col[0] + ' </strong>' + first_col[1] + '</td>\n'
+		for item in row_data[1:]:
+			output += sp + '<td>' + item + '</td>\n'
+ 
+	sp = sp[:-SP_INC]
+	return output + sp + '</tr>\n'  
+	
+def create_table(table_data, **kwargs):
+	border = str(kwargs.get('bo

@@ -1,0 +1,26 @@
+
+try:
+except:
+alphanum = re.compile('[\W_]+')
+merged = {'Biology': 'Science',
+		  'Physics': 'Science',
+		  'Chemistry': 'Science',
+		  'Mathematics': 'Science',
+		  'Earth Science': 'Science',
+		  'Astronomy': 'Science',
+		  'Social Science': 'Social Studies',
+		  'Geography': 'Social Studies'}
+def write_bigrams(bigrams, output):
+	o = open(output, 'wb')
+	pickle.dump(bigrams, o, pickle.HIGHEST_PROTOCOL)
+def classify_text(classifier, text, all_bigrams):
+	feats = {}
+	total = alphanum.sub(' ', unidecode(text.lower()))
+	total = total.split()
+	bgs = set(ngrams(total, 2))
+	for bg in bgs.intersection(all_bigrams):
+		feats[bg] = 1.0
+	for word in total:
+		feats[word] = 1.0
+	return classifier.prob_classify(feats)
+def compute_frequent_bigrams(thresh, 

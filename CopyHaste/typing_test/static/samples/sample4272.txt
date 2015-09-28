@@ -1,0 +1,28 @@
+check_executable,
+	encodeFilename,
+	encodeArgument,
+	get_exe_version,
+)
+def rtmpdump_version():
+	return get_exe_version(
+		'rtmpdump', ['--help'], r'(?i)RTMPDump\s*v?([0-9a-zA-Z._-]+)')
+class RtmpFD(FileDownloader):
+	def real_download(self, filename, info_dict):
+		def run_rtmpdump(args):
+			start = time.time()
+			resume_percent = None
+			resume_downloaded_data_len = None
+			proc = subprocess.Popen(args, stderr=subprocess.PIPE)
+			cursor_in_new_line = True
+			proc_stderr_closed = False
+			while not proc_stderr_closed:
+				line = ''
+				while True:
+					char = proc.stderr.read(1)
+					if not char:
+						proc_stderr_closed = True
+						break
+					if char in [b'\r', b'\n']:
+						break
+					line += char.decode('ascii', 'replace')
+				if not lin

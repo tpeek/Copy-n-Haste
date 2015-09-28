@@ -1,0 +1,23 @@
+
+class IPS(Bcfg2.Client.Tools.PkgTool):
+	name = 'IPS'
+	pkgtype = 'ips'
+	conflicts = ['SYSV']
+	__handles__ = [('Package', 'ips')]
+	__req__ = {'Package': ['name', 'version']}
+	pkgtool = ('pkg install --no-refresh %s', ('%s', ['name']))
+	def __init__(self, config):
+		self.installed = {}
+		self.pending_upgrades = set()
+		self.image = image.Image()
+		self.image.find_root('/', False)
+		self.image.load_config()
+		Bcfg2.Client.Tools.PkgTool.__init__(self, config)
+	def RefreshPackages(self):
+		self.installed = dict()
+		self.image.history.operation_name = "list"
+		self.image.load_catalogs(progress.NullProgressTracker())
+		for (pfmri, pinfo) in self.image.inventory([], False):
+			pname = pfmri.pkg_name
+			pversion = pfmri.version.get_short_version()
+	

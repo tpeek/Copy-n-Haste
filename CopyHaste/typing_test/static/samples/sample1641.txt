@@ -1,0 +1,22 @@
+
+try:
+except ImportError:
+class BuiltinCore(NetworkCore):
+	name = 'bcfg2-server'
+	def __init__(self):
+		NetworkCore.__init__(self)
+		self.server = None
+		daemon_args = dict(uid=Bcfg2.Options.setup.daemon_uid,
+						   gid=Bcfg2.Options.setup.daemon_gid,
+						   umask=int(Bcfg2.Options.setup.umask, 8),
+						   detach_process=True,
+						   files_preserve=self._logfilehandles())
+		if Bcfg2.Options.setup.daemon:
+			daemon_args['pidfile'] = TimeoutPIDLockFile(
+				Bcfg2.Options.setup.daemon, acquire_timeout=5)
+		self.context = daemon.DaemonContext(**daemon_args)
+	__init__.__doc__ = NetworkCore.__init__.__doc__.split('.. -----')[0]
+	def _logfilehandles(self, logger=None):
+		if logger is None:
+			logger = self.logger
+		handles = [handler.stream

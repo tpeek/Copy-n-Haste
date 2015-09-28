@@ -1,0 +1,20 @@
+
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+vis_dir = os.path.join(repo_dir, 'visualisation')
+sys.path.append(vis_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def stat_writer(fout, len_primary, len_intersect, len_secondary, season):
+	primary_statement = 'Total primary %s dates = %i \n' %(season, len_primary) 
+	intersect_statement = 'Total intersection %s dates = %i \n' %(season, len_intersect) 
+	secondary_statement = 'Total secondary %s dates = %i \n' %(season, len_secondary) 
+	
+	intersect_primary_ratio = (len_intersect / f

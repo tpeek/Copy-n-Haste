@@ -1,0 +1,32 @@
+
+class MP4DataBlock:
+	def __init__(self):
+		self.size = -1
+		self.boxtype = ''
+		self.data = ''
+class MP4MovieHeader:
+	def __init__(self):
+		self.version = 0
+		self.flags = 0
+		self.created = 0
+		self.modified = 0
+		self.scale = 0
+		self.duration = 0
+class MP4Parser:
+	def __init__(self):
+		self.MovieHeader = MP4MovieHeader()
+	def log(self, msg, level = xbmc.LOGDEBUG):
+		xbmc.log('MP4Parser: ' + ascii(msg), level)
+	def determineLength(self, filename):
+		self.log("determineLength " + filename)
+		try:
+			self.File = FileAccess.open(filename, "rb", None)
+		except:
+			self.log("Unable to open the file")
+			return
+		dur = self.readHeader()
+		self.File.close()
+		self.log("Duration: " + str(dur))
+		return dur
+	def readHeader(self):
+		data = self.re

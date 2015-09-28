@@ -1,0 +1,18 @@
+def convert_yaml_to_rosinstall(yaml_file, rosinstall_file):
+	data = yaml.load(open(yaml_file, 'r'))
+	data = convert_yaml_data_to_rosinstall_data(data)
+	yaml.dump(data, file(rosinstall_file, 'w'), default_flow_style=False)
+def convert_yaml_data_to_rosinstall_data(data):
+	rosinstall_data = []
+	for name in sorted(data['repositories'].keys()):
+		values = data['repositories'][name]
+		repo = {}
+		repo['local-name'] = name
+		repo['uri'] = values['url']
+		if 'version' in values:
+			repo['version'] = values['version']
+		vcs_type = values['type'] if 'type' in values else 'git'
+		rosinstall_data.append({vcs_type: repo})
+	return rosinstall_data
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Convert a .yaml file into a .rosins

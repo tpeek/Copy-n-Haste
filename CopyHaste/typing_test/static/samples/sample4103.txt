@@ -1,0 +1,21 @@
+class CommentForm(forms.ModelForm):
+	class Meta:
+		model = Comment
+		fields = ['comment', ]
+	def __init__(self, user=None, topic=None, *args, **kwargs):
+		super(CommentForm, self).__init__(*args, **kwargs)
+		self.user = user
+		self.topic = topic
+		self.mentions = None
+		self.fields['comment'].widget.attrs['placeholder'] = _("Escribe un comentario...")
+	def _get_comment_html(self):
+		markdown = Markdown(escape=True, hard_wrap=True)
+		comment_html = markdown.render(self.cleaned_data['comment'])
+		self.mentions = markdown.get_mentions()
+		return comment_html
+	def save(self, commit=True):
+		if not self.instance.pk:
+			self.instance.user = self.user
+			self.instance.topic = self.topic
+		self.instance.comment_html = self._get_comment_html()
+		ret

@@ -1,0 +1,27 @@
+def main():
+  parser = argparse.ArgumentParser(
+	  description='Removes duplicate key-value pairs
+  parser.add_argument('--suffix', default='',
+					  help='optional suffix for output files; '
+					  'if empty, files will be changed in place')
+  parser.add_argument('files', nargs='+', help='input files')
+  args = parser.parse_args()
+  for filename in args.files:
+	print('Processing ' + filename + '...')
+	try:
+	  with codecs.open(filename, 'r', 'utf-8') as infile:
+		j = json.load(infile)
+	except ValueError, e:
+	  print('Error reading ' + filename)
+	  raise InputError(file, str(e))
+	output = []
+	for key in j:
+	  if key != '@metadata':
+		output.append('\t"' + key + '": "' +
+					  j[key].replace('\n', '\\n') + '"')
+	with codecs.open(filename + args.suffix, 'w', 'utf-8') as outfile:
+	  outfile.write('{\n')
+	  outfile.write(',\n'.join(output))
+	  outfile.write('\n}\n')
+if __name__ == '__main__':
+  main()

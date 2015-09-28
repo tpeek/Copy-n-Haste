@@ -1,0 +1,27 @@
+__version__ = '0.3.4'
+
+class NQueens():
+	
+	def __init__(self, master):		
+		self.n = 8
+		self.queens = [0 for i in range(self.n)]
+		self.index = 0
+		self.solutions = None
+			   
+		self.master = master
+		self.master.title('NQueens')
+		self.master.configure(background = '
+		self.master.minsize(400, 470)
+		self.master.resizable(True, True)				
+		self.master.bind('<Configure>', lambda e: self.draw_board())
+		
+		self.style = ttk.Style()
+		self.style.configure('TFrame', background = '
+		self.style.configure('TButton', background = '
+		self.style.configure('TLabel', background = '
+		
+		self.board_canvas = Canvas(self.master)
+		self.board_canvas.pack()   
+		
+		self.controls_frame = ttk.Frame(self.master)
+		self.controls_frame.pac

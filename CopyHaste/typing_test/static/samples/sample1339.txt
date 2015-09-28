@@ -1,0 +1,21 @@
+
+__version__ = '4.9.4'
+sys.dont_write_bytecode = True
+WORKINGDIR = '/'.join(os.path.dirname(os.path.abspath(__file__).replace('\\', '/')).split('/')[:-1])
+os.chdir(WORKINGDIR)
+sys.path.append(os.path.dirname(os.path.abspath(__file__).replace('\\', '/')))
+sys.path += glob.glob('%s/Python27/*.egg' % WORKINGDIR)
+gevent = None
+try:
+	gevent.monkey.patch_all(subprocess=True, Event=True)
+except ImportError:
+	sys.stderr.write('Warning: gevent not found! Using thread instead...\n')
+except TypeError:
+	gevent.monkey.patch_all()
+	sys.stderr.write('Warning: Please update gevent to the latest 1.0 version!\n')
+try:
+except ImportError:
+	try:
+	except ImportError:
+logging.basicConfig(level=logging.INFO,
+					format='FW-Lite %(asctime)s %(levelname)s %(messag

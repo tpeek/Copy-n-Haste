@@ -1,0 +1,17 @@
+
+class TubeGraph(abstract.AbstractGraph):
+	velocity_arc_length_step_size = config.VELOCITY_ARC_LENGTH_STEP_SIZE
+	def compute_triptime_excess(self, tube_coords, num_edges):
+		if num_edges < config.TUBE_TRIP_TIME_EXCESS_MIN_NUM_EDGES:
+			return None
+		else:
+			z_values = [tube_coord[2] for tube_coord in tube_coords]
+			local_max_allowed_vels = interpolate.points_1d_local_max_allowed_vels(
+				z_values)
+			triptime_excess = velocity.compute_local_trip_time_excess(
+				local_max_allowed_vels, self.velocity_arc_length_step_size)
+			return triptime_excess
+	def __init__(self, start_id, end_id, start_angle, end_angle, num_edges,
+				 tube_cost, pylon_cost, tube_coords):
+		abstract.AbstractGraph.__init__(self, start_id, end_id,
+										start_angle

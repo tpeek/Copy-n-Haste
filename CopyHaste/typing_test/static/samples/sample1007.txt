@@ -1,0 +1,16 @@
+
+parser = argparse.ArgumentParser(usage='pycbc_plot_params [--options]',
+				  description="Plot two columns
+parser.add_argument('--trigger-files', type=str, nargs="+",
+				  help='Input xml files with SnglInspiral triggers.')
+parser.add_argument('--output-file', type=str,
+				  help='Output image file.')
+parser.add_argument('--gps-start-time', type=int,
+				  help='Time to start accepting triggers for plotting.')
+parser.add_argument('--gps-end-time', type=int,
+				  help='Time to stop accepting triggers for plotting.')
+parser.add_argument('--param-x', type=str,
+				  help='SnglInspiral column to plot on x-axis.')
+parser.add_argument('--param-y', type=str,
+				  help='SnglInspiral column to plot on x-axis.')
+parser.add_argument('--log-y', a

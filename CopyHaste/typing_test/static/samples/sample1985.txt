@@ -1,0 +1,27 @@
+
+try:
+except ImportError:
+	ssl = None
+try:
+except ImportError:
+	try:
+	except ImportError:
+		DEFAULT_BUFFER_SIZE = -1
+class BuiltinSSLAdapter(wsgiserver.SSLAdapter):
+	certificate = None
+	private_key = None
+	def __init__(self, certificate, private_key, certificate_chain=None):
+		if ssl is None:
+			raise ImportError("You must install the ssl module to use HTTPS.")
+		self.certificate = certificate
+		self.private_key = private_key
+		self.certificate_chain = certificate_chain
+	def bind(self, sock):
+		return sock
+	def wrap(self, sock):
+		try:
+			s = ssl.wrap_socket(sock, do_handshake_on_connect=True,
+								server_side=True, certfile=self.certificate,
+								keyfile=self.private_key,
+								ssl_version=ssl.PROTOCOL_SSLv23)
+		except ssl.SSLError

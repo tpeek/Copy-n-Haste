@@ -1,0 +1,25 @@
+
+def _create_test_dict():
+	return {'id': 'uuid',
+			'field': 'foo'}
+def _create_test_resource(context=None):
+	resource_dict = _create_test_dict()
+	resource = FakeResource(context, **resource_dict)
+	resource.obj_reset_changes()
+	return resource
+@obj_base.VersionedObjectRegistry.register
+class FakeResource(objects_base.NeutronObject):
+	fields = {
+		'id': obj_fields.UUIDField(),
+		'field': obj_fields.StringField()
+	}
+	@classmethod
+	def get_objects(cls, context, **kwargs):
+		return list()
+class ResourcesRpcBaseTestCase(base.BaseTestCase):
+	def setUp(self):
+		super(ResourcesRpcBaseTestCase, self).setUp()
+		self.context = context.get_admin_context()
+class _ValidateResourceTypeTestCase(base.BaseTestCase):
+	def setUp(self):
+		super(_ValidateResourc

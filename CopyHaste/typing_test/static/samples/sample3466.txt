@@ -1,0 +1,358 @@
+__q_debug__ = False
+_xterm_path_directory = {"darwin":"/usr/X11/bin/xterm", "linux2":"/usr/bin/xterm"}
+if sys.platform in _xterm_path_directory.keys():
+	_default_xterm = _xterm_path_directory[sys.platform]
+else:
+  _default_xterm = _xterm_path_directory["linux2"]
+_konsole_path_directory = {"darwin":"/usr/X11/bin/konsole", "linux2":"/usr/bin/konsole"}
+if sys.platform in _konsole_path_directory.keys():
+	_default_konsole = _konsole_path_directory[sys.platform]
+else:
+  _default_konsole = _konsole_path_directory["linux2"]
+_gnome_terminal_path_directory = {"darwin":"/usr/bin/gnome-terminal", "linux2":"/usr/bin/gnome-terminal"}
+if sys.platform in _gnome_terminal_path_directory.keys():
+	_default_gnome_terminal = _gnome_terminal_path_directory[sys.platform]
+else:
+  _default_gnome_terminal = _gnome_terminal_path_directory["linux2"]
+_default_terminal = _default_xterm
+def runCom(command, cwd=getcwd(), terminal=_default_terminal):
+  proc = subprocess.Popen(terminal+" -e "+command, shell=True, cwd=cwd)
+  while proc.wait() != 0:
+	pass
+def runComUnlimited(command, cwd=getcwd(), sleepTime=0, terminal=_default_terminal):
+	tmpsh = open(path.join(cwd,"QZTEMP.sh"), "w")
+	tmpsh.write("ulimit -s unlimited\n")
+	tmpsh.write(command+"\n")
+	tmpsh.write("sleep "+str(sleepTime))
+	if __q_debug__ == True:
+		tmpsh.write("sleep 10")
+	tmpsh.close()
+	proc = subprocess.Popen(terminal+" -e bash QZTEMP.sh", shell=True, cwd=cwd)
+	while proc.wait() != 0:
+		pass
+runCommand = runComUnlimited
+execute = runCom
+def copyIn_calculate_copyOut(source_dir, target_dir, exe_file, para_str, copyIn, copyOut, silent=True):
+  copyFiles(copyIn, source_dir, target_dir, silent)
+  runCommand(exe_file+" "+para_str, path.dirname(exe_file))
+  copyFiles(copyOut, target_dir, source_dir, silent)
+def preExePost(argValueList, preFncs=[], exeFile="", postFncs=[], order=[], sleepTime=0):
+  for valueCmb in listR.outer(map(listR.toList, listR.toList(argValueList))):
+	valueCmb = list(listR.FL(valueCmb))
+	if preFncs!=[]:
+	  for pre_func in listR.toList(preFncs):
+		pre_func(valueCmb)
+	if exeFile!="":
+	  runCommand(exeFile + " " + listR.listToStr(listR.applyOrderList(order,valueCmb)), path.dirname(exeFile), sleepTime)
+	if postFncs!=[]:
+	  for post_func in listR.toList(postFncs):
+		post_func(valueCmb)
+def _argListToDir(argNameList, valueCmb, baseDir, connectionSymbol="=", seperationSymbol=","):
+  tmp = listR.mimic(argNameList, listR.strZip(listR.FL(argNameList), listR.FL(valueCmb), connectionSymbol))
+  tmp = map(lambda x:seperationSymbol.join(listR.toList(x)), tmp)
+  return path.join(baseDir, path.sep.join(tmp))
+def preExeMkdirPost(argNameList, argValueList, baseDir, preFncs=[], exeFile="", callOrderList=None, postFncs=[], sleepTime=0, connectionSymbol="=", seperationSymbol=","):
+  if len(argNameList) != len(argValueList):
+	print("The lists argNameList and argValueList have different length!\n")
+	return False
+  def mkdirHook(valueCmb):
+	makeDir(_argListToDir(argNameList, valueCmb, baseDir, connectionSymbol, seperationSymbol))
+  preFncs=listR.toList(preFncs)
+  preFncs.insert(0,mkdirHook)
+  if callOrderList == None: callOrderList = argNameList
+  order = listR.createOrderList(listR.FLL(callOrderList), listR.FLL(argNameList))
+  preExePost(argValueList, preFncs, exeFile, postFncs, order, sleepTime)
+def makeDirTree(baseDir, argNameList, argValueList, connectionSymbol="=", seperationSymbol=","):
+  preExeMkdirPost(argNameList, argValueList, baseDir)
+def copyinPreExeMkdirCopyoutPost(exeFile, toBeCopiedDir, copyToBaseDir, toBeCopiedFileNames,
+  argNameList, argValueList, callOrderList=None, sleepTime=0, preFncs=[], postFncs=[],
+  connectionSymbol="=",seperationSymbol=","):
+  def copyinHook(valueCmb):
+	copyToFullDir = _argListToDir(argNameList, valueCmb, copyToBaseDir)
+	copyFiles(toBeCopiedFileNames, toBeCopiedDir, copyToFullDir)
+  preFncs=listR.toList(preFncs)
+  preFncs.insert(0,copyinHook)
+  preExeMkdirPost(argNameList, argValueList, copyToBaseDir, preFncs,
+	exeFile, callOrderList, postFncs, sleepTime, connectionSymbol, seperationSymbol)
+def readCSED(dir_name, connectionSymbol="=", seperationSymbol=","):
+  if connectionSymbol not in dir_name: return {}
+  return dict(map(lambda x:listR.split(x, connectionSymbol), listR.toList(dir_name.split(seperationSymbol))))
+def readCSEFullpathD(fullpath, baseDir="", connectionSymbol="=", seperationSymbol=","):
+  dictList = []
+  while fullpath!="":
+	aDic = path.basename(fullpath)
+	if connectionSymbol not in aDic: break
+	dictList.extend(listR.itemsList(readCSED(aDic, connectionSymbol, seperationSymbol)))
+	fullpath = path.dirname(fullpath)
+  return dict(dictList)
+def descendDirTree(baseDir, mustBeDefined, connectionSymbol="=", seperationSymbol=","):
+  mustBeDefined = listR.toList(mustBeDefined)
+  tmp_result = dirR.listDir(baseDir)
+  def qf(var):
+	return listR.containedIn(mustBeDefined, readCSEFullpathD(var, connectionSymbol="=", seperationSymbol=",").keys())
+  return filter(qf, tmp_result)
+def descendDirTreeSharp(baseDir, mustBeDefined, connectionSymbol="=", seperationSymbol=","):
+  tmp_result = descendDirTree(baseDir, mustBeDefined, connectionSymbol, seperationSymbol)
+  if tmp_result==[]: return tmp_result
+  tmp_list = []
+  for aPath in tmp_result:
+	while list(listR.biIntersectI(mustBeDefined,readCSED(path.basename(aPath),connectionSymbol,seperationSymbol).keys()))==[]:
+	  aPath = path.dirname(aPath)
+	  if aPath == baseDir: break
+	tmp_list.append(aPath)
+  tmp_list = listR.removeDuplicates(tmp_list)
+  return tmp_list
+def sortByColumn(data_file, column_to_sort=1):
+	cmp = lambda qvar: float(qvar.split()[column_to_sort-1])
+	in_file = open(data_file, "r")
+	out_file = open(data_file+".TEMP", "w")
+	for a_line in sorted(in_file.readlines(),key=cmp):
+		out_file.write(a_line)
+	in_file.close()
+	out_file.close()
+	shutil.copy(data_file+".TEMP", data_file)
+	remove(data_file+".TEMP")
+def switchColumn(data_file, column1, column2):
+  data = []
+  for dataLine in readData(data_file):
+	tmp = dataLine[column1-1]
+	dataLine[column1-1] = dataLine[column2-1]
+	dataLine[column2-1] = tmp
+	data.append(dataLine)
+  writeData(data_file, data)
+def copyFile(filename, sourceDir, targetDir, renameTo=None, silent=True):
+  if renameTo == None: renameTo = filename
+  fullname_source = path.join(sourceDir, filename)
+  fullname_target = path.join(targetDir, renameTo)
+  shutil.copy(fullname_source, fullname_target)
+  if silent==False:
+	print("File "+fullname_source+" copied to "+source_dir)
+def copy(source, target):
+  shutil.copy(source, target)
+def copyFiles(fileNames, sourceDir, targetDir, silent=True):
+  fileNames = listR.toList(fileNames)
+  for filename in fileNames:
+	copyFile(filename, sourceDir, targetDir, None, silent)
+def xcopy(namePatterns, sourceDir, targetDir, renameTo=None, flags=None):
+  nameL = dirR.listFilesMatch(sourceDir, namePatterns, flags)
+  if len(nameL) == 0: return
+  if not path.exists(targetDir): makeDir(targetDir)
+  if renameTo == None:
+	for name in nameL:
+	  full_source_path = path.join(sourceDir, name)
+	  full_target_path = path.join(targetDir, name)
+	  shutil.copy(full_source_path, full_target_path)
+  else:
+	full_source_path = path.join(sourceDir, nameL[0])
+	full_target_path = path.join(targetDir, renameTo)
+	shutil.copy(full_source_path, full_target_path)
+def nestedXcopy(namePatterns, sourceDir, targetDir, renameTo=None, flags=None):
+  for aDir in dirR.listNestedDirContainsOneOfFilesM(sourceDir, namePatterns, flags):
+	xcopy(namePatterns, aDir, path.join(targetDir, dirR._relativePathString(sourceDir, aDir)), renameTo, flags)
+def readData(filename, commentSymbol="
+  inFile = open(filename, "r")
+  data = []
+  for aLine in inFile.readlines():
+	if aLine.find(commentSymbol)!=-1: continue
+	lineData = []
+	splited = aLine.split();
+	if splited == []: continue
+	for piece in splited:
+	  if listR.isFloat(piece):
+		lineData.append(float(piece))
+	  else:
+		lineData.append(piece)
+	data.append(lineData)
+  inFile.close()
+  return data
+def writeData(filename, data, seperator="   "):
+  outFile = open(filename, "w")
+  for dataLine in data:
+	outFile.write(seperator.join(map(repr, dataLine))+"\n")
+  outFile.close()
+def nestedRenameFiles(dir_path, old_filenames, new_filenames, silent_level=0):
+	old_filenames = listR.toList(old_filenames)
+	new_filenames = listR.toList(new_filenames)
+	for old_name, new_name in zip(old_filenames, new_filenames):
+		dirL = dirR.listNestedDirContainsFiles(dir_path, old_name)
+		for aDir in dirL:
+			if path.exists(path.join(aDir, new_name)):
+				print("File "+path.join(aDir, new_name)+" already exists! skipped.")
+			else:
+				os.rename(path.join(aDir, old_name), path.join(aDir, new_name))
+				if silent_level==0:
+					pass
+				elif silent_level==1:
+					print("File "+_relativePath(dir_path, full_path)
+						  +" renamed to "+_relativePath(dir_path,new_full_path))
+				else:
+					print("File "+full_path+" renamed to "+new_full_path)
+def nestedRenameFilesAdd(dir_path, filenames, str_add, add_to_front=True):
+  filenames = listR.toList(filenames)
+  for name in filenames:
+	if add_to_front == True:
+	  str_mode = str_add+"%s%s"
+	else:
+	  str_mode = "%s" + str_add + "%s"
+	new_filename = str_mode % (path.splitext(name))
+	nestedRenameFiles(dir_path, name, new_filename)
+def nestedDeleteFiles(dir_path, filenames, silence_level=0, leaf_only=False):
+	filenames = listR.toList(filenames)
+	for name in filenames:
+		dirL = dirR.listNestedDirContainsFiles(dir_path, name)
+		for aDir in dirL:
+			remove(path.join(aDir, name))
+			if silence_level>0: print("File "+full_path+" deleted.")
+def groupingDataOneL(dir_path, data_filename, frontAdd=None, isValid=None, change_name_to=""):
+  if isValid == None:
+	isValid = lambda qvar: True
+	cmb_data_filename = data_filename
+  else:
+	if change_name_to == "": change_name_to = data_filename
+	cmb_data_filename = change_name_to
+  untreated = []
+  for aHLDir in dirR.nested_oneL_oneSubDir_hasAll(dir_path, data_filename):
+	if __q_debug__: print(aHLDir)
+	toWrite = open(path.join(aHLDir, cmb_data_filename), "w")
+	is_empty = True
+	for aDir in listdir(aHLDir):
+	  full_path = path.normpath(path.join(aHLDir, aDir))
+	  if path.isdir(full_path) == False: continue
+	  if path.exists(path.join(full_path, data_filename)) == False: continue
+	  if not isValid(full_path): continue
+	  is_empty = False
+	  if frontAdd != None:
+		toWrite.write(frontAdd(aDir)+" ")
+	  toRead = open(path.join(full_path, data_filename), "r")
+	  textBuffer = toRead.read()
+	  if textBuffer[-1:] != "\n": textBuffer = textBuffer + "\n"
+	  toWrite.write(textBuffer)
+	  toRead.close()
+	toWrite.close()
+	if is_empty == True:
+	  remove(path.join(aHLDir, cmb_data_filename))
+	  untreated.append(aHLDir)
+  return untreated
+def makeDir(dir_path, when_conflicts="skip"):
+	if path.exists(dir_path):
+	  if when_conflicts=="skip":
+		return "";
+	  elif when_conflicts=="overwrite":
+		return dir_path;
+	  elif when_conflicts=="new":
+		ii = 1;
+		while path.exists(dir_path+"-"+str(ii)): ii = ii + 1;
+		mkdir(dir_path+"-"+str(ii));
+		return dir_path+"-"+str(ii);
+	  else:
+		print("makeDir error: unknown when_conflicts option.");
+		return "";
+	dir_path = path.realpath(dir_path)
+	dir_path = path.normpath(dir_path)
+	if path.exists(path.dirname(dir_path)):
+		mkdir(dir_path);
+		return dir_path;
+	else:
+		makeDir(path.dirname(dir_path));
+		mkdir(dir_path);
+		return dir_path;
+def removeDir(dir_path):
+  if not path.exists(dir_path): return
+  for name in listdir(dir_path):
+	full_path = path.join(dir_path, name)
+	if path.isfile(full_path):
+	  remove(full_path)
+	  continue
+	if path.isdir(full_path):
+	  removeDir(full_path)
+	  continue
+  os.rmdir(dir_path)
+def delete(file):
+  if not path.exists(file): return
+  remove(file)
+def extractToken(filename, token, numOfLines=2):
+  file = open(filename, "r")
+  lines = file.readlines()
+  file.close()
+  for aLine in lines:
+	if aLine.find(token) != -1:
+	  return lines[lines.index(aLine)+1:lines.index(aLine)+1+numOfLines]
+  return ""
+def collectFile(pathDir, filenames, targetDir=None):
+  filenames = listR.toList(filenames)
+  if targetDir == None: targetDir=getcwd()
+  for aDir in dirR.listNestedDirContainsFiles(pathDir, filenames):
+	for aFile in filenames:
+	  paraList = readCSEFullpathD(aDir).items()
+	  toAdd="-" + ",".join(map(lambda x:"=".join(x), paraList))
+	  changedName = path.splitext(aFile)[0] + toAdd + path.splitext(aFile)[1]
+	  copyFile(aFile, aDir, targetDir, changedName)
+def addColumnsToFile(filename, columns, add_before_original=True):
+  tempFile = "TEMP.tmp"
+  outFile = open(tempFile, "w")
+  inFile = open(filename, "r")
+  columns = listR.toList(columns)
+  index = 0
+  aLine = inFile.readline()
+  while aLine:
+	if add_before_original:
+	  outFile.write(columns[index] + aLine)
+	else:
+	  outFile.write(aLine + columns[index])
+	index = listR.next(columns, index)
+	aLine = inFile.readline()
+  inFile.close
+  outFile.close()
+  copy(tempFile, filename)
+def combineFilesWithParas(dir_path, filename, targetDir=None, connector="="):
+	filenameL = listR.toList(filename)
+	for filename in filenameL:
+		allParas = []
+		for aDir in dirR.listNestedDirContainsFiles(dir_path, filename):
+			allParas.append(listR.readCSESD(path.join(aDir, filename)).keys())
+		allParas = listR.removeDuplicates(listR.intersect(allParas))
+		if targetDir == None: targetDir=getcwd()
+		new_filename = path.join(targetDir,path.splitext(filename)[0]+"("+",".join(listR.stringizeL(allParas))+")"+path.splitext(filename)[1])
+		outFile = open(new_filename, "w")
+		for aDir in dirR.listNestedDirContainsFiles(dir_path, filename):
+			to_read = path.join(aDir, filename)
+			parasD = listR.readCSESD(to_read)
+			para_str = " ".join(listR.stringizeL(listR.getValueListFromDict(allParas, parasD)))
+			inFile = open(to_read, "r")
+			buffer = inFile.readlines()
+			for aLine in buffer:
+				outFile.write(para_str+" "+aLine)
+			inFile.close()
+		outFile.close()
+def takeRatioWithFirstLine(filename, columns=[2], newfilename=""):
+	if newfilename == "": newfilename = filename;
+	columns = listR.toList(columns);
+	buffer = readData(filename);
+	first = list(buffer[0]);
+	for i in range(len(buffer)):
+		for j in columns:
+			buffer[i][j-1] = buffer[i][j-1] / float(first[j-1]);
+	writeData(newfilename, buffer);
+def takeRatioWithFirstLineForAll(dir_path, filename, columns=[2], newfilename=""):
+	if newfilename=="": newfilename = filename;
+	for aDir in dirR.listNestedDirContainsFiles(dir_path, filename):
+		fullpath_in = path.join(aDir, filename);
+		fullpath_out = path.join(aDir, newfilename);
+		takeRatioWithFirstLine(fullpath_in, columns, fullpath_out);
+def getRowWithGivenValue(filename, value, column=1):
+	buffer = readData(filename);
+	min_diff = 1e300;
+	target_row=[];
+	for aLine in buffer:
+		if abs(value-aLine[column-1]) < min_diff:
+			min_diff = abs(value-aLine[column-1]);
+			target_row = aLine;
+	return target_row;
+def ls(dir_path, type="dir"):
+  results = listdir(dir_path);
+  results = filter(lambda x:x[0]!='.', results);
+  if type=="dir": results = filter(lambda x:path.isdir(path.join(dir_path, x)), results);
+  if type=="file": results = filter(lambda x:path.isfile(path.join(dir_path, x)), results);
+  return results;
+if __name__ == "__main__":
+  print("Morning!")

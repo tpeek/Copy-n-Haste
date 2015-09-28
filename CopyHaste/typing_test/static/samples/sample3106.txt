@@ -1,0 +1,54 @@
+ICON_PATH = "/usr/share/icons/hicolor/32x32/apps/xmind.png"
+ICON_OPACITY = 0.6
+THUMBNAIL_BACKGROUND_COLOR = "white"
+in_file_path = gnomevfs.get_local_path_
+out_file_path = sys.argv[2]
+path_without_thumbs = os.getenv("HOME")+"/Templates" 
+def get_icon(thumbnail_size):
+	icon = Image.open(ICON_PATH).convert("RGBA")
+	icon = set_icon_opacity(icon,ICON_OPACITY)
+	icon_posx=thumbnail_size[0]-icon.size[0]
+	icon_posy=thumbnail_size[1]-icon.size[1]
+	icon_width=thumbnail_size[0]
+	icon_height=thumbnail_size[1]
+	return {"image":icon,"position":(icon_posx,icon_posy,icon_width,icon_height)}	
+	
+def get_basic_thumbnail():
+	if in_file_path.find(path_without_thumbs)!=0:
+		try:
+			zip=zipfile.ZipFile(in_file_path,mode="r")
+			picture=zip.read("Thumbnails/thumbnail.jpg")
+			zip.close()
+			thumbnail=open(out_file_path,"w")
+			thumbnail.write(picture)
+			thumbnail.write("/n")
+			thumbnail.close()
+			image=Image.open(out_file_path).convert("RGBA")
+			if image.size[0]>200:
+				image = image.resize((200,image.size[1]*200/image.size[0]))
+			if image.size[1]>200:
+				image = image.resize((image.size[0]*200/image.size[1],200))
+			return {"suceeded":True,"image":image,"size":(image.size[0],image.size[1])}
+		
+		except:
+			return {"suceeded":False}
+	else:
+		return {"suceeded":False}
+def set_icon_opacity(icon,opacity):
+	assert opacity >= 0 and opacity <= 1
+	if icon.mode != 'RGBA':
+		icon = icon.convert('RGBA')
+	else:
+		icon = icon.copy()
+	alpha = icon.split()[3]
+	alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
+	icon.putalpha(alpha)
+	return icon
+thumbnail=get_basic_thumbnail()
+if thumbnail["suceeded"]:
+	background=Image.new("RGB", thumbnail["size"], THUMBNAIL_BACKGROUND_COLOR)
+	icon=get_icon(thumbnail["size"])
+	thumbnail=thumbnail["image"]
+	background.paste(thumbnail, None, thumbnail)
+	background.paste(icon["image"],icon["position"],icon["image"])
+	background.save(out_file_path,"PNG")

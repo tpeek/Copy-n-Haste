@@ -1,0 +1,22 @@
+
+def gmail_updater(accounts_ids = []):
+	with session_scope() as db_session:
+		accounts = db_session.query(Account).filter(
+			Account.discriminator =='gmailaccount')
+	if accounts_ids != []:
+		accounts = accounts.filter(Account.id.in_(accounts_ids))
+	pool = Pool(10)
+	failed_accounts = []
+	for account in accounts:
+		print "Spawning for account: %d" % account.id
+		pool.spawn(account_updater, account, failed_accounts)
+	pool.join()
+	print "Failed accounts: %s" % failed_accounts
+def account_updater(account_id):
+	with session_scope() as db_session:
+		account = db_session.query(Account).filter(
+				Account.discriminator =='gmailaccount').get(account_id)
+		if account == None:
+			print "Invalid account"
+			sys.exit(-1)
+		folders = db_session.query(Fo

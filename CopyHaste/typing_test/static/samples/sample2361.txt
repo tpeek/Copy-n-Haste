@@ -1,0 +1,26 @@
+
+class Pen(object):
+	def __init__(self, color='black', linewidth=1, linestyle='solid'):
+		self.color = color
+		self.linewidth = linewidth
+		self.linestyle = 'solid'
+		if linestyle == 'dash':
+			self.linestyle = 'dashdot'
+class Brush(object):
+	def __init__(self, color='black', fill=False):
+		self.color = color
+		self.fill = fill
+class Font(object):
+	def __init__(self, fontname='sans', fontsize=12.0, color='black'):
+		self.fontname = fontname
+		self.fontsize = fontsize
+		self.color = color
+	def get_fontdict(self):
+		fontdict = dict(color=self.color, family=self.fontname,
+						size=self.fontsize, transform=None)
+		return fontdict
+class MplContext(object):
+	def __init__(self, axes):
+		self.axes = axes
+		self.kwdargs = dict()
+	def set_canvas(se

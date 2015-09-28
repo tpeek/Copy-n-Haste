@@ -1,0 +1,24 @@
+
+VELOCIDAD = 10
+INDICE_ROTACION = 5
+random.seed()
+class Enemigo(Sprite):
+	def __init__(self, imagen_tanque, resolucion):
+		pygame.sprite.Sprite.__init__(self)
+		self.contador = 0
+		self.eventos = []
+		self.imagen_original = None
+		self.image = None
+		self.rect = None
+		imagen = pygame.image.load(imagen_tanque)
+		imagen_escalada = pygame.transform.scale(imagen, (50, 50))
+		self.imagen_original = imagen_escalada.convert_alpha()
+		self.image = self.imagen_original.copy()
+		self.rect = self.image.get_rect()
+		self.ancho_monitor, self.alto_monitor = resolucion
+		self.centerx = self.ancho_monitor / 2
+		self.centery = self.alto_monitor / 2
+		self.angulo = 0
+		self.dx, self.dy = self.__get_vector(self.angulo)
+		self.__set_posicion(
+			centerx=self.

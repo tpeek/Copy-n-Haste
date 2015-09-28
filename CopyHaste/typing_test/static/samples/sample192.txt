@@ -1,0 +1,24 @@
+
+print "\nHello! So this was kind of a playground type thing for me where I tried stuff out until it worked"
+print "I tested myself on basics like variables, while loops, functions and booleans\n"
+print "It'll probably make a lot more sense once you look at the code if you're just running this!"
+print "\n ----------------------"
+hello = "Hello World!"
+print "
+print hello + "\n -----------------------"
+print "
+isSoftDevAwesome = True
+if isSoftDevAwesome:
+	print "woo SoftDev is awesome!!" + "\n -----------------------"
+else:
+	print "boo soft dev is awesome :P" + "\n -----------------------"
+print "
+def helloWorld():
+	x = 10;
+	myList = []
+	while x > 0:
+		myList.append(x)
+		x = x - 1
+	print myList[0:]
+	return "yeees the function worked!"
+print 

@@ -1,0 +1,248 @@
+class FileAccess(object):
+	def __init__(self, xmsf):
+		self.filenameConverter = xmsf.createInstance(
+			"com.sun.star.ucb.FileContentProvider")
+		self.xInterface = xmsf.createInstance(
+				"com.sun.star.ucb.SimpleFileAccess")
+			
+	@classmethod
+	def deleteLastSlash
+		if _sPath.endswith("/"):
+			return _sPath[:-1]
+		else:
+			return _sPath
+	@classmethod
+	def getOfficePath(self, xMSF, sPath, xSimpleFileAccess):
+		try:
+			ResultPath = ""
+			xInterface = xMSF.createInstance("com.sun.star.util.PathSettings")
+			ResultPath = str(getattr(xInterface, sPath))
+			ResultPath = self.deleteLastSlash
+			return ResultPath
+		except Exception:
+			traceback.print_exc()
+			return ""
+	@classmethod
+	def getOfficePath2(self, xMSF, sPath, sType, sSearchDir):
+		bexists = False
+		try:
+			xPathInterface = xMSF.createInstance(
+				"com.sun.star.util.PathSettings")
+			ResultPath = ""
+			ReadPaths = ()
+			xUcbInterface = xMSF.createInstance(
+				"com.sun.star.ucb.SimpleFileAccess")
+			Template_writable = xPathInterface.getPropertyValue(
+				sPath + "_writable")
+			Template_internal = xPathInterface.getPropertyValue(
+				sPath + "_internal")
+			Template_user = xPathInterface.getPropertyValue(
+				sPath + "_user")
+			if not hasattr(Template_internal, '__dict__'):
+				ReadPaths = ReadPaths + Template_internal
+			if not hasattr(Template_user, '__dict__'):
+				ReadPaths = ReadPaths + Template_user
+			ReadPaths = ReadPaths + (Template_writable,)
+			if sType.lower() == "user":
+				ResultPath = Template_writable
+				bexists = True
+			else:
+				for i in ReadPaths:
+					tmpPath = i + sSearchDir
+					if xUcbInterface.exists(tmpPath):
+						ResultPath = i
+						bexists = True
+						break
+			ResultPath = self.deleteLastSlash
+		except Exception:
+			traceback.print_exc()
+			ResultPath = ""
+		if not bexists:
+			raise NoValidPathException (xMSF, "")
+		return ResultPath
+	@classmethod
+	def combinePaths(self, xMSF, _sFirstPath, _sSecondPath):
+		bexists = False
+		ReturnPath = ""
+		try:
+			xUcbInterface = xMSF.createInstance(
+				"com.sun.star.ucb.SimpleFileAccess")
+			ReturnPath = _sFirstPath + _sSecondPath
+			bexists = xUcbInterface.exists(ReturnPath)
+		except Exception:
+			traceback.print_exc()
+			return ""
+		if not bexists:
+			raise NoValidPathException (xMSF, "")
+		return ReturnPath
+	@classmethod
+	def getFolderTitles(self, xMSF, FilterName, FolderName, resDict=None):
+		
+		locLayoutFiles = []
+		try:
+			xDocInterface = xMSF.createInstance(
+				"com.sun.star.document.DocumentProperties")
+			xInterface = xMSF.createInstance(
+				"com.sun.star.ucb.SimpleFileAccess")
+			nameList = xInterface.getFolderContents(FolderName, False)
+			if FilterName is None or FilterName == "":
+				FilterName = None
+			else:
+				FilterName += "-"
+			
+			locLayoutDict = {}
+			for i in nameList:
+				fileName = self.getFilename(i)
+				if FilterName is None or fileName.startswith(FilterName):
+					xDocInterface.loadFromMedium(i, tuple())
+					if resDict is None:
+						title = xDocInterface.Title
+					else:
+						if xDocInterface.Title in resDict:
+							title = resDict[xDocInterface.Title]
+						else:
+							title = xDocInterface.Title
+					locLayoutDict[title] = i
+			keysList = sorted(locLayoutDict.keys())
+			valuesList= []
+			for i in keysList:
+				valuesList.append(locLayoutDict[i])
+			locLayoutFiles.append(keysList)
+			locLayoutFiles.append(valuesList)		  
+		except Exception:
+			traceback.print_exc()
+		return locLayoutFiles
+	@classmethod
+	def addPath(self, _sPath, _sPath2):
+		if not _sPath.endsWith("/"):
+			_sPath += "/"
+		if _sPath2.startsWith("/"):
+			_sPath2 = _sPath2.substring(1)
+		sNewPath = _sPath + _sPath2
+		return sNewPath
+	@classmethod
+	def getTitle(self, xMSF, _sFile):
+		sTitle = ""
+		try:
+			xDocInterface = xMSF.createInstance(
+				"com.sun.star.document.DocumentProperties")
+			noArgs = []
+			xDocInterface.loadFromMedium(_sFile, noArgs)
+			sTitle = xDocInterface.getTitle()
+		except Exception:
+			traceback.print_exc()
+		return sTitle
+	def getPath(self, parentURL, childURL):
+		string = ""
+		if childURL is not None and childURL is not "":
+			string = "/" + childURL
+		return self.filenameConverter.getSystemPathFromFileURL(
+			parentURL + string)
+	def copy(self, source, target):
+		try:
+			self.xInterface.copy(source, target)
+			return True
+		except Exception:
+			traceback.print_exc()
+		return False
+	def exists(self, filename, default):
+		try:
+			return self.xInterface.exists(filename)
+		except Exception:
+			traceback.print_exc()
+		return default
+	def isDirectory(self, filename):
+		try:
+			return self.xInterface.isFolder(filename)
+		except Exception:
+			traceback.print_exc()
+		return False
+	def getLastModified(self, url):
+		try:
+			return self.xInterface.getDateTimeModified(url)
+		except Exception:
+			traceback.print_exc()
+		return None
+	def delete(self, filename):
+		try:
+			self.xInterface.kill(filename)
+			return True
+		except Exception:
+			traceback.print_exc()
+		return False
+	def listFiles(self, folder, includeFolders):
+		try:
+			return self.xInterface.getFolderContents(folder, includeFolders)
+		except Exception:
+			traceback.print_exc()
+		return [""]
+	def mkdir(self, s):
+		try:
+			self.xInterface.createFolder(s)
+			return True
+		except Exception:
+			traceback.print_exc()
+		return False
+	def createNewDir(self, parentDir, name):
+		s = self.getNewFile(parentDir, name, "")
+		if (self.mkdir(s)):
+			return s
+		else:
+			return None
+	def getSize(self, url):
+		try:
+			return self.xInterface.getSize(url)
+		except Exception:
+			traceback.print_exc()
+			return -1
+	def getNewFile(self, parentDir, name, extension):
+		i = 0
+		url = ""
+		while (True):
+			filename = self.filename(name, extension, i)
+			url = self.getURL(parentDir, filename)
+			if (not self.exists(url, True)):
+				break
+			i += 1
+		return url
+	def getURL(self, parentURL, childPath):
+		if len(childPath) > 0 and childPath[0] == "/":
+			path = parentURL + childPath
+		else:
+			path = parentURL + "/" + childPath
+		return path
+	@classmethod
+	def getPathFilename(self, path):
+		return self.getFilename(path, FileSeparator)
+	@classmethod
+	def getFilename(self, path, pathSeparator = "/"):
+		return path.split(pathSeparator)[-1]
+	@classmethod
+	def getParentDir(self, url):
+		while url[-1] == "/":
+			url = url[:-1]
+		return url[:url.rfind("/")]
+	@classmethod
+	def connectURLs(self, urlFolder, urlFilename):
+		stringFolder = ""
+		stringFileName = urlFilename
+		if not urlFolder.endswith("/"):
+			stringFolder = "/"
+		if urlFilename.startswith("/"):
+			stringFileName = urlFilename[1:]
+		return urlFolder + stringFolder + stringFileName
+	@classmethod
+	def getExtension(self, filename):
+		p = filename.find(".")
+		if (p == -1):
+			return ""
+		else:
+			while (True):
+				filename = filename[(p+1):]
+				p = filename.find(".")
+				if (p == -1):
+					break
+		return filename
+	@classmethod
+	def filename(self, name, ext, i):
+		return name + ("" if (i == 0) else str(i)) + ("" if (ext == "") else ("." + ext))

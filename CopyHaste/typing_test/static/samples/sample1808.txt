@@ -1,0 +1,32 @@
+
+class local_dummy_pool(object):
+	class job_handle(object):
+		def __init__(self, objective, args):
+			self.objective = objective
+			self.args = args
+		def get(self, timeout):
+			args = self.args
+			return _call_objective(*args)
+	def __init__(self, objective, initargs):
+		_init_objective(objective, initargs, 1)
+	def apply_async(self, objective, args):
+		return self.job_handle(objective, args)
+	def close(self): pass
+	def join(self): pass
+	def terminate(self): pass
+def _makepath(dir):
+	if os.path.exists(dir):
+		return dir
+	retry = True
+	while retry:
+		try:
+			time.sleep(0.001)
+			os.makedirs(dir)
+		except WindowsError, e:
+			if e.errno != 13:
+				raise
+		else:
+			retry = False
+	return dir
+class paramdef(object):
+	def __init__(self,name,dtype):

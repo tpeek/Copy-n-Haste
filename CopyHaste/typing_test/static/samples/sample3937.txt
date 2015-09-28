@@ -1,0 +1,22 @@
+try:
+except ImportError:
+try:
+except ImportError:
+	USER_SITE = None
+DEFAULT_VERSION = "17.1.1"
+DEFAULT_URL = "https://pypi.python.org/packages/source/s/setuptools/"
+DEFAULT_SAVE_DIR = os.curdir
+def _python_cmd(*args):
+	args = (sys.executable,) + args
+	return subprocess.call(args) == 0
+def _install(archive_filename, install_args=()):
+	with archive_context(archive_filename):
+		log.warn('Installing Setuptools')
+		if not _python_cmd('setup.py', 'install', *install_args):
+			log.warn('Something went wrong during the installation.')
+			log.warn('See the error message above.')
+			return 2
+def _build_egg(egg, archive_filename, to_dir):
+	with archive_context(archive_filename):
+		log.warn('Building a Setuptools egg in %s', to_dir)
+		_python_cmd('setu

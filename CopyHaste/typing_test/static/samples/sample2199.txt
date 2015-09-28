@@ -1,0 +1,25 @@
+
+cwdInFunction()
+def mapBase():
+	m = Basemap(projection='cyl', resolution='c',\
+		llcrnrlat=-47.5,urcrnrlat=-7.5,\
+		llcrnrlon=112.5,urcrnrlon=157.5)
+	m.drawcoastlines()
+	return m
+def states():
+	m.drawstates()
+	states_lon = [145.5,142,146.5,144,144,133,133,122]
+	states_lat = [-42.5,-37,-35,-32,-22,-30,-23,-25]
+	x,y = m(states_lon, states_lat)
+	m.plot(x, y, 'bo',markersize=0)
+	labels = ['Tas.','Vic.','A.C.T.','N.S.W.','Qld','S.A.','N.T.','W.A.']
+	for label, xpt, ypt in zip(labels,x,y):
+		plt.text(xpt,ypt,label)
+	return plt
+def grey():
+	m.fillcontinents(color='0.75',lake_color='white')
+	m.drawmapboundary(fill_color='white')
+	return plt
+def gridWhole(a,b,c,d,e,f):
+	m.drawparallels(np.arange(a,b,c),labels=[False,False,False,False])
+	m.drawmerid

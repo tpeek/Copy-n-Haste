@@ -1,0 +1,14 @@
+
+class Migration(SchemaMigration):
+	def forwards(self, orm):
+		db.add_column('core_analysisnodeconnection', 'subanalysis',
+					  self.gf('django.db.models.fields.IntegerField')(null=True),
+					  keep_default=False)
+		db.add_column('core_analysisnodeconnection', 'filename',
+					  self.gf('django.db.models.fields.CharField')(default='testfilename', max_length=100),
+					  keep_default=False)
+		db.create_unique('core_analysisnodeconnection', ['subanalysis', 'name', 'analysis_id'])
+		db.create_unique('core_analysisnodeconnection', ['subanalysis', 'analysis_id'])
+	def backwards(self, orm):
+		db.delete_unique('core_analysisnodeconnection', ['subanalysis', 'analysis_id'])
+		db.delete_unique('core_analysisnodeconnection', ['subanalysis', 'name',

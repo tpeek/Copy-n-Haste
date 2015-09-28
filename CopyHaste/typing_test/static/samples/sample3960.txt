@@ -1,0 +1,23 @@
+django.db.connection.queries=[]
+planets = Planet.objects\
+				.filter(owner__isnull=False)\
+				.select_related('owner', 'resources',
+								'prices', 'foreignprices')
+print "getting upgrades"
+localcache['upgrades']	   = allupgrades()
+localcache['attributes']	 = allattributes()
+counter = 0   
+print "computing prices"
+somewhatempty = {'x':1}
+for planet in planets.iterator():
+  planet.computeprices()
+  history = PlanetHistory(day		  = datetime.datetime.now(),
+						  planet	   = planet,
+						  sensorrange  = planet.sensorrange,
+						  tariffrate   = planet.tariffrate,
+						  inctaxrate   = planet.inctaxrate,
+						  damaged	  = planet.damaged)
+  history.inport = Fleet.objects\
+						.filter(sector= planet.sector,
+								x	 = planet.x,
+		

@@ -1,0 +1,19 @@
+
+if osp.isfile(osp.join(osp.dirname(osp.dirname(osp.realpath(__file__))), ".portage_not_installed")):
+	sys.path.insert(0, osp.join(osp.dirname(osp.dirname(osp.realpath(__file__))), "pym"))
+portage._internal_caller = True
+FIND_EXTANT_CONFIGS  = "find '%s' %s -name '._cfg????_%s' ! -name '.*~' ! -iname '.*.bak' -print"
+DIFF_CONTENTS		= "diff -Nu '%s' '%s'"
+if "case-insensitive-fs" in portage.settings.features:
+	FIND_EXTANT_CONFIGS = FIND_EXTANT_CONFIGS.replace(
+		"-name '._cfg", "-iname '._cfg")
+oldmask = os.umask(0o077)
+SCRATCH_DIR = None
+while SCRATCH_DIR is None:
+	try:
+		mydir = "/tmp/dispatch-conf."
+		for x in range(0,8):
+			if int(random() * 3) == 0:
+				mydir += chr(int(65+random()*26.0))
+			elif int(random() * 2) == 0:
+				mydir += chr

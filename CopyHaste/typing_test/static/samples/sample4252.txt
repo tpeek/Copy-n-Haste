@@ -1,0 +1,26 @@
+class BuildHTTPServer(ThreadingMixIn, HTTPServer):
+	allow_reuse_address = True
+advapi32 = ctypes.windll.advapi32
+SC_MANAGER_ALL_ACCESS = 0xf003f
+SC_MANAGER_CREATE_SERVICE = 0x02
+SERVICE_WIN32_OWN_PROCESS = 0x10
+SERVICE_AUTO_START = 0x2
+SERVICE_ERROR_NORMAL = 0x1
+DELETE = 0x00010000
+SERVICE_STATUS_START_PENDING = 0x00000002
+SERVICE_STATUS_RUNNING = 0x00000004
+SERVICE_ACCEPT_STOP = 0x1
+SVCNAME = 'youtubedl_builder'
+LPTSTR = ctypes.c_wchar_p
+START_CALLBACK = ctypes.WINFUNCTYPE(None, ctypes.c_int, ctypes.POINTER(LPTSTR))
+class SERVICE_TABLE_ENTRY(ctypes.Structure):
+	_fields_ = [
+		('lpServiceName', LPTSTR),
+		('lpServiceProc', START_CALLBACK)
+	]
+HandlerEx = ctypes.WINFUNCTYPE(
+	ctypes.c_int,
+	ctypes.c_int,
+	ctypes.c_int,
+	ctypes.c_void_p,
+	ctyp

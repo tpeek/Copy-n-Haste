@@ -1,0 +1,29 @@
+__author__ = 'Sean Lip'
+DISPLAY_MODE_INLINE = 'inline'
+DISPLAY_MODE_SUPPLEMENTAL = 'supplemental'
+ALLOWED_DISPLAY_MODES = [DISPLAY_MODE_SUPPLEMENTAL, DISPLAY_MODE_INLINE]
+class BaseInteraction(object):
+	name = ''
+	description = ''
+	display_mode = ''
+	is_terminal = False
+	is_trainable = False
+	_dependency_ids = []
+	answer_type = None
+	_customization_arg_specs = []
+	instructions = None
+	needs_summary = False
+	@property
+	def id(self):
+		return self.__class__.__name__
+	@property
+	def customization_arg_specs(self):
+		return [
+			domain.CustomizationArgSpec(**cas)
+			for cas in self._customization_arg_specs]
+	@property
+	def dependency_ids(self):
+		return copy.deepcopy(self._dependency_ids)
+	@property
+	def rules(self):
+		return rule_domain.get_rul

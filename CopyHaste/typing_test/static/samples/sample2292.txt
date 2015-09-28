@@ -1,0 +1,21 @@
+
+ml2_opts = [
+	cfg.ListOpt('type_drivers',
+				default=['local', 'flat', 'vlan', 'gre', 'vxlan', 'geneve'],
+				help=_("List of network type driver entrypoints to be loaded "
+					   "
+	cfg.ListOpt('tenant_network_types',
+				default=['local'],
+				help=_("Ordered list of network_types to allocate as tenant "
+					   "networks.")),
+	cfg.ListOpt('mechanism_drivers',
+				default=[],
+				help=_("An ordered list of networking mechanism driver "
+					   "entrypoints to be loaded
+					   "neutron.ml2.mechanism_drivers namespace.")),
+	cfg.ListOpt('extension_drivers',
+				default=[],
+				help=_("An ordered list of extension driver "
+					   "entrypoints to be loaded
+					   "neutron.ml2.extension_drivers namespace.")),
+	cfg.IntOpt('path_mtu', defau

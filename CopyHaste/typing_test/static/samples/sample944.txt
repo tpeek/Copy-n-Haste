@@ -1,0 +1,19 @@
+
+DATE_FORMAT = '%Y-%m-%d'
+FILE_NAME_FORMAT = '{date}__{lang}__{slug}.rst'
+def now_str():
+	return datetime.datetime.now().strftime(DATE_FORMAT)
+def check_content_dir_exists(ctx, param, value):
+	if not os.path.exists(value):
+		click.secho('Content directory "%s" does not exist' % value, fg='red')
+		raise ctx.abort()
+	return value
+def slugify(value):
+	value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+	value = re.sub('[^\w\s-]', '', value).strip().lower()
+	return re.sub('[-\s]+', '-', value)
+def get_filename(date, lang, title):
+	slug = slugify(title)
+	return FILE_NAME_FORMAT.format(date=date, lang=lang, slug=slug)
+@click.command()
+@click.option('--content-dir', required=True, is_eager=True, type=click.Path()

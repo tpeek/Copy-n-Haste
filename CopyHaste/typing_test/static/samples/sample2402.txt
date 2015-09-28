@@ -1,0 +1,21 @@
+
+class ChangeAmount(ContextMenu):
+	def __init__(self):
+		self.mainFrame = gui.mainFrame.MainFrame.getInstance()
+	def display(self, srcContext, selection):
+		return srcContext in ("cargoItem","projectedFit")
+	def getText(self, itmContext, selection):
+		return "Change {0} Quantity".format(itmContext)
+	def activate(self, fullContext, selection, i):
+		srcContext = fullContext[0]
+		dlg = AmountChanger(self.mainFrame, selection[0], srcContext)
+		dlg.ShowModal()
+		dlg.Destroy()
+ChangeAmount.register()
+class AmountChanger(wx.Dialog):
+	def __init__(self, parent, thing, context):
+		wx.Dialog.__init__(self, parent, title="Select Amount", size=wx.Size(220, 60))
+		self.thing = thing
+		self.context = context
+		bSizer1 = wx.BoxSizer(wx.HORIZONTAL)
+		self.

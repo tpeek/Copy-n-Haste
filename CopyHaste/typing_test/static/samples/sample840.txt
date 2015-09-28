@@ -1,0 +1,28 @@
+
+connector = MySQLdb.connect(host="localhost", db="Restaourant", user="root",passwd="", charset="utf8")
+cursor = connector.cursor()
+def writedata(FileName):
+	fileName = ("RCdata/" + FileName + ".csv")
+	f = open(fileName, 'r')
+	sql = "CREATE TABLE " + FileName  + " ( "
+	reader = csv.reader(f)
+	header = next(reader)
+	for column in header:
+		sql += (str(column) + " " + "LONGTEXT" + ",")
+	sql = sql[0:-1]
+	sql += ") ENGINE=InnoDB DEFAULT CHARSET=utf8 ;"
+	try:
+		cursor.execute(sql)
+	except:
+		print sql
+	for row in reader:
+		sql = "INSERT INTO " + FileName + " ("
+		for column in header:
+			sql += (str(column) + ",")
+		sql = sql[0:-1]
+		sql += ") VALUES("
+		i = 0
+		for column in header:
+			sql += ("'" + str(row[i]) + "'" + ",")
+			i += 1
+		sql = sq

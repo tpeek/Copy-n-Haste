@@ -1,0 +1,23 @@
+
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def write_output(fout, lats, lons, side_number):
+	for i in range(0, len(lats)):
+		data = '%f, %f, %i' %(lats[i], lons[i], side_number)
+		fout.write(data+'\n')
+def main(inargs):
+	fout = open(inargs.outfile, 'w')
+	phi, theta, psi = crot.north_pole_to_rotation_angles(inargs.north_pole_lat, inargs.north_pole_lon)
+	side_number = 0
+	for side in inargs.side:
+		start_lat, start_lon, end_lat, end_lon = side
+		assert (start_lat == end_lat) or (start_l

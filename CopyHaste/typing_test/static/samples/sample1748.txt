@@ -1,0 +1,24 @@
+
+ExtensionShortName = 'AzureEnhancedMonitor'
+def parse_context(operation):
+	hutil = util.HandlerUtility(waagent.Log, waagent.Error, ExtensionShortName)
+	hutil.do_parse_context(operation)
+	return hutil
+def find_psutil_build(buildDir):
+	for item in os.listdir(buildDir):
+		try:
+			build = os.path.join(buildDir, item)
+			binary = os.path.join(build, '_psutil_linux.so')
+			imp.load_dynamic('_psutil_linux', binary)
+			return build
+		except Exception, e:
+			pass
+	raise Exception("Available build of psutil not found.")
+def main():
+	waagent.LoggerInit('/var/log/waagent.log','/dev/stdout')
+	waagent.Log("{0} started to handle.".format(ExtensionShortName))
+	
+	hutil = parse_context("Install")
+	try:
+		root = os.path.dirname(os.path.abspath(__file__))
+		b

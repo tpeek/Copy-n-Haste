@@ -1,0 +1,16 @@
+
+DIR_OF_THIS_SCRIPT = p.dirname( p.abspath( __file__ ) )
+DIR_OF_THIRD_PARTY = p.join( DIR_OF_THIS_SCRIPT, 'third_party' )
+DIR_OF_YCMD_THIRD_PARTY = p.join( DIR_OF_THIRD_PARTY, 'ycmd', 'third_party' )
+python_path = []
+for folder in os.listdir( DIR_OF_THIRD_PARTY ):
+  python_path.append( p.abspath( p.join( DIR_OF_THIRD_PARTY, folder ) ) )
+for folder in os.listdir( DIR_OF_YCMD_THIRD_PARTY ):
+  python_path.append( p.abspath( p.join( DIR_OF_YCMD_THIRD_PARTY, folder ) ) )
+if os.environ.get( 'PYTHONPATH' ):
+  python_path.append( os.environ[ 'PYTHONPATH' ] )
+os.environ[ 'PYTHONPATH' ] = os.pathsep.join( python_path )
+sys.path.insert( 1, p.abspath( p.join( DIR_OF_THIRD_PARTY, 'argparse' ) ) )
+def RunFlake8():
+  print( 'Running flake8' )
+  subprocess

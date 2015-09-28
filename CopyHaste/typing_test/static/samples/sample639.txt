@@ -1,0 +1,20 @@
+
+PREFIX = ('/distribution',
+		  '/update')
+BANNED = ()
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(description='Group files in directories and add the size.')
+	parser.add_argument('--date', help='Date to filter as a new (YYYY-MM-DD)')
+	parser.add_argument('file', help='File to remove the version name')
+	args = parser.parse_args()
+	args.date = tuple(int(d) for d in args.date.split('-'))
+	items = read_file(args.file, laplacian=False, with_time=True)
+	for size, _time, path in items:
+		if not path.startswith('/'):
+			path = '/' + path
+		print size, path
+		if _time >= args.date:
+			value = 10
+			value *= 10000 if any(path.startswith(p) for p in PREFIX) else 1
+			if not any(path.startswith(p) for p in BANNED):
+				print >> sys.st

@@ -1,0 +1,19 @@
+
+matplotlib.use('Agg')
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+plot_types = ['colour', 'contour', 'uwind', 'vwind', 'hatching']
+input_projections = {'PlateCarree': ccrs.PlateCarree(),
+					 'RotatedPole_260E_20N': ccrs.RotatedPole(pole_longitude=260, pole_latitude=20),
+					 'RotatedPole_250E_20N': ccrs.RotatedPole(pole_longitude=250, pole_latitude=20),
+					 'RotatedPole_270E_20N': ccrs.RotatedPole(pole_longitude=270, pole_latitude=20),
+					 'RotatedPole_260E_15N': ccrs.RotatedPo

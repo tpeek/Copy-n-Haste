@@ -1,0 +1,19 @@
+
+def make_availability_zone(elem):
+	elem.set('name', 'zoneName')
+	zoneStateElem = xmlutil.SubTemplateElement(elem, 'zoneState',
+											   selector='zoneState')
+	zoneStateElem.set('available')
+class ListTemplate(xmlutil.TemplateBuilder):
+	def construct(self):
+		root = xmlutil.TemplateElement('availabilityZones')
+		elem = xmlutil.SubTemplateElement(root, 'availabilityZone',
+										  selector='availabilityZoneInfo')
+		make_availability_zone(elem)
+		alias = Availability_zones.alias
+		namespace = Availability_zones.namespace
+		return xmlutil.MasterTemplate(root, 1, nsmap={alias: namespace})
+class Controller(wsgi.Controller):
+	_view_builder_class = cinder.api.views.availability_zones.ViewBuilder
+	def __init__(self, *args, **kwargs):
+		supe

@@ -1,0 +1,14 @@
+class Migration(SchemaMigration):
+	def forwards(self, orm):
+		db.create_table(u'manageset_kanji', (
+			(u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+			('kanji_name', self.gf('django.db.models.fields.CharField')(max_length=50)),
+			('kanji_meaning', self.gf('django.db.models.fields.CharField')(max_length=200)),
+			('readings', self.gf('django.db.models.fields.CharField')(max_length=200)),
+			('strokes', self.gf('django.db.models.fields.IntegerField')()),
+			('grade', self.gf('django.db.models.fields.IntegerField')()),
+		))
+		db.send_create_signal(u'manageset', ['Kanji'])
+		db.create_table(u'manageset_words', (
+			(u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+			('real_word', self.gf('dja

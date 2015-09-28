@@ -1,0 +1,25 @@
+__license__   = 'GPL v3'
+__author__ = '2013, Carlos Alves <carlosalves90@gmail.com>'
+class General(BasicNewsRecipe):
+	title				 = '10minutos'
+	__author__			= 'Carlos Alves'
+	description		   = 'Noticias de Salto - Uruguay'
+	tags = 'news, sports'
+	language	   = 'es_UY'
+	timefmt		= '[%a, %d %b, %Y]'
+	use_embedded_content  = False
+	recursion			 = 5
+	encoding = 'utf8'
+	remove_javascript = True
+	no_stylesheets = True
+	oldest_article		= 2
+	max_articles_per_feed = 100
+	keep_only_tags = [dict(name='div', attrs={'class':'post-content'})]
+	remove_tags = [
+			 dict(name='div', attrs={'class':['hr', 'titlebar', 'navigation']}),
+			 dict(name='p', attrs={'class':'post-meta'}),
+			 dict(name=['object','link'])
+				  ]
+	extra_css =
+	feeds = [
+		   (u'Artic

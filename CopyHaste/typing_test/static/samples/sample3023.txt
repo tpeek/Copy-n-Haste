@@ -1,0 +1,47 @@
+class Character (base.Base):
+	
+	folder = '../character'
+	
+	cols = [['str',
+			 'con',
+			 'dex',
+			 'int',
+			 'wis',
+			 'cha',
+			 ],
+			 ['current_hp',
+			 'max_hp',
+			 'current_mp',
+			 'max_mp',
+			 'speed']]
+	
+	def __init__(self, input = {}):
+		for col in self.cols[0:2]:
+			for item in col:
+				self[item] = 10
+		self['name'] = ''
+		super(type(self), self).__init__(input)
+	
+	def modifier(self, stat):
+		stat = int(self.get(stat, 10))
+		stat -= 10
+		stat /= 2
+		return stat
+	
+	def ac(self):
+		return 0
+	
+	def speed(self):
+		d = self['dex'] / 3.0
+		d = math.ceil(d)
+		c = self.modifier('con')
+		return int(d - c) * 3
+if __name__ == '__main__':
+	filename = 'charles.json'
+	c = Character.load(filename)
+	if c == None:
+		c = {'name': 'Charles'}
+		c = Character(c)
+	c.save()
+	
+	print c

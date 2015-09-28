@@ -1,0 +1,22 @@
+
+						print_function)
+__license__ = 'GPL v3'
+__copyright__ = '2014, Kovid Goyal <kovid at kovidgoyal.net>'
+class DemoTool(Tool):
+	name = 'demo-tool'
+	allowed_in_toolbar = True
+	allowed_in_menu = True
+	def create_action(self, for_toolbar=True):
+		ac = QAction(get_icons('images/icon.png'), 'Magnify fonts', self.gui)
+		if not for_toolbar:
+			self.register_shortcut(ac, 'magnify-fonts-tool', default_keys=('Ctrl+Shift+Alt+D',))
+		ac.triggered.connect(self.ask_user)
+		return ac
+	def ask_user(self):
+		factor, ok = QInputDialog.getDouble(
+			self.gui, 'Enter a magnification factor', 'Allow font sizes in the book will be multiplied by the specified factor',
+			value=2, min=0.1, max=4
+		)
+		if ok:
+			self.boss.commit_all_editors_to_container()
+			try

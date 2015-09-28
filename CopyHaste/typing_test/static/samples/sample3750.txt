@@ -1,0 +1,28 @@
+web_port = check_config("WEB_PORT=")
+class StoppableHttpRequestHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
+	def do_QUIT(self):
+		self.send_response(200)
+		self.end_headers()
+		self.server.stop = True
+		
+	def do_POST(self):
+		self.do_GET()
+	def send_head(self):
+		path = self.translate_path(self.path)
+		f = None
+		if os.path.isdir(path):
+			if not self.path.endswith('/'):
+				self.send_response(301)
+				self.send_header("Location", self.path + "/")
+				self.end_headers()
+				return None
+			for index in "index.html", "index.htm":
+				index = os.path.join(path, index)
+				if os.path.exists(index):
+					path = index
+					break
+			else:
+				return self.list_directory(path)
+		ctype = self.guess_type(path)
+		if ctype.startswith('text/'):
+		

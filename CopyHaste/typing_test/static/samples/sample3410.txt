@@ -1,0 +1,71 @@
+class ProfilerCollector(object):
+	def __init__(self, profiler_cls, dump_path=None):
+		self.profiler_cls = profiler_cls
+		self.profile_dump_path = dump_path
+		self.profilers = []
+	def new_profiler(self, ctx):
+		return self.profiler_cls(ctx)
+	def add_profiler(self, id, profiler):
+		if not self.profilers:
+			if self.profile_dump_path:
+				atexit.register(self.dump_profiles, self.profile_dump_path)
+			else:
+				atexit.register(self.show_profiles)
+		self.profilers.append([id, profiler, False])
+	def dump_profiles(self, path):
+		for id, profiler, _ in self.profilers:
+			profiler.dump(id, path)
+		self.profilers = []
+	def show_profiles(self):
+		for i, (id, profiler, showed) in enumerate(self.profilers):
+			if not showed and profiler:
+				profiler.show(id)
+				self.profilers[i][2] = True
+class Profiler(object):
+	def __init__(self, ctx):
+		pass
+	def profile(self, func):
+		raise NotImplemented
+	def stats(self):
+		raise NotImplemented
+	def show(self, id):
+		stats = self.stats()
+		if stats:
+			print("=" * 60)
+			print("Profile of RDD<id=%d>" % id)
+			print("=" * 60)
+			stats.sort_stats("time", "cumulative").print_stats()
+	def dump(self, id, path):
+		if not os.path.exists(path):
+			os.makedirs(path)
+		stats = self.stats()
+		if stats:
+			p = os.path.join(path, "rdd_%d.pstats" % id)
+			stats.dump_stats(p)
+class PStatsParam(AccumulatorParam):
+	@staticmethod
+	def zero(value):
+		return None
+	@staticmethod
+	def addInPlace(value1, value2):
+		if value1 is None:
+			return value2
+		value1.add(value2)
+		return value1
+class BasicProfiler(Profiler):
+	def __init__(self, ctx):
+		Profiler.__init__(self, ctx)
+		self._accumulator = ctx.accumulator(None, PStatsParam)
+	def profile(self, func):
+		pr = cProfile.Profile()
+		pr.runcall(func)
+		st = pstats.Stats(pr)
+		st.stream = None
+		st.strip_dirs()
+		self._accumulator.add(st)
+	def stats(self):
+		return self._accumulator.value
+if __name__ == "__main__":
+	(failure_count, test_count) = doctest.testmod()
+	if failure_count:
+		exit(-1)

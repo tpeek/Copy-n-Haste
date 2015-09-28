@@ -1,0 +1,155 @@
+generator_wants_static_library_dependencies_adjusted = False
+generator_default_variables = {
+}
+for dirname in ['INTERMEDIATE_DIR', 'PRODUCT_DIR', 'LIB_DIR', 'SHARED_LIB_DIR']:
+  generator_default_variables[dirname] = 'dir'
+for unused in ['RULE_INPUT_PATH', 'RULE_INPUT_ROOT', 'RULE_INPUT_NAME',
+			   'RULE_INPUT_DIRNAME', 'RULE_INPUT_EXT',
+			   'EXECUTABLE_PREFIX', 'EXECUTABLE_SUFFIX',
+			   'STATIC_LIB_PREFIX', 'STATIC_LIB_SUFFIX',
+			   'SHARED_LIB_PREFIX', 'SHARED_LIB_SUFFIX',
+			   'CONFIGURATION_NAME']:
+  generator_default_variables[unused] = ''
+generator_default_variables['SHARED_INTERMEDIATE_DIR'] = \
+	'$SHARED_INTERMEDIATES_DIR'
+def CalculateVariables(default_variables, params):
+  generator_flags = params.get('generator_flags', {})
+  for key, val in generator_flags.items():
+	default_variables.setdefault(key, val)
+  default_variables.setdefault('OS', gyp.common.GetFlavor(params))
+def CalculateGeneratorInputInfo(params):
+  generator_flags = params.get('generator_flags', {})
+  if generator_flags.get('adjust_static_libraries', False):
+	global generator_wants_static_library_dependencies_adjusted
+	generator_wants_static_library_dependencies_adjusted = True
+def GetAllIncludeDirectories(target_list, target_dicts,
+							 shared_intermediates_dir, config_name):
+  gyp_includes_set = set()
+  compiler_includes_list = []
+  for target_name in target_list:
+	target = target_dicts[target_name]
+	if config_name in target['configurations']:
+	  config = target['configurations'][config_name]
+	  cflags = config['cflags']
+	  for cflag in cflags:
+		include_dir = ''
+		if cflag.startswith('-I'):
+		  include_dir = cflag[2:]
+		if include_dir and not include_dir in compiler_includes_list:
+		  compiler_includes_list.append(include_dir)
+	  if config.has_key('include_dirs'):
+		include_dirs = config['include_dirs']
+		for include_dir in include_dirs:
+		  include_dir = include_dir.replace('$SHARED_INTERMEDIATES_DIR',
+											shared_intermediates_dir)
+		  if not os.path.isabs(include_dir):
+			base_dir = os.path.dirname(target_name)
+			include_dir = base_dir + '/' + include_dir
+			include_dir = os.path.abspath(include_dir)
+		  if not include_dir in gyp_includes_set:
+			gyp_includes_set.add(include_dir)
+  all_includes_list = list(gyp_includes_set)
+  all_includes_list.sort()
+  for compiler_include in compiler_includes_list:
+	if not compiler_include in gyp_includes_set:
+	  all_includes_list.append(compiler_include)
+  return all_includes_list
+def GetCompilerPath(target_list, target_dicts, data):
+  build_file, _, _ = gyp.common.ParseQualifiedTarget(target_list[0])
+  make_global_settings_dict = data[build_file].get('make_global_settings', {})
+  for key, value in make_global_settings_dict:
+	if key in ['CC', 'CXX']:
+	  return value
+  for key in ['CC_target', 'CC', 'CXX']:
+	compiler = os.environ.get(key)
+	if compiler:
+	  return compiler
+  return 'gcc'
+def GetAllDefines(target_list, target_dicts, data, config_name):
+  all_defines = {}
+  for target_name in target_list:
+	target = target_dicts[target_name]
+	if config_name in target['configurations']:
+	  config = target['configurations'][config_name]
+	  for define in config['defines']:
+		split_define = define.split('=', 1)
+		if len(split_define) == 1:
+		  split_define.append('1')
+		if split_define[0].strip() in all_defines:
+		  continue
+		all_defines[split_define[0].strip()] = split_define[1].strip()
+  cc_target = GetCompilerPath(target_list, target_dicts, data)
+  if cc_target:
+	command = shlex.split(cc_target)
+	command.extend(['-E', '-dM', '-'])
+	cpp_proc = subprocess.Popen(args=command, cwd='.',
+								stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+	cpp_output = cpp_proc.communicate()[0]
+	cpp_lines = cpp_output.split('\n')
+	for cpp_line in cpp_lines:
+	  if not cpp_line.strip():
+		continue
+	  cpp_line_parts = cpp_line.split(' ', 2)
+	  key = cpp_line_parts[1]
+	  if len(cpp_line_parts) >= 3:
+		val = cpp_line_parts[2]
+	  else:
+		val = '1'
+	  all_defines[key] = val
+  return all_defines
+def WriteIncludePaths(out, eclipse_langs, include_dirs):
+  out.write('  <section name="org.eclipse.cdt.internal.ui.wizards.' \
+			'settingswizards.IncludePaths">\n')
+  out.write('	<language name="holder for library settings"></language>\n')
+  for lang in eclipse_langs:
+	out.write('	<language name="%s">\n' % lang)
+	for include_dir in include_dirs:
+	  out.write('	  <includepath workspace_path="false">%s</includepath>\n' %
+				include_dir)
+	out.write('	</language>\n')
+  out.write('  </section>\n')
+def WriteMacros(out, eclipse_langs, defines):
+  out.write('  <section name="org.eclipse.cdt.internal.ui.wizards.' \
+			'settingswizards.Macros">\n')
+  out.write('	<language name="holder for library settings"></language>\n')
+  for lang in eclipse_langs:
+	out.write('	<language name="%s">\n' % lang)
+	for key in sorted(defines.iterkeys()):
+	  out.write('	  <macro><name>%s</name><value>%s</value></macro>\n' %
+				(escape(key), escape(defines[key])))
+	out.write('	</language>\n')
+  out.write('  </section>\n')
+def GenerateOutputForConfig(target_list, target_dicts, data, params,
+							config_name):
+  options = params['options']
+  generator_flags = params.get('generator_flags', {})
+  build_dir = os.path.join(generator_flags.get('output_dir', 'out'),
+						   config_name)
+  toplevel_build = os.path.join(options.toplevel_dir, build_dir)
+  shared_intermediate_dir = os.path.join(toplevel_build, 'obj', 'gen')
+  if not os.path.exists(toplevel_build):
+	os.makedirs(toplevel_build)
+  out = open(os.path.join(toplevel_build, 'eclipse-cdt-settings.xml'), 'w')
+  out.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+  out.write('<cdtprojectproperties>\n')
+  eclipse_langs = ['C++ Source File', 'C Source File', 'Assembly Source File',
+				   'GNU C++', 'GNU C', 'Assembly']
+  include_dirs = GetAllIncludeDirectories(target_list, target_dicts,
+										  shared_intermediate_dir, config_name)
+  WriteIncludePaths(out, eclipse_langs, include_dirs)
+  defines = GetAllDefines(target_list, target_dicts, data, config_name)
+  WriteMacros(out, eclipse_langs, defines)
+  out.write('</cdtprojectproperties>\n')
+  out.close()
+def GenerateOutput(target_list, target_dicts, data, params):
+  if params['options'].generator_output:
+	raise NotImplementedError, "--generator_output not implemented for eclipse"
+  user_config = params.get('generator_flags', {}).get('config', None)
+  if user_config:
+	GenerateOutputForConfig(target_list, target_dicts, data, params,
+							user_config)
+  else:
+	config_names = target_dicts[target_list[0]]['configurations'].keys()
+	for config_name in config_names:
+	  GenerateOutputForConfig(target_list, target_dicts, data, params,
+							  config_name)

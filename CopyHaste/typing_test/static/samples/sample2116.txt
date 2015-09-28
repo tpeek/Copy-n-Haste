@@ -1,0 +1,29 @@
+
+LOG = logging.getLogger(__name__)
+def _check_for_expected_result(name, schema):
+	expected_result = None
+	if "results" in schema:
+		if name in schema["results"]:
+			expected_result = schema["results"][name]
+	return expected_result
+def generator_type(*args, **kwargs):
+	def wrapper(func):
+		func.types = args
+		for key in kwargs:
+			setattr(func, key, kwargs[key])
+		return func
+	return wrapper
+def simple_generator(fn):
+	@functools.wraps(fn)
+	def wrapped(self, schema):
+		result = fn(self, schema)
+		if result is not None:
+			expected_result = _check_for_expected_result(fn.__name__, schema)
+			return (fn.__name__, result, expected_result)
+		return
+	return wrapped
+class BasicGeneratorSet(object):
+	_instance = None
+	schema = {
+		"type": "object",
+	

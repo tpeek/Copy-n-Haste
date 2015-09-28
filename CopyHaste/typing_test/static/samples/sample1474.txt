@@ -1,0 +1,23 @@
+
+class Settings:
+	def __init__(self):
+		self.logfile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.xml'))
+		self.repairfile = xbmc.translatePath(os.path.join(Globals.SETTINGS_LOC, 'settings2.repair.xml'))
+		self.currentSettings = []
+		self.alwaysWrite = 1
+	def loadSettings(self):
+		self.log("Loading settings
+		del self.currentSettings[:]
+		try:
+			if FileAccess.exists(self.logfile):
+				try:
+					fle = FileAccess.open(self.logfile, "r")
+					curset = fle.readlines()
+					fle.close()
+				except Exception,e:
+					self.log("Exception when reading settings: ")
+					self.log(traceback.format_exc(), xbmc.LOGERROR)
+				for line in curset:
+					name = re.search('setting id="(.*?)"', line)
+					if name:
+						val = re.search(' v

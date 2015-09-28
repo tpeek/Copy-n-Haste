@@ -1,0 +1,37 @@
+__author__ = "Nick Sweet"
+__copyright__ = "Copyright 2015, Cohrint"
+__credits__ = ["Nick Sweet", "Nisar Ahmed"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Nick Sweet"
+__email__ = "nick.sweet@colorado.edu"
+__status__ = "Development"
+try:
+except ImportError:
+class iRobotCreate(object):
+	DIAMETER = 0.34
+	MAX_SPEED = 500
+	MAX_TURN_RADIUS = 2000
+	RAD_STRAIGHT = 2 ** 15 - 1
+	RAD_CW = 2 ** 16 - 1
+	RAD_CCW = 1
+	OPCODE = {
+		'start': 128,
+		'baud': 129,
+		'safe': 131,
+		'full': 132,
+		'spot': 134,
+		'cover': 135,
+		'demo': 136,
+		'cover-and-dock': 143,
+		'drive': 137,
+		'drive-direct': 145,
+		'LEDs': 139,
+		'sensors': 142,
+		'stream': 148,
+		'query-list': 149,
+		'stream_toggle': 150
+	}
+	SENSOR_PKT = {
+		'bump-wheel-drop': 7,
+		'wall

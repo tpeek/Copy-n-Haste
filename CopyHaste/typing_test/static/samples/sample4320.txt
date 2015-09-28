@@ -1,0 +1,24 @@
+class CustomReplacements(object):
+	def __init__(self):
+		self.simpleScheme = {'(@PLATFORM@)':	os.environ.get('OS'),
+							 '(@CURRENT_URL@)': fu.getFileContent(os.path.join(common.Paths.cacheDir, 'lasturl')),
+							 '(@LANGUAGE@)':	self.languageShortName(common.language)
+							 }
+		self.complexScheme = {  '
+								'find':	   '(
+								'catch':	  '(
+							  }
+	def languageShortName(self, longName):
+		if str(longName).lower() == 'german':
+			return 'de'
+		else:
+			return 'en'
+	def regex(self, item):
+		return self.complexScheme.get(item)
+	def __replaceImports(self, pathToImports, data):
+		while True:
+			m_reg = findall(data, self.regex('
+			if len(m_reg) > 0:
+				for idat in m_reg:
+					if idat[0].startswith('
+						data = data.replace(i

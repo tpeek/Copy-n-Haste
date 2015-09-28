@@ -1,0 +1,29 @@
+
+__version__ = "0.7"
+COMMENT = "Comment"
+DATE = "Date"
+EQUIPMENT = "Digitalization equipment"
+FRAMES = "File size (no of images)"
+LUT = "Lut"
+NAME = "Name"
+SCALE = "Scale (x,y)"
+SIZE = "Image size (x*y)"
+MODE = "Image type"
+TAGS = { COMMENT:0, DATE:0, EQUIPMENT:0, FRAMES:0, LUT:0, NAME:0,
+		 SCALE:0, SIZE:0, MODE:0 }
+OPEN = {
+	"0 1 image": ("1", "1"),
+	"L 1 image": ("1", "1"),
+	"Greyscale image": ("L", "L"),
+	"Grayscale image": ("L", "L"),
+	"RGB image": ("RGB", "RGB;L"),
+	"RLB image": ("RGB", "RLB"),
+	"RYB image": ("RGB", "RLB"),
+	"B1 image": ("1", "1"),
+	"B2 image": ("P", "P;2"),
+	"B4 image": ("P", "P;4"),
+	"X 24 image": ("RGB", "RGB"),
+	"L 32 S image": ("I", "I;32"),
+	"L 32 F image": ("F", "F;32"),
+	"RGB3 image": ("RGB", "RGB;T"),
+	"RYB3 

@@ -1,0 +1,24 @@
+__version__ = '0.4.3'
+
+class Theremin:
+	
+	def __init__(self, master):
+		self.prev = None
+		self.sound = None
+		self.sound_on = False
+	
+		master.attributes('-fullscreen', True)
+		
+		self.canvas = Canvas(master, background = 'black')
+		self.canvas.pack(fill = BOTH, expand = True)
+		self.canvas.create_text(master.winfo_screenwidth()//2, master.winfo_screenheight(), anchor = 's',
+								text = "Press 'Esc' to Quit.", font = ('Helvetica', 32, 'bold'), fill = 'white')
+		
+		master.bind('<Motion>', self.mouse_move)
+		master.bind('<ButtonPress>', self.mouse_down)
+		master.bind('<ButtonRelease>', self.mouse_up)
+		master.bind('<Escape>', lambda e: master.destroy())
+			
+		mixer.init(22050, -16, 1)
+				
+	def mouse_move(self, event):	

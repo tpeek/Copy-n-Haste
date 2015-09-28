@@ -1,0 +1,19 @@
+
+
+class Ui_LocalRule(object):
+	def setupUi(self, LocalRule):
+		LocalRule.setObjectName("LocalRule")
+		LocalRule.resize(232, 23)
+		self.horizontalLayout = QtGui.QHBoxLayout(LocalRule)
+		self.horizontalLayout.setContentsMargins(-1, 0, -1, 0)
+		self.horizontalLayout.setObjectName("horizontalLayout")
+		self.lineEdit = QtGui.QLineEdit(LocalRule)
+		self.lineEdit.setReadOnly(True)
+		self.lineEdit.setObjectName("lineEdit")
+		self.horizontalLayout.addWidget(self.lineEdit)
+		self.copyButton = QtGui.QPushButton(LocalRule)
+		self.copyButton.setObjectName("copyButton")
+		self.horizontalLayout.addWidget(self.copyButton)
+		self.delButton = QtGui.QPushButton(LocalRule)
+		self.delButton.setObjectName("delButton")
+		self.horizontalLayout.add

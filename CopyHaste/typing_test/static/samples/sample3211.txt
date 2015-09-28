@@ -1,0 +1,40 @@
+device_vid = 0x03EB
+device_pid = 0x2063
+report_length = 1 + 7
+def get_hid_device_handle():
+	hid_device_filter = hid.HidDeviceFilter(vendor_id=device_vid,
+											product_id=device_pid)
+	valid_hid_devices = hid_device_filter.get_devices()
+	if len(valid_hid_devices) is 0:
+		return None
+	else:
+		return valid_hid_devices[0]
+def configure_temp_log_device(device, time_date, log_interval_500ms):
+	report_data = [0]
+	report_data.extend([time_date.hour, time_date.minute,
+						time_date.second, time_date.day,
+						time_date.month, time_date.year - 2000])
+	report_data.extend([log_interval_500ms])
+	report_data.extend([0] * (report_length - len(report_data)))
+	device.send_output_report(report_data)
+def main(time_date, log_interval_500ms):
+	hid_device = get_hid_device_handle()
+	if hid_device is None:
+		print("No valid HID device found.")
+		sys.exit(1)
+	try:
+		hid_device.open()
+		print("Connected to device 0x%04X/0x%04X - %s [%s]" %
+			  (hid_device.vendor_id, hid_device.product_id,
+			   hid_device.product_name, hid_device.vendor_name))
+		configure_temp_log_device(hid_device, time_date, log_interval_500ms)
+		print("Time/Date is now set to %s" % time_date)
+		print("Log interval is now set to every %0.1fs" % (log_interval_500ms * (500.0 / 1000.0)))
+	finally:
+		hid_device.close()
+if __name__ == '__main__':
+	time_date = datetime.now()
+	log_interval_500ms = (int(sys.argv[1]) / 500) if len(sys.argv) > 1 else 2
+	log_interval_500ms = max(log_interval_500ms, 0x01)
+	log_interval_500ms = min(log_interval_500ms, 0xFF)
+	main(time_date, log_interval_500ms)

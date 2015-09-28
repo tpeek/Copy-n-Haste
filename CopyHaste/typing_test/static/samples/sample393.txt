@@ -1,0 +1,27 @@
+
+ELB_BAN_LIST = [
+	'Apros',
+]
+ELB_PLAY_MAPPINGS = {
+	'RabbitMQ': 'rabbitmq',
+	'Xqueue': 'xqueue',
+	'Elastic': 'elasticsearch',
+}
+class DNSRecord():
+	def __init__(self, zone, record_name, record_type,
+				 record_ttl, record_values):
+		self.zone = zone
+		self.record_name = record_name
+		self.record_type = record_type
+		self.record_ttl = record_ttl
+		self.record_values = record_values
+def add_or_update_record(dns_records):
+	change_set = boto.route53.record.ResourceRecordSets()
+	record_names = set()
+	for record in dns_records:
+		status_msg =.format(record.record_name, record.record_type,
+							record.record_ttl, record.record_values)
+		if args.noop:
+			print("Would have updated DNS record:\n{}".format(status_msg))
+		else:
+			print("Updating D

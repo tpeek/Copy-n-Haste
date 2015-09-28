@@ -1,0 +1,16 @@
+class FavouritesManager:
+	def __init__(self, favouritesFolder):
+		self.cfgBuilder = CfgBuilder()
+		
+		self._favouritesFolder = favouritesFolder
+		if not os.path.exists(self._favouritesFolder):
+			os.makedirs(self._favouritesFolder, 0777)
+		self._favouritesFile = os.path.join(self._favouritesFolder, 'favourites.cfg')
+		if not os.path.exists(self._favouritesFile):
+			self._createVirtualFolder('Favourites', self._favouritesFile)
+		self._favouritesFoldersFolder = os.path.join(self._favouritesFolder, 'favfolders')
+		if not os.path.exists(self._favouritesFoldersFolder):
+			os.mkdir(self._favouritesFoldersFolder)
+	def _getFullPath(self, path):
+		if path.startswith('favfolders'):
+			path =  os.path.normpath(os.path.join(self._favouritesFolder, path

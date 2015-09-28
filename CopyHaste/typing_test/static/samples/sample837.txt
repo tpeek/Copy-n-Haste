@@ -1,0 +1,39 @@
+
+CharEncoding = 'utf-8'
+fileName = ("20135.csv")
+f = open(fileName, 'r')
+reader = csv.reader(f)
+textlist = []
+timestamp = {}
+M = 0
+for row in reader:
+	if len(row[8]) <> 0:
+		timestamp[M] = row[5]
+		text = row[9]
+		textlist.append(text)
+		M = M + 1
+f.close()
+  
+txt_num = len(textlist)
+print 'total texts:', txt_num
+  
+fv_tf = []
+fv_df = {}
+word_count = []
+  
+fv_tf_idf = []
+tf_idf = {}
+count_flag = {}
+TotalwordsList = {} 
+wordsCountList = {}
+WordAppearCount = {}
+for txt_id, txt in enumerate(textlist):
+	txt = textlist[txt_id]
+	tagger = MeCab.Tagger()
+	result = tagger.parse(txt)
+	node = tagger.parseToNode(txt)
+	keywords = []
+	while node:
+		surface = node.surface
+		meta = node.feature.split(",")
+		if meta[0] == ('名詞' or'形容詞' or '動詞'

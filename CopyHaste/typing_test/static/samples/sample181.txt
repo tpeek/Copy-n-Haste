@@ -1,0 +1,30 @@
+
+__version__ = '2.1.10'
+IPV4LENGTH = 32
+IPV6LENGTH = 128
+class AddressValueError(ValueError):
+class NetmaskValueError(ValueError):
+def IPAddress(address, version=None):
+	if version:
+		if version == 4:
+			return IPv4Address(address)
+		elif version == 6:
+			return IPv6Address(address)
+	try:
+		return IPv4Address(address)
+	except (AddressValueError, NetmaskValueError):
+		pass
+	try:
+		return IPv6Address(address)
+	except (AddressValueError, NetmaskValueError):
+		pass
+	raise ValueError('%r does not appear to be an IPv4 or IPv6 address' %
+					 address)
+def IPNetwork(address, version=None, strict=False):
+	if version:
+		if version == 4:
+			return IPv4Network(address, strict)
+		elif version == 6:
+			return IPv6Network(address, strict)
+	try:
+		return 

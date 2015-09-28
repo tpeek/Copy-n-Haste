@@ -1,0 +1,26 @@
+
+logger = logging.getLogger(__name__)
+register = template.Library()
+@register.filter(name='country')
+def country(lang):
+	if lang == 'en':
+		return 'US'
+	if lang == 'ja':
+		return 'JP'
+	return lang.upper()
+@register.assignment_tag
+def get_theme():
+	return GlobalConfig.UDS_THEME.get()
+class EnhacedVisual(template.Node):
+	def __init__(self, nodelistTrue, nodelistFalse):
+		self._nodelistTrue = nodelistTrue
+		self._nodelistFalse = nodelistFalse
+	def render(self, context):
+		if GlobalConfig.UDS_THEME_VISUAL.getBool(True) is True:
+			return self._nodelistTrue.render(context)
+		if self._nodelistFalse is None:
+			return ''
+		return self._nodelistFalse.render(context)
+@register.tag(name='enhaced_visual')
+def enhaced_visual(parser, token):
+	states = {

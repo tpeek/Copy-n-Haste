@@ -1,0 +1,21 @@
+class SpatialGraph(abstract.AbstractGraph):
+	def get_time(self, geospatials, num_edges):
+		if num_edges > config.GRAPH_FILTER_MIN_NUM_EDGES:
+			time = interpolate.graph_curvature(
+				self.geospatials, config.GRAPH_SAMPLE_SPACING)
+			return time
+	def __init__(self, abstract_graph, pylon_cost, tube_cost, land_cost,
+												 latlngs, geospatials):
+		abstract.AbstractGraph.init_
+		self.pylon_cost = pylon_cost
+		self.tube_cost = tube_cost
+		self.land_cost = land_cost
+		self.latlngs = latlngs
+		self.geospatials = geospatials
+		self.time = self.get_time(geospatials, self.num_edges)
+	@classmethod
+	def init_
+		abstract_edge = spatial_edge.to_abstract_edge()
+		abstract_graph = abstract.AbstractGraph.init_
+														  abstract_edge)
+		pylon_c

@@ -1,0 +1,29 @@
+
+sys.path = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')]+sys.path
+class Tests(unittest.TestCase):
+	def s(self, seqs):
+		to_return = []
+		current_seq = None
+		for bit in split(seqs,' '):
+			if current_seq:
+				current_seq.seq = bit
+				to_return.append(current_seq)
+				current_seq = None
+			else:
+				current_seq = Sequence(bit, '')
+		return to_return
+	
+	def nd(self, seqs):
+		return sorted([' '.join([x.name for x in s])
+					   for s in self.deduplicator.deduplicate(seqs)])
+		
+	def setUp(self):
+		unittest.TestCase.setUp(self)
+		self.deduplicator = Deduplicator()
+		self.d = self.deduplicator
+		
+	def test_deduplicate_hello_world(self):
+		seqs = self.s('1 AAA 2 AAT')
+		self.assertEqual(['1','2'], self.nd(seqs))
+				
+	def test

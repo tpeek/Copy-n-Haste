@@ -1,0 +1,188 @@
+def d(n):
+	if n == 0:
+		return 0
+	r = 1 - random.random()
+	r = int(math.ceil(r * abs(n)))
+	if n > 0:
+		return r
+	else:
+		return -r
+def d20(adv = ''):
+	if adv == '+':
+		return max(d(20), d(20))
+	elif adv == '-':
+		return min(d(20), d(20))
+	else:
+		return d(20)
+def get_stat_4d6():
+	roll = []
+	for _ in xrange(4):
+		roll.append(d(6))
+	roll = sorted(roll)[1:]
+	roll = sum(roll)
+	return roll
+def roll(x, n):
+	n = int(n)
+	if x < 0:
+		num = int(-x)
+	else:
+		num = int(x)
+	roll = 0
+	for _ in xrange(num):
+		roll += d(n)
+	if x >= 0:
+		return roll
+	else:
+		return -roll
+def _separate_operators(lst, operators, unary):
+	new = []
+	for item in lst:
+		if item == ' ':
+			new.append('')
+		elif item.isdigit() or item == '.':
+			if len(new) and len(new[-1]) and (new[-1][-1].isdigit() or new[-1][-1] == '.'):
+				new[-1] += item
+			else:
+				new.append(item)
+		else:
+			if len(new) and len(new[-1]) and not (new[-1][-1].isdigit() or new[-1][-1] == '.'):
+				new[-1] += item
+			else:
+				new.append(item)
+	
+	lst = []
+	for item in new:
+		if item != '':
+			lst.append(item)
+	
+	new = []
+	digits = '1234567890.'
+	os = unary.keys() + operators.keys() + ['(', ')']
+	for item in lst:
+		if all([x in digits for x in item]):
+			new.append(item)
+		else:
+			while len(item):
+				for op in os:
+					if item.startswith(op):
+						new.append(op)
+						item = item[len(op):]
+						break
+				else:
+					raise ValueError('Invalid character provided')
+	return new
+def _handle_unary(lst, operators, unary):
+	os = operators.keys() + ['(']
+	flag = False
+	new = ['+']
+	for item in lst:
+		if flag:
+			try:
+				item = str(unary[new[-1]](float(item)))
+				new.pop(-1)
+			except ValueError:
+				pass
+			flag = False
+		elif item in unary and new[-1] in os:
+			flag = True
+		new.append(item)
+	return new[1:]
+def _presedence(operator, order):
+	for x in xrange(len(order)):
+		if operator in order[x]:
+			break
+	else:
+		x = len(order)
+	return x
+def _relative_precedence(a, b, order):
+	return _presedence(a, order) - _presedence(b, order)
+def _infix_to_postfix(lst, operators, unary, order):
+	lst = _separate_operators(lst, operators, unary)
+	lst = _handle_unary(lst, operators, unary)
+	
+	digits = '1234567890.'
+	stack = []
+	new = []
+	for item in lst:
+		if all([x in digits for x in item]) or len(item) > 1 and item[0] == '-' and all([x in digits for x in item[1:]]):
+			new.append(item)
+		elif item == ')':
+			try:
+				while stack[-1] != '(':
+					new.append(stack.pop())
+				stack.pop()
+			except:
+				raise
+				raise ValueError('Invalid character provided')
+		else:
+			if len(stack) == 0 or _relative_precedence(item, stack[-1], order) > 0:
+				stack.append(item)
+			else:
+				while len(stack) and _relative_precedence(stack[-1], item, order) >= 0 and stack[-1] != '(':
+					new.append(stack.pop())
+				stack.append(item)
+	while len(stack):
+		new.append(stack.pop())
+	return new
+def _evaluate_postfix(lst, operators):
+	digits = '1234567890.'
+	stack = []
+	for item in lst:
+		if all([x in digits for x in item]) or len(item) > 1 and item[0] == '-' and all([x in digits for x in item[1:]]):
+			stack.append(item)
+		elif len(stack) > 1:
+			b = float(stack.pop())
+			a = float(stack.pop())
+			try:
+				stack.append(operators[item](a, b))
+			except KeyError:
+				raise ValueError('Inavlid character provided')
+		else:
+			raise ValueError('Invalid character provided')
+	if len(stack) != 1:
+		raise ValueError('Invalid character provided')
+	return stack.pop()
+def solve(expression, test = False):
+	
+	operators = {\
+	'+': lambda a, b: a + b,
+	'-': lambda a, b: a - b,
+	'*': lambda a, b: a * b,
+	'/': lambda a, b: a / b,
+	'%': lambda a, b: a % b,
+	'^': lambda a, b: a ** b,
+	'd': roll}
+	
+	unary = {'-': lambda a: -a}
+	
+	order = [\
+	'+-',
+	'*/%',
+	'^',
+	'd']
+	
+	if not test:
+		expression = _infix_to_postfix(expression, operators, unary, order)
+		return _evaluate_postfix(expression, operators)
+	else:
+		try:
+			expression = _infix_to_postfix(expression, operators, unary, order)
+			os = dict(operators)
+			os['d'] = lambda a, b: a * (0 if b == 0 else (1 if b > 0 else -1))
+			_evaluate_postfix(expression, os)
+			os['d'] = lambda a, b: a * b
+			_evaluate_postfix(expression, os)
+			return True
+		except ValueError:
+			if str(sys.exc_info()[1]) == 'Invalid character provided':
+				return False
+if __name__ == '__main__':
+	assert solve('1+(-2*3)-4') == -9, 'Equation solved to %d rather than -9' % solve('1+(-2*3)-4')
+	while True:
+		string = raw_input('Solve: ')
+		if string == '':
+			string = '1d20'
+		if solve(string, True):
+			print 'Result: %g\n' % solve(string)
+		else:
+			print 'oops\n'

@@ -1,0 +1,23 @@
+
+os.chdir("/home/sonya/Documents/")
+print os.getcwd()
+f = n.Dataset('ACCESS_data/pr_Amon_ACCESS1-3_historical_r3i1p1_185001-200512.nc','a')
+print f.variables['time'][1871:1872]
+print f.variables['time'][0:1]
+time = f.variables['time']
+timeDiff = [time[i]-time[i-1] for i in range(0,len(time))]
+timeDiff.pop(0)
+timeDiff.append(30.5)
+timeDiffNP = np.array(timeDiff)
+months = np.reshape(timeDiffNP,(156,12))
+m = f.variables
+days_time = [m['time'][i]-m['time'][i-1] for i in range(0,len(m['time']))]
+days_time.pop(0)
+days_time.append(30.5)
+prc_monthly = [m['pr'][i]*m['time'][i] for i in range(0,len(m['time']))]
+m['pr'] = prc_monthly
+Jan = prc_monthly[600::12]
+Jan_array = np.array(Jan)
+Feb = prc_monthly[601::12]
+Feb_array = np.array(Feb)
+Mar = prc_mon

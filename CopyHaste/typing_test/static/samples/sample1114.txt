@@ -1,0 +1,24 @@
+
+if os.name == 'posix':
+
+class PokerMetrics():
+	
+	@staticmethod
+	def initialize_deck():
+		deck = []
+		for rank in PokerConfig.CONFIG['ranks']:
+			for suit in PokerConfig.CONFIG['suits']:
+				deck.append(rank+suit)
+		return deck
+
+	@staticmethod
+	def initialize_hole_cards_based_on_equity():
+		deck = initialize_deck()
+		hole_cards = list(itertools.combinations(deck, 2))
+		equities = []
+		for card1, card2 in hole_cards:
+			equities.append(NORMALIZED_HAND_EQUITY[frozenset([card1, card2])])
+		total_equities = sum(equities)
+		probabilities = [e/float(total_equities) for e in equities]
+		hole_cards_indices = numpy.random.choice(range(len(hole_cards)), size = int(len(hole_cards)*0.3), replace = False, p = probabilities)
+		final_

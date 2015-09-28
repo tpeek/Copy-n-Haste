@@ -1,0 +1,30 @@
+
+__version__ = "0.9"
+def i16(c):
+	return ord(c[0]) + (ord(c[1])<<8)
+def o16(i):
+	return chr(i&255) + chr(i>>8&255)
+def _accept(prefix):
+	return prefix[:6] in ["GIF87a", "GIF89a"]
+class GifImageFile(ImageFile.ImageFile):
+	format = "GIF"
+	format_description = "Compuserve GIF"
+	global_palette = None
+	def data(self):
+		s = self.fp.read(1)
+		if s and ord(s):
+			return self.fp.read(ord(s))
+		return None
+	def _open(self):
+		s = self.fp.read(13)
+		if s[:6] not in ["GIF87a", "GIF89a"]:
+			raise SyntaxError, "not a GIF file"
+		self.info["version"] = s[:6]
+		self.size = i16(s[6:]), i16(s[8:])
+		self.tile = []
+		flags = ord(s[10])
+		bits = (flags & 7) + 1
+		if flags & 128:
+			self.info["background"] = ord(s[11])
+			p = self.fp.read(3<<bits)
+			for i in

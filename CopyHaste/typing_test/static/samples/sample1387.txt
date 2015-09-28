@@ -1,0 +1,24 @@
+
+try:
+except ImportError:
+DIFF_TARGET = 'origin/master'
+EOL_DISTROS = ['groovy', 'hydro']
+TARGET_FILE_BLACKLIST = []
+def get_all_distribution_filenames(url=None):
+	if not url:
+		url = rosdistro.get_index_url()
+	distribution_filenames = []
+	i = rosdistro.get_index(url)
+	for d in i.distributions.values():
+		dpath = os.path.abspath(urlparse(d['distribution']).path)
+		distribution_filenames.append(dpath)
+	return distribution_filenames
+def get_eol_distribution_filenames(url=None):
+	if not url:
+		url = rosdistro.get_index_url()
+	distribution_filenames = []
+	i = rosdistro.get_index(url)
+	for d_name, d in i.distributions.items():
+		if d_name in EOL_DISTROS:
+			dpath = os.path.abspath(urlparse(d['distribution']).path)
+			distribution_filenames.appen

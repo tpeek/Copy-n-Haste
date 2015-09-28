@@ -1,0 +1,26 @@
+addon = xbmcaddon.Addon('plugin.video.GujaratiNatak')
+
+addon_handle = int(sys.argv[1])
+
+xbmcplugin.setContent(addon_handle, 'videos')
+requestUrl = "https://www.youtube.com/playlist?list=PL7ueRli5dEU8jUZzyucuYQOllebth1x07"
+r = requests.get(requestUrl)
+data = r.text
+soup = BeautifulSoup(data)
+dataTitles = []
+dataLinks = []
+dataThumbnails = []
+i=0
+videoTitle = soup.find_all('a', 'pl-video-title-link')
+videoLink = soup.find_all('a', 'pl-video-title-link', href=True)
+videoThumbnail = soup.find_all('span', 'yt-thumb-clip')
+for row in videoTitle:
+		Title = row.get_text()
+		Title = Title.strip()
+		Title = Title.encode('utf-8')
+		dataTitles.append(Title)
+
+for link in videoLink:
+		properLink = str()
+		properLink = link['href']
+		

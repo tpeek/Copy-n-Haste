@@ -1,0 +1,27 @@
+
+class TestNetflix (TestCase) :
+	def test_read_1 (self) :
+		r	= StringIO("1:")
+		line = netflix_read(r)
+		self.assertEqual(line, "1:")
+	def test_read_2 (self) :
+		r	= StringIO("12312:")
+		line = netflix_read(r)
+		self.assertEqual(line, "12312:")
+	def test_read_3 (self) :
+		r	= StringIO("12501293")
+		line = netflix_read(r)
+		self.assertEqual(line, "12501293")
+	def test_get_rmse_1 (self) :
+		v = netflix_get_rmse(1, 1)
+		self.assertEqual(v, 1)
+	def test_get_rmse_2 (self) :
+		v = netflix_get_rmse(42123, 100000)
+		self.assertEqual(v, 0.65)
+	def test_get_rmse_3 (self) :
+		v = netflix_get_rmse(212412, 10000)
+		self.assertEqual(v, 4.61)
+	def test_get_predicted_rating_1 (self) :
+		p = netflix_get_predicted_rating(1, 1)
+		self.assertEqual(p, 1)
+	def 

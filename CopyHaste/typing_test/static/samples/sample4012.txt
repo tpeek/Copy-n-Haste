@@ -1,0 +1,23 @@
+class Console(object):
+	def __init__(self):
+		self.appContainers = {}
+		self.appResults = {}
+		self.callbacks = {}
+		self.extra_args = {}
+	def ePopen(self, cmd, callback=None, extra_args=None):
+		if not extra_args: extra_args = []
+		name = cmd
+		i = 0
+		while self.appContainers.has_key(name):
+			name = cmd +'_'+ str(i)
+			i += 1
+		self.appResults[name] = ""
+		self.extra_args[name] = extra_args
+		self.callbacks[name] = callback
+		self.appContainers[name] = eConsoleAppContainer()
+		self.appContainers[name].dataAvail.append(boundFunction(self.dataAvailCB,name))
+		self.appContainers[name].appClosed.append(boundFunction(self.finishedCB,name))
+		if isinstance(cmd, str):
+			cmd = [cmd]
+		retval = self.appContainers[name].execute(*cmd)
+		if retval:

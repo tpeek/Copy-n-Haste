@@ -1,0 +1,16 @@
+
+class Ui_MainWindow(object):
+	def setupUi(self, MainWindow):
+		MainWindow.setObjectName("MainWindow")
+		MainWindow.resize(626, 430)
+		self.centralwidget = QtGui.QWidget(MainWindow)
+		self.centralwidget.setObjectName("centralwidget")
+		self.verticalLayoutWidget = QtGui.QWidget(self.centralwidget)
+		self.verticalLayoutWidget.setGeometry(QtCore.QRect(9, 10, 611, 371))
+		self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+		self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+		self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+		self.verticalLayout.setObjectName("verticalLayout")
+		self.tab_control = QtGui.QTabWidget(self.verticalLayoutWidget)
+		self.tab_control.setObjectName("tab_control")
+		self.tab_3 = QtGui.QWidg

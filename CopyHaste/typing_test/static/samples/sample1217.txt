@@ -1,0 +1,25 @@
+
+TR = 2.5
+ref_slice = 1
+n_dummies = 4
+write_which = [0, 1]
+bounding_box = [[-78., -112., -46.], [78., 76., 86.]]
+voxel_sizes = [3, 3, 3]
+def ascending_interleaved(num_slices):
+	odd = range(1, num_slices + 1, 2)
+	even = range(2, num_slices + 1, 2)
+	return list(odd) + list(even)
+order_func = ascending_interleaved
+def prefix_path(prefix, path):
+	dirname, fname = psplit(path)
+	return pjoin(dirname, prefix + fname)
+def degz(path):
+	return path[:-3] if path.endswith('.gz') else path
+def process_subject(func_fname, anat_fname):
+	img = nib.load(func_fname);
+	dropped_img = nib.Nifti1Image(img.get_data()[..., n_dummies:],
+								img.affine,
+								img.header)
+	fixed_fname = prefix_path('f', degz(func_fname))
+	nib.save(dropped_img, fixed_fname)
+	if 

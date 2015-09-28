@@ -1,0 +1,18 @@
+class _DeviceNameNotFound(Exception):
+  pass
+def map_metric_name_to_num_channels(device_name):
+  metadata = [metadata for metadata in DEVICE_METADATA if metadata['device_name'] == device_name]
+  if len(metadata) > 0:
+	metrics = metadata[0]['metrics']
+  else:
+	raise _DeviceNameNotFound("Could not find device name '%s' in metadata" % device_name)
+  metric_name_to_num_channels = {}
+  for metric in metrics:
+	metric_name_to_num_channels[metric['metric_name']] = metric['num_channels']
+  return metric_name_to_num_channels
+def get_metrics_names(device_type):
+  metadata = [metadata for metadata in DEVICE_METADATA if metadata['device_name'] == device_type]
+  if len(metadata) > 0:
+	metrics = metadata[0]['metrics']
+  else:
+	raise _DeviceNameNotFound("C

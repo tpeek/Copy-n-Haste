@@ -1,0 +1,26 @@
+
+class PluginManager(PluginManagerBase):
+	def update_taskbar(self, localmode=True):
+		if localmode:
+			for child in self.hbox.get_children():
+				child.hide()
+		for name in self.active.keys():
+			bnch = self.active[name]
+			bnch.widget.show()
+	def add_taskbar(self, bnch):
+		lblname = bnch.lblname
+		lbl = gtk.Label(lblname)
+		lbl.set_justify(gtk.JUSTIFY_CENTER)
+		lbl.set_tooltip_text("Right click for menu")
+		evbox = gtk.EventBox()
+		evbox.add(lbl)
+		fr = gtk.Frame()
+		fr.set_shadow_type(gtk.SHADOW_OUT)
+		fr.add(evbox)
+		fr.show_all()
+		self.hbox.pack_start(fr, expand=False, fill=False)
+		lname = bnch.pInfo.name.lower()
+		menu = gtk.Menu()
+		item = gtk.MenuItem("Focus")
+		item.show()
+		item.connect("activate", lambda w: self.set_focus(lname)

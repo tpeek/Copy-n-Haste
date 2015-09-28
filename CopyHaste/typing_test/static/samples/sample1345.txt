@@ -1,0 +1,24 @@
+
+try:
+	pyhmc_
+except ImportError:
+	pyhmc_
+class BayesianContinuousTimeMSM(BaseEstimator, _MappingTransformMixin):
+	def __init__(self, lag_time=1,  n_samples=2000, n_steps=25, epsilon=5e-4,
+				 prior_alpha=1, prior_beta=1, n_timescales=None,
+				 sliding_window=True, verbose=False):
+		self.lag_time = lag_time
+		self.n_samples = n_samples
+		self.n_steps = n_steps
+		self.epsilon = epsilon
+		self.prior_alpha = prior_alpha
+		self.prior_beta = prior_beta
+		self.n_timescales = n_timescales
+		self.sliding_window = sliding_window
+		self.verbose = verbose
+		self._all_eigenvalues = None
+		self._all_left_eigenvectors = None
+		self._all_right_eigenvectors = None
+		self._is_dirty = False
+	@experimental('BayesianContinuousTimeMSM')
+	def fit(self, sequenc

@@ -1,0 +1,29 @@
+
+sfiles=glob.glob('test_data/tutorial_data/*L.S*')
+templates=[]
+template_names=[]
+i=0
+for sfile in sfiles:
+	picks=Sfile_util.readpicks(sfile)
+	for pick in picks:
+		if not 'wavefiles' in locals():
+			wavefiles=glob.glob('test_data/tutorial_data/'+\
+								   pick.station+'.*')
+		else:
+			wavefiles+=glob.glob('test_data/tutorial_data/'+\
+								 pick.station+'.*')
+	wavefiles=list(set(wavefiles))
+	for wavefile in wavefiles:
+		print 'Reading data
+		if not 'st' in locals():
+			st=read(wavefile)
+		else:
+			st+=read(wavefile)
+	st=st.merge(fill_value='interpolate')
+	day=st[0].stats.starttime.date
+	for tr in st:
+		tr=pre_processing.dayproc(tr, 1.0, 20.0, 3, 100.0,\
+								  matchdef.debug, day)
+	for pick in picks:
+		pick.time=pick.time-0.1
+	templ

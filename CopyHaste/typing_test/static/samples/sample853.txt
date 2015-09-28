@@ -1,0 +1,27 @@
+
+class LitNet:
+  def __init__(self, name):
+	self.g = igraph.Graph(directed=True)
+	self.g['name'] = name
+	self.ref_counts = {'all': 0, 'new': 0, 'pmid': 0, 'wosid': 0, 'title': 0}
+	self.pmid_to_v = {}
+	self.wosid_to_v = {}
+	self.title_to_v = {}
+	self.author_to_v = {}
+	self.institution_to_v = {}
+	self.grant_agency_to_v = {}
+  def save(self, path):
+	with open(path, 'wb') as output_file:
+	  self.g.write(output_file, format='picklez')
+  def layout(self, alg='fr', scale=4.0):
+	l = self.g.layout(alg)
+	for v_index in range(self.g.vcount()):
+	  x, y = l[v_index]
+	  x *= scale
+	  y *= scale
+	  self.g.vs[v_index]['graphics'] = {'x': str(x), 'y': str(y)}
+  def add_v(self, **attrs):
+	index = self.g.vcount()
+	self.g.add_vertex(**attrs)
+	return index
+  de

@@ -1,0 +1,23 @@
+
+DOCUMENTATION =
+EXAMPLES =
+try:
+except ImportError:
+	print "failed=True msg='boto required for this module'"
+	sys.exit(1)
+def addRulesToLookup(rules, prefix, dict):
+	for rule in rules:
+		for grant in rule.grants:
+			dict["%s-%s-%s-%s-%s-%s" % (prefix, rule.ip_protocol, rule.
+										grant.group_id, grant.cidr_ip)] = rule
+def get_target_
+	group_id = None
+	group_name = None
+	ip = None
+	target_group_created = False
+	if 'group_id' in rule and 'cidr_ip' in rule:
+		module.fail_json(msg="Specify group_id OR cidr_ip, not both")
+	elif 'group_name' in rule and 'cidr_ip' in rule:
+		module.fail_json(msg="Specify group_name OR cidr_ip, not both")
+	elif 'group_id' in rule and 'group_name' in rule:
+		module.fail_json(msg="Specify group_id OR group_name

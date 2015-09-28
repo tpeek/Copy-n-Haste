@@ -1,0 +1,36 @@
+config = Blueprint('config', __name__)
+log = logging.getLogger('ui.config')
+@config.route('/', methods=['GET', 'POST'])
+def root():
+	if request.method == 'POST':
+		manager.config = json.loads(request.data)
+	result = jsonify(manager.config)
+	result.headers[b'Content-Type'] += '; profile=/schema/root'
+	return result
+def getset_item(obj, item, set=None):
+	for func in [lambda x: x, int]:
+		try:
+			item = func(item)
+			if set is not None:
+				obj[item] = set
+			return obj[item]
+		except (TypeError, LookupError, ValueError):
+			pass
+	raise LookupError('%s not in config' % item)
+@config.route('/<path:path>', methods=['GET', 'POST'])
+def with_path(path):
+	path = path.split('/')
+	result = manager.config
+	try:
+		for elem in path[:-1]:
+			result = getset_item(result, elem)
+		elem = path[-1]
+		if request.method == 'POST':
+			getset_item(result, elem, set=json.loads(request.data))
+		result = jsonify(getset_item(result, elem))
+	except LookupError as e:
+		return unicode(e), 404
+	if len(path) == 2 and path[0] in ['tasks', 'presets']:
+		result.headers[b'Content-Type'] += '; profile=/schema/plugins?context=task'
+	return result
+register_plugin(config)

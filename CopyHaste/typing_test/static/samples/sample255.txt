@@ -1,0 +1,27 @@
+
+class UnpackRawReads:
+	class UnexpectedFileFormatException(Exception): pass
+	
+	FORMAT_FASTA	= "FORMAT_FASTA"
+	FORMAT_FASTQ	= "FORMAT_FASTQ"
+	FORMAT_FASTQ_GZ = "FORMAT_FASTQ_GZ"
+	FORMAT_FASTA_GZ = "FORMAT_FASTA_GZ"
+	
+	PROTEIN_SEQUENCE_TYPE = 'aminoacid'
+	NUCLEOTIDE_SEQUENCE_TYPE = 'nucleotide'
+	
+	_EXTENSION_TO_FILE_TYPE = {'.fa': FORMAT_FASTA,
+							   '.faa': FORMAT_FASTA,
+							   '.fna': FORMAT_FASTA,
+							   '.fasta': FORMAT_FASTA,
+							   
+							   '.fq': FORMAT_FASTQ,
+							   '.fastq': FORMAT_FASTQ,
+							   
+							   '.fq.gz': FORMAT_FASTQ_GZ,
+							   '.fastq.gz': FORMAT_FASTQ_GZ,
+							   
+							   '.fa.gz': FORMAT_FASTA_GZ,
+							   '.faa.gz': FORMAT_FASTA_GZ,
+							   '.fna.gz': FORMAT_FASTA_GZ,
+							   '.fasta.

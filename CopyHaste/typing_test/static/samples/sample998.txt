@@ -1,0 +1,12 @@
+
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('-i', dest='inj_xml', required=True, help='Input LIGOLW file defining injections')
+parser.add_argument('-o', dest='out_file', required=True, help='Output LIGOLW file')
+parser.add_argument('--f-low', type=float, default=30.,
+					help='Start frequency of matched-filter integration in Hz (default %(default)s)')
+parser.add_argument('--seg-length', type=float, default=256,
+					help='Segment duration in seconds (default %(default)s)')
+parser.add_argument('--sample-rate', type=float, default=16384,
+					help='Data sample rate in Hz (default %(default)s)')
+parser.add_argument('--snr-columns', nargs='+', action=MultiDetOptionAction,
+					metavar='DETECTOR:COLUMN', required=

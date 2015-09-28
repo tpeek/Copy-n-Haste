@@ -1,0 +1,30 @@
+RUNNERS_BASE = "rally.task.runner."
+RUNNERS = "rally.plugins.common.runners."
+class RPSScenarioRunnerTestCase(test.TestCase):
+	def setUp(self):
+		super(RPSScenarioRunnerTestCase, self).setUp()
+		self.task = mock.MagicMock()
+	def test_validate(self):
+		config = {
+			"type": "rps",
+			"times": 1,
+			"rps": 100,
+			"max_concurrency": 50,
+			"max_cpu_count": 8,
+			"timeout": 1
+		}
+		rps.RPSScenarioRunner.validate(config)
+	def test_rps_parameter_validate(self):
+		config = {
+			"type": "rps",
+			"rps": 0.0000001
+		}
+		rps.RPSScenarioRunner.validate(config)
+	def test_rps_parameter_validate_failed(self):
+		config = {
+			"type": "rps",
+			"rps": 0
+		}
+		self.assertRaises(jsonschema.ValidationError,
+						  rps.RPSScenarioRunner.validate, config)
+	de

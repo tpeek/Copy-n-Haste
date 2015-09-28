@@ -1,0 +1,36 @@
+
+logging.basicConfig(level=logging.ERROR)
+FILE_TYPES = {
+	'image/png': 'png',
+	'image/gif': 'gif',
+	'image/jpeg': 'jpg'
+}
+def breakFrom(fullid):
+  data={}
+  if '@' in fullid:
+	 data['jid']= fullid[:fullid.index('@')]
+	 if '/' in fullid:
+	   data['domain'] = fullid[fullid.index('@')+1:fullid.index('/')]
+	   data['resource'] = fullid[fullid.index('/')+1:]
+	 else:
+	   data['domain'] = fullid[fullid.index('@')+1:]
+	   data['resource'] = ''	
+  else:
+	data['jid']  = fullid
+	data['domain'] = ''
+	data['resource'] = ''
+  return data
+  
+def ParseMsg(xml):
+  root = ET.
+  data ={}
+  data['
+  if  data['
+  data['type'] = root.attrib.get('type')
+  data['body'] = root.findtext('body')
+  return data
+  
+def parseRoster(xml):
+  root = ET.
+  ilist =[]
+  root =

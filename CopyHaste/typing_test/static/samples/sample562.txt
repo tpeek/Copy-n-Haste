@@ -1,0 +1,26 @@
+
+class ExecutionStyle(with_metaclass(abc.ABCMeta)):
+	_exchange = None
+	@abc.abstractmethod
+	def get_limit_price(self, is_buy):
+		raise NotImplemented
+	@abc.abstractmethod
+	def get_stop_price(self, is_buy):
+		raise NotImplemented
+	@property
+	def exchange(self):
+		return self._exchange
+class MarketOrder(ExecutionStyle):
+	def __init__(self, exchange=None):
+		self._exchange = exchange
+	def get_limit_price(self, _is_buy):
+		return None
+	def get_stop_price(self, _is_buy):
+		return None
+class LimitOrder(ExecutionStyle):
+	def __init__(self, limit_price, exchange=None):
+		check_stoplimit_prices(limit_price, 'limit')
+		self.limit_price = limit_price
+		self._exchange = exchange
+	def get_limit_price(self, is_buy):
+		return asymmetric_round_price_to_pen

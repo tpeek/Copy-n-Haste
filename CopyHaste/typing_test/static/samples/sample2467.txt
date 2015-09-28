@@ -1,0 +1,29 @@
+
+	IntegrityError,
+	OperationalError,
+	RedundantRuleError,
+	UserFunctionError
+)
+string_defaults = {
+	'string': {'eng': [('README', 'Write release notes for your game here.')]}
+}
+class QueryEngine(gorm.query.QueryEngine):
+	json_path = LiSE.__path__[0]
+	IntegrityError = IntegrityError
+	OperationalError = OperationalError
+	def count_all_table(self, tbl):
+		return self.sql('count_all_{}'.format(tbl)).fetchone()[0]
+	def init_table(self, tbl):
+		try:
+			return self.sql('create_{}'.format(tbl))
+		except OperationalError:
+			pass
+	def index_table(self, tbl):
+		try:
+			return self.sql('index_{}'.format(tbl))
+		except OperationalError:
+			pass
+	def init_string_table(self, tbl):
+		self.init_table(tbl)
+		if tbl in string_defaults:
+			for (lang, defaults

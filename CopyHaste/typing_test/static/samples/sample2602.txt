@@ -1,0 +1,28 @@
+
+class TBinaryProtocol(TProtocolBase):
+  VERSION_MASK = -65536
+  VERSION_1 = -2147418112
+  TYPE_MASK = 0x000000ff
+  def __init__(self, trans, strictRead=False, strictWrite=True):
+	TProtocolBase.__init__(self, trans)
+	self.strictRead = strictRead
+	self.strictWrite = strictWrite
+  def writeMessageBegin(self, name, type, seqid):
+	if self.strictWrite:
+	  self.writeI32(TBinaryProtocol.VERSION_1 | type)
+	  self.writeString(name)
+	  self.writeI32(seqid)
+	else:
+	  self.writeString(name)
+	  self.writeByte(type)
+	  self.writeI32(seqid)
+  def writeMessageEnd(self):
+	pass
+  def writeStructBegin(self, name):
+	pass
+  def writeStructEnd(self):
+	pass
+  def writeFieldBegin(self, name, type, id):
+	self.writeByte(type)
+	self.writeI16(id)
+  def writeFieldEnd(s

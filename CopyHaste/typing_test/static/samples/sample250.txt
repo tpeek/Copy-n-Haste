@@ -1,0 +1,23 @@
+
+class HMMreader:
+	def __init__(self, table):
+		self.entries = {}
+		self.type	= [x.split()[2] for x in open(table, 'r') if x.startswith('
+		table		= [x.rstrip().split() for x in open(table, 'r') if not x.startswith('
+		for entry in table:
+			if entry[0] in self.entries:
+				if self.type == "hmmsearch":	
+					if float(self.entries[entry[0]][15]) > float(entry[15]):
+						self.entries[entry[0]][15]=entry[15]
+					if float(self.entries[entry[0]][16]) < float(entry[16]):
+						self.entries[entry[0]][16]=entry[16]
+					
+				elif self.type == "nhmmer":
+					if float(self.entries[entry[0]][13]) > float(entry[13]):
+						self.entries[entry[0]]=entry
+			else:
+				self.entries[entry[0]]=entry
+		
+	def names(self):
+		return self.entries.keys()
+	def eva

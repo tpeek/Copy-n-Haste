@@ -1,0 +1,30 @@
+class Engine(object):
+	def __init__(self, engine=None, log=None, content=None, image=None, scraperlog=None, debug=True):
+		self.dbname = engine + '.db'
+		self.debug = debug
+		self.engine = create_engine('sqlite:///' + self.dbname )
+		self.log = log
+		self.content = content
+		self.image = image
+		self.scraperlog = scraperlog
+		self.commitlist = []
+		if not os.path.isfile(self.dbname) :
+			self.createDB()
+		self.connectDB()
+		
+		if self.scraperlog:
+			self.ScraperLog()
+		if self.log:
+			self.Log()
+		if self.content:
+			self.Content()
+		for entry in self.commitlist:
+			
+			try:
+				self.session.add(entry)
+				 
+			
+			except sqlalchemy.exc.IntegrityError as ex:
+				print 'Exception'
+				print type(self.commitlist)
+				next(self.commitlist, Non

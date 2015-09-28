@@ -1,0 +1,32 @@
+
+
+
+class UnsupportedConversion(Exception):
+	pass
+
+
+class NoSourceFile(Exception):
+	pass
+
+
+class UnsupportedArch(Exception):
+	unsupported = ('aarch64', 'arm', 'ebc', 'ipf')
+
+
+class CommonUtils:
+	VersionNumber = "0.01"
+	__version__ = "%prog Version " + VersionNumber
+	__copyright__ = "Copyright (c) 2007 - 2014, Intel Corporation. All rights reserved."
+	__usage__ = "%prog [options] source.asm [destination.nasm]"
+
+	def __init__(self, clone=None):
+		if clone is None:
+			(self.Opt, self.Args) = self.ProcessCommandLine()
+		else:
+			(self.Opt, self.Args) = (clone.Opt, clone.Args)
+
+		self.unsupportedSyntaxSeen = False
+		self.src = self.Args[0]
+		assert(os.path.exists(self.src))
+		self.dirmode = os.path.isdir(self.src)
+		s

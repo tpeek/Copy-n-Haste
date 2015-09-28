@@ -1,0 +1,19 @@
+
+def self_test(template):
+	sys.path.append('..')
+	date=template[0].stats.starttime.datetime.date()
+	sta_chans=[(tr.stats.station,tr.stats.channel,tr.stats.network) for tr in template]
+	for sta_chan in sta_chans:
+		base=matchdef.contbase[[i for i in xrange(len(matchdef.contbase)) \
+								if matchdef.contbase[i][2]==sta_chan[2]][0]]
+		if base[1]=='yyyymmdd':
+			daydir=date.strftime('%Y%m%d')
+			staform='*'+sta_chan[0]+'.'+sta_chan[1][0]+'*'+sta_chan[1][1]+'.*'
+		elif base[1]=='Yyyyy/Rjjj.01':
+			daydir=date.strftime('Y%Y/R%j.01')
+			staform=sta_chan[0]+'.*.'+sta_chan[1][0]+'*'+sta_chan[1][1]+\
+					'.'+date.strftime('%Y.%j')
+		else:
+			raise IOError('Not in the correct form'+base[1])
+		if not 'image' in locals():
+			image=read(base[0]+'/'+d

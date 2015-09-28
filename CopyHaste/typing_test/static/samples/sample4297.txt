@@ -1,0 +1,23 @@
+__license__   = 'GPL v3'
+__copyright__ = '2008, Kovid Goyal <kovid at kovidgoyal.net>'
+PREAMBLE =
+CATEGORY_TEMPLATE =
+FUNCTION_TEMPLATE =
+POSTAMBLE =
+def generate_template_language_help(language):
+	pat = re.compile(r'\)`{0,2}\s*-{1,2}')
+	funcs = defaultdict(dict)
+	for func in formatter_functions().get_builtins().values():
+		class_name = func.__class__.__name__
+		func_sig = getattr(func, 'doc')
+		m = pat.search(func_sig)
+		if m is None:
+			print ('No signature for template function ', class_name)
+			continue
+		func_sig = func_sig[:m.start()+1].strip('`')
+		func_cat = getattr(func, 'category')
+		funcs[func_cat][func_sig] = class_name
+	output = PREAMBLE.format(language)
+	cats = sorted(funcs.keys())
+	for cat in cats:
+		output += CATEGORY_TEMPLA

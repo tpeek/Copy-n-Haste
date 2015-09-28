@@ -1,0 +1,19 @@
+
+sequence = ''
+ref_pdb_id = ''
+ref_chain_id = 'A'
+ref_res_id_range = (1,-1)
+exclude = []
+script_dir = os.path.dirname(os.path.abspath(\
+  inspect.getfile(inspect.currentframe())))
+execfile(os.path.join(script_dir,'_load_profile.py'))
+parser = argparse.ArgumentParser()
+parser.add_argument('--sequence', default=sequence)
+parser.add_argument('--ref_pdb_id', default=ref_pdb_id.lower())
+parser.add_argument('--ref_chain_id', default=ref_chain_id.upper())
+parser.add_argument('--ref_res_id_range', default=ref_res_id_range)
+parser.add_argument('--min_seq_identity', type=int, default=min_seq_identity)
+parser.add_argument('--min_equivalent_positions', type=int, \
+  default=min_equivalent_positions)
+parser.add_argument('--pylab', action='store_true')
+a

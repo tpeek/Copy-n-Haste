@@ -1,0 +1,113 @@
+lang_sep={"es":", ",
+		  "en-us":", ",
+		  "ru":", ",
+		  "hu":", ",
+		  "pl":", ",
+		  "ko":", ",
+		  "tr":", ",
+		  "it":", ",
+		  "da":", ",
+		  "pt":", ",
+		  "de":", ",
+		  "zh":", ",
+		  "fr":", ",
+		  "ja":"、",
+		  "uk":", "}
+intro="Snowglobe includes source code contributions of the following residents: "
+def add_indra_lib_path():
+	root = os.path.realpath(__file__)
+	dir = os.path.dirname(root)
+	if dir not in sys.path:
+		sys.path.insert(0, dir)
+	while root != os.path.sep:
+		root = os.path.dirname(root)
+		dir = os.path.join(root, 'indra', 'lib', 'python')
+		if os.path.isdir(dir):
+			if dir not in sys.path:
+				sys.path.insert(0, dir)
+			return root
+	else:
+		print >>sys.stderr, "This script is not inside a valid installation."
+		sys.exit(1)
+src_root = add_indra_lib_path()
+def usage():
+	print "Usage:"
+	print sys.argv[0] +
+def _getstatusoutput(cmd):
+	if os.path.sep != "/":
+		cmd = 'cmd.exe /c "'+cmd+'"'
+	pipe = os.popen(cmd, 'r')
+	text = pipe.read()
+	sts = pipe.close()
+	if sts is None: sts = 0
+	if text[-1:] == '\n': text = text[:-1]
+	return sts, text
+def get_contributors(filename):
+	f = open(filename)
+	credits={}
+	contributors=[]
+	thisres=''
+	for line in f:
+		m = re.search('^(\S+ +\S+)\s*$', line.strip())
+		if(m):
+			thisres=m.group(1)
+			credits[thisres]=[]
+			contributors.append(thisres)
+		m = re.search('^\s+(\S+\-\d+)\s*$', line)
+		if(m and thisres != ''):
+			credits[thisres].append(m.group(1))
+	return contributors
+def main():
+	global src_root
+	global intro
+	svn = os.path.expandvars("${SVN}")
+	if not svn or svn == "${SVN}": svn = "svn"
+	contributors = get_contributors(src_root + "/doc/contributions.txt")
+	re_map = {}
+	for lang in lang_sep.keys():
+		filename='indra/newview/skins/default/xui/%(lang)s/floater_about.xml' % locals()
+		searchpattern='%(intro)s.*\n' % {'intro':intro}
+		replacelist=string.join(contributors, lang_sep[lang])
+		replacement='%(intro)s%(replacelist)s\n' % {'intro':intro,'replacelist':replacelist}
+		re_map[filename] = [[searchpattern, replacement]]
+	verbose = False
+	opts, args = getopt.getopt(sys.argv[1:],
+							   "",
+							   ['skip-on-branch=',
+								'src-root=',
+								'verbose',
+								'help'])
+	skip_on_branch_re = None
+	for o,a in opts:
+		if o in ('--skip-on-branch'):
+			skip_on_branch_re = re.compile(a)
+		if o in ('--src-root'):
+			src_root = a
+		if o in ('--verbose'):
+			verbose = True
+		if o in ('--help'):
+			usage()
+			return 0
+	if verbose:
+		print "Source Path:", src_root
+		if viewer_channel != None:
+			print "Current viewer channel/version: '%(viewer_channel)s' / '%(viewer_version)s'" % locals()
+		print
+	for filename in re_map.keys():
+		try:
+			full_fn = src_root + '/' + filename
+			file = open(full_fn,"r")
+			file_str = file.read()
+			file.close()
+			if verbose:
+				print "Processing file:",filename
+			for rule in re_map[filename]:
+				repl = rule[1]
+				file_str = re.sub(rule[0], repl, file_str)
+			file = open(full_fn,"w")
+			file.write(file_str)
+			file.close()
+		except IOError:
+			print "File %(filename)s not present, skipping..." % locals()
+	return 0
+main()

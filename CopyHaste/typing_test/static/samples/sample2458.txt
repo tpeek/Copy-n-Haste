@@ -1,0 +1,26 @@
+
+install_hooks(globals())
+a = Analysis(['start.py'],
+			 pathex=['/home/sanotehu/src/LiSE'],
+			 hidden
+				 'kivy.graphics.instructions',
+				 'kivy.graphics.buffer',
+				 'kivy.graphics.vertex',
+				 'kivy.graphics.vbo',
+				 'kivy.graphics.compiler',
+				 'kivy.graphics.shader',
+				 'kivy.core.image._img_sdl2',
+				 'kivy.core.image.img_sdl2',
+				 'kivy.core.text.text_sdl2',
+				 'kivy.core.window.window_sdl2',
+				 'kivy.core.window._window_sdl2',
+				 'pygments.formatters.bbcode',
+				 'ELiDE.kivygarden.collider',
+				 'ELiDE.kivygarden.texturestack',
+				 'ELiDE.kivygarden.stiffscroll'
+			 ],
+			 hookspath=None,
+			 runtime_hooks=None)
+collider_built = os.listdir('ELiDE/kivygarden/collider/build')
+for fn in collider_built:
+	if fn.st

@@ -1,0 +1,21 @@
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+class HTTPTestRequestHandler(compat_http_server.BaseHTTPRequestHandler):
+	def log_message(self, format, *args):
+		pass
+	def do_GET(self):
+		if self.path == '/video.html':
+			self.send_response(200)
+			self.send_header('Content-Type', 'text/html; charset=utf-8')
+			self.end_headers()
+			self.wfile.write(b'<html><video src="/vid.mp4" /></html>')
+		elif self.path == '/vid.mp4':
+			self.send_response(200)
+			self.send_header('Content-Type', 'video/mp4')
+			self.end_headers()
+			self.wfile.write(b'\x00\x00\x00\x00\x20\x66\x74[video]')
+		else:
+			assert False
+class FakeLogger(object):
+	def debug(self, msg):
+		pass

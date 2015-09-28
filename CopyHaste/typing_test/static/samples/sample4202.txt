@@ -1,0 +1,22 @@
+current_path = os.path.dirname(os.path.abspath(__file__))
+python_path = os.path.abspath( os.path.join(current_path, os.pardir, 'python27', '1.0'))
+noarch_lib = os.path.abspath( os.path.join(python_path, 'lib', 'noarch'))
+sys.path.append(noarch_lib)
+has_desktop = True
+if sys.platform.startswith("linux"):
+	def X_is_running():
+		try:
+			p = Popen(["xset", "-q"], stdout=PIPE, stderr=PIPE, shell=True)
+			p.communicate()
+			return p.returncode == 0
+		except:
+			return False
+	if X_is_running():
+	else:
+		has_desktop = False
+elif sys.platform == "win32":
+	win32_lib = os.path.join(python_path, 'lib', 'win32')
+	sys.path.append(win32_lib)
+elif sys.platform == "darwin":
+	darwin_lib = os.path.abspath( os.path.join(python_path, 'lib', 'darwin'))
+	sys.path

@@ -1,0 +1,12 @@
+
+class Migration(SchemaMigration):
+	def forwards(self, orm):
+		db.create_table('account_bsdgroupmembership', (
+			('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+			('bsdgrpmember_group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['account.bsdGroups'])),
+			('bsdgrpmember_user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['account.bsdUsers'])),
+		))
+		db.send_create_signal('account', ['bsdGroupMembership'])
+		db.delete_column('account_bsdusers', 'bsdusr_password')
+		db.add_column('account_bsdusers', 'bsdusr_unixhash', self.gf('django.db.models.fields.CharField')(default='*', max_length=128, blank=True), keep_default=False)
+		db.add_column('account_bsdusers', 'bsdusr_smbhash', self.g

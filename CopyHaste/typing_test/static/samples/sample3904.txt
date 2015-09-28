@@ -1,0 +1,35 @@
+def degminsec2decimal_degrees(dd,mm,ss):
+	assert abs(mm) == mm
+	assert abs(ss) == ss	
+	if dd < 0:
+		sign = -1
+	else:
+		sign = 1
+	
+	return sign * (abs(dd) + mm/60. + ss/3600.)	  
+	
+def decimal_degrees2degminsec(dec):
+	if dec < 0:
+		sign = -1
+	else:
+		sign = 1
+	dec = abs(dec)	
+	dd = int(dec)
+	f = dec-dd
+	mm = int(f*60)
+	ss = (f*60-mm)*60
+	
+	return sign*dd, mm, ss
+def redfearn(lat, lon, false_easting=None, false_northing=None,
+			 zone=None, central_meridian=None, scale_factor=None):
+	a = 6378137.0
+	inverse_flattening = 298.257222101
+	if scale_factor is None:
+		K0 = 0.9996
+	else:
+		K0 = scale_factor
+	zone_width = 6
+	longitude_of_central_meridian_zone0 = -183	
+	longitude_of_western_edge_zone0 = -186
+	if false_easting is None:
+		false_easting = 

@@ -1,0 +1,26 @@
+
+try:
+except ImportError:
+	futures = None
+_GC_CYCLE_FINALIZERS = (platform.python_implementation() == 'CPython' and
+						sys.version_info >= (3, 4))
+class ReturnValueIgnoredError(Exception):
+	pass
+class _TracebackLogger(object):
+	__slots__ = ('exc_info', 'formatted_tb')
+	def __init__(self, exc_info):
+		self.exc_info = exc_info
+		self.formatted_tb = None
+	def activate(self):
+		exc_info = self.exc_info
+		if exc_info is not None:
+			self.exc_info = None
+			self.formatted_tb = traceback.format_exception(*exc_info)
+	def clear(self):
+		self.exc_info = None
+		self.formatted_tb = None
+	def __del__(self):
+		if self.formatted_tb:
+			app_log.error('Future exception was never retrieved: %s',
+						  ''.join(self.formatted_tb).rstrip())
+class Future(ob

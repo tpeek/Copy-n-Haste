@@ -1,0 +1,18 @@
+
+LastModifiedDate = '2015-01-31'
+ShortProgName = "GreekLexicon"
+ProgName = "Greek Lexicon format handler"
+ProgVersion = '0.16'
+ProgNameVersion = '{} v{}'.format( ProgName, ProgVersion )
+ProgNameVersionDate = '{} {} {}'.format( ProgNameVersion, _("last modified"), LastModifiedDate )
+debuggingThisModule = False
+def t( messageString ):
+	try: nameBit, errorBit = messageString.split( ': ', 1 )
+	except ValueError: nameBit, errorBit = '', messageString
+	if BibleOrgSysGlobals.debugFlag or debuggingThisModule:
+		nameBit = '{}{}{}: '.format( ShortProgName, '.' if nameBit else '', nameBit )
+	return '{}{}'.format( nameBit, _(errorBit) )
+class GreekStrongsFileConverter:
+	databaseFilename = "strongsgreek.xml"
+	treeTag = "strongsdictionary"
+	def __init__(

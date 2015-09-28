@@ -1,0 +1,28 @@
+
+u
+def test_1():
+	p = srw_multi_particle.simulate(_params('sample'))
+	e_p, I_rad = _results(
+		[p.stkF.mesh.eStart, p.stkF.mesh.eFin, p.stkF.mesh.ne],
+		p.stkF.arS,
+	)
+	maxI = max(I_rad)
+	pkdp('Spectral Amplitude: {:g} ph/s/mrad2', maxI)
+	maxima_s = _maxima(I_rad, 3)
+	pkdp('maxima: {}', maxima_s)
+	z_distance, x_trajectory = _results(
+		p.ctMesh,
+		p.partTraj.arX,
+	)
+	minX = min(x_trajectory)
+	maxX = max(x_trajectory)
+	minZ = min(z_distance)
+	maxZ = max(z_distance)
+	pkdp('Length of ID: {:g} m', maxZ - minZ)
+	pkdp('Oscillation Amplitude: {:g} mm', (maxX - minX)/2)
+	L_trajectory = _path_length(z_distance, x_trajectory)
+	pkdp('Length of Trajectory: {:g} m', L_trajectory)
+	plt.figure()
+	plt.plot(e_p, I_rad)
+	for i in maxima_s:
+	plt.scatter(e_p[i

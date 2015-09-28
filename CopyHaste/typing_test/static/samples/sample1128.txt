@@ -1,0 +1,23 @@
+
+def avg_flux(startW, endW, SpecData, median=False, verbose=True):
+	
+	Wavelength_big = SpecData[0]
+	Flux_big = SpecData[1]
+	
+	if not(isinstance(Wavelength_big, np.ndarray)):
+		Wavelength_big = np.array( Wavelength_big)
+	if not(isinstance(Flux_big, np.ndarray)):
+		Flux_big = np.array( Flux_big)
+	
+	if len(SpecData) >= 3:
+		Sigma_big = SpecData[2]
+		if not(isinstance(Sigma_big, np.ndarray)):
+			Sigma_big = np.array( Sigma_big)
+	if np.min(Wavelength_big) > startW or np.max(Wavelength_big) < endW:
+		if verbose == True:
+			print('avg_flux: wavelength interval out of range')
+		return
+	set1 = set(list(np.where( Wavelength_big >= startW)[0]))
+	newEnd = endW + .0022
+	set2 = set(list(np.where(Wavelength_big <= endW + .0022)[0]))
+	temp = np.array(list(

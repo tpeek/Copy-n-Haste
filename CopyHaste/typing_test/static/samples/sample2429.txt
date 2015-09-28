@@ -1,0 +1,21 @@
+
+class cmd_checkbranches(Command):
+	doc = N_('Check modules in GNOME Git repository have the correct branch definition')
+	name = 'checkbranches'
+	
+	def __init__(self):
+		Command.__init__(self, [
+			make_option('-b', '--branch', metavar = 'BRANCH',
+					action = 'store', dest = 'branch', default = None)])
+	def run(self, config, options, args, help=None):
+		if options.branch:
+			branch = options.branch
+		else:
+			if type(config.moduleset) is list:
+				branch = config.moduleset[0].replace('.', '-')
+			else:
+				branch = config.moduleset.replace('.', '-')
+			for prefix in ('gnome-suites-core-deps', 'gnome-suites-core',
+						   'gnome-suites-', 'gnome-apps-'):
+				branch = branch.replace(prefix, 'gnome-')
+		module_set = jhbuild.moduleset.load(c

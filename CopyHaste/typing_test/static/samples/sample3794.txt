@@ -1,0 +1,29 @@
+XINCLUDE = "{http://www.w3.org/2001/XInclude}"
+XINCLUDE_INCLUDE = XINCLUDE + "include"
+XINCLUDE_FALLBACK = XINCLUDE + "fallback"
+class FatalIncludeError(SyntaxError):
+	pass
+def default_loader(href, parse, encoding=None):
+	file = open(href)
+	if parse == "xml":
+		data = ElementTree.parse(file).getroot()
+	else:
+		data = file.read()
+		if encoding:
+			data = data.decode(encoding)
+	file.close()
+	return data
+def include(elem, loader=None):
+	if loader is None:
+		loader = default_loader
+	i = 0
+	while i < len(elem):
+		e = elem[i]
+		if e.tag == XINCLUDE_INCLUDE:
+			href = e.get("href")
+			parse = e.get("parse", "xml")
+			if parse == "xml":
+				node = loader(href, parse)
+				if node is None:
+					raise FatalIncludeError(
+						"cannot load %r as %r" % 

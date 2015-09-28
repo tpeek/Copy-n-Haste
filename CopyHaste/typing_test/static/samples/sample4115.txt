@@ -1,0 +1,18 @@
+WORLD, USA, EUROPE = 54029, 2163, 'Europe'
+EPSG4326 = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'
+EPSG2163 = '+proj=laea +lat_0=45 +lon_0=-100 +x_0=0 +y_0=0 +a=6370997 +b=6370997 +units=m +no_defs'
+ESRI54029 = '+proj=vandg +lon_0=0 +x_0=0 +y_0=0 +R_A +ellps=WGS84 +datum=WGS84 +units=m +no_defs'
+def make_context(width=960, resolution=1, area=WORLD):
+	if area == WORLD:
+		left, top = -18000000, 14050000
+		right, bottom = 19500000, -7500000
+	elif area == USA:
+		left, top = -2040000, 740000
+		right, bottom = 2525000, -2130000
+	elif area == EUROPE:
+		left, top = -2700000, 8700000
+		right, bottom = 5800000, 3600000
+	else:
+		raise RuntimeError('Unknown area "{}"'.format(area))
+	aspect = (right - left) / (top - bottom)
+	hsize = int(resolution

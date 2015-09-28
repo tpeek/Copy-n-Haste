@@ -1,0 +1,24 @@
+plugins_module = Blueprint('plugins', __name__)
+def plugin_infos(plugins):
+	def plugin_info(plugin):
+		return {'contexts': plugin.contexts,
+				'groups': plugin.groups,
+				'category': plugin.category}
+	return dict((p.name, plugin_info(p)) for p in plugins)
+@plugins_module.route('/all')
+def all_plugins():
+	return jsonify(plugins=plugin_infos(plugins.itervalues()))
+@plugins_module.route('/phases')
+def phases():
+	return jsonify(phases=task_phases)
+@plugins_module.route('/phase/<phase>')
+def plugins_by_phase(phase):
+	try:
+		return jsonify(plugins=plugin_infos(get_plugins(phase=phase)))
+	except Exception as e:
+		return e.message, 404
+@plugins_module.route('/groups')
+def groups():
+	groups = set()
+	for plugin in plugins.itervalues():
+		groups.upd

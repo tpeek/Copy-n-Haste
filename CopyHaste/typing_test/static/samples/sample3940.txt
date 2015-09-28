@@ -1,0 +1,30 @@
+sys.path.insert(0, os.path.abspath('../../'))
+ 
+MOCK_MODULES = ['pylab']
+for mod_name in MOCK_MODULES:
+	sys.modules[mod_name] = mock.Mock()
+extensions = [
+	'sphinx.ext.autodoc',
+	'sphinx.ext.todo',
+	'sphinx.ext.coverage',
+	'sphinx.ext.mathjax',
+	'sphinx.ext.viewcode',
+	'sphinxcontrib.napoleon',
+]
+templates_path = ['_templates']
+source_suffix = '.rst'
+master_doc = 'index'
+project = u'Cops and Robots'
+copyright = u'2015, Nick Sweet'
+version = '1.0'
+release = '1.0'
+exclude_patterns = ['_build']
+add_module_names = False
+pygments_style = 'sphinx'
+html_theme = 'sphinx_rtd_theme'
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_static_path = ['_static']
+htmlhelp_basename = 'CopsandRobotsdoc'
+latex_elements = {
+}
+latex_documents = [

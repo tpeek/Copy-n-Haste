@@ -1,0 +1,21 @@
+
+old_repositories_json_path = './repositories.json'
+new_channel_path = './channel.json'
+new_repository_path = './repository.json'
+new_repository_url = './repository.json'
+new_repository_subfolder_path = './repository/'
+client_auth = os.environ['PACKAGE_CONTROL_AUTH']
+with open(old_repositories_json_path, encoding='utf-8') as of:
+	old_data = json.load(of)
+	previous_names = OrderedDict()
+	for key, value in old_data['renamed_packages'].items():
+		if value not in previous_names:
+			previous_names[value] = []
+		previous_names[value].append(key)
+	names = OrderedDict()
+	master_list = OrderedDict()
+	repositories = [new_repository_url]
+	repositories_
+	repositories_without_orgs = []
+	for repository in old_data['repositories']:
+		user_match = re.match

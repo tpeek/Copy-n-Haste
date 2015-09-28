@@ -1,0 +1,200 @@
+_ = L10n.get_translation()
+class Cake(HandHistoryConverter):
+	sitename = "Cake"
+	filetype = "text"
+	codepage = ("utf8", "cp1252")
+	siteId   = 17
+	sym = {'USD': "\$", 'CAD': "\$", 'T$': "", "EUR": "\xe2\x82\xac", "GBP": "\xa3", "play": ""}
+	substitutions = {
+					 'LEGAL_ISO' : "USD|EUR|GBP|CAD|FPP",
+							'LS' : u"\$|\xe2\x82\xac|\u20ac|",
+						   'PLYR': r'(?P<PNAME>.+?)',
+							'CUR': u"(\$|\xe2\x82\xac|\u20ac|)",
+					}
+	Lim_Blinds = {  '0.04': ('0.01', '0.02'),		'0.08': ('0.02', '0.04'),
+				  }
+	limits = { 'NL':'nl', 'PL':'pl', 'FL':'fl' }
+	games = {
+							  "Hold'em" : ('hold','holdem'), 
+								'Omaha' : ('hold','omahahi'),
+						  'Omaha Hi/Lo' : ('hold','omahahilo'),
+			   }
+	currencies = { u'€':'EUR', '$':'USD', '':'T$' }
+	re_GameInfo	 = re.compile(u % substitutions, re.MULTILINE|re.VERBOSE)
+	re_PlayerInfo   = re.compile(u % substitutions, 
+		  re.MULTILINE|re.VERBOSE)
+	re_SplitHands   = re.compile('\n\n+')
+	re_Button	   = re.compile('Seat
+	re_Board		= re.compile(r"\[(?P<CARDS>.+)\]")
+	re_DateTime	 = re.compile(, re.MULTILINE)
+	re_PostSB	   = re.compile(r"^%(PLYR)s: posts small blind %(CUR)s(?P<SB>[.0-9]+)$" %  substitutions, re.MULTILINE)
+	re_PostBB	   = re.compile(r"^%(PLYR)s: posts big blind %(CUR)s(?P<BB>[.0-9]+)$" %  substitutions, re.MULTILINE)
+	re_Antes		= re.compile(r"^%(PLYR)s: posts the ante %(CUR)s(?P<ANTE>[.0-9]+)" % substitutions, re.MULTILINE)
+	re_BringIn	  = re.compile(r"^%(PLYR)s: brings[- ]in( low|) for %(CUR)s(?P<BRINGIN>[.0-9]+)" % substitutions, re.MULTILINE)
+	re_PostBoth	 = re.compile(r"^%(PLYR)s:posts dead blind %(CUR)s(?P<SB>[.0-9]+) and big blind %(CUR)s(?P<BB>[.0-9]+)" %  substitutions, re.MULTILINE)
+	re_HeroCards	= re.compile(r"^Dealt to %(PLYR)s(?: \[(?P<OLDCARDS>.+?)\])?( \[(?P<NEWCARDS>.+?)\])" % substitutions, re.MULTILINE)
+	re_Action	   = re.compile(r
+						 %  substitutions, re.MULTILINE|re.VERBOSE)
+	re_ShowdownAction   = re.compile(r"^%s: shows \[(?P<CARDS>.*)\]" % substitutions['PLYR'], re.MULTILINE)
+	re_sitsOut		  = re.compile("^%s sits out" %  substitutions['PLYR'], re.MULTILINE)
+	re_ShownCards	   = re.compile("^Seat (?P<SEAT>[0-9]+): %s (\(.*\) )?(?P<SHOWED>showed|mucked) \[(?P<CARDS>.*)\]( and won \([.\d]+\) with (?P<STRING>.*))?" %  substitutions['PLYR'], re.MULTILINE)
+	re_CollectPot	   = re.compile(r"%(PLYR)s wins %(CUR)s(?P<POT>[.\d]+)" %  substitutions, re.MULTILINE)
+	re_WinningRankOne   = re.compile(u"^%(PLYR)s wins the tournament and receives %(CUR)s(?P<AMT>[\.0-9]+) - congratulations!$" %  substitutions, re.MULTILINE)
+	re_WinningRankOther = re.compile(u"^%(PLYR)s finished the tournament in (?P<RANK>[0-9]+)(st|nd|rd|th) place and received %(CUR)s(?P<AMT>[.0-9]+)\.$" %  substitutions, re.MULTILINE)
+	re_RankOther		= re.compile(u"^%(PLYR)s finished the tournament in (?P<RANK>[0-9]+)(st|nd|rd|th) place$" %  substitutions, re.MULTILINE)
+	def compilePlayerRegexs(self,  hand):
+		pass
+	def readSupportedGames(self):
+		return [["ring", "hold", "nl"],
+				["ring", "hold", "pl"],
+				["ring", "hold", "fl"],
+			   ]
+	def determineGameType(self, handText):
+		info = {}
+		m = self.re_GameInfo.search(handText)
+		if not m:
+			tmp = handText[0:200]
+			log.error(_("CakeToFpdb.determineGameType: '%s'") % tmp)
+			raise FpdbParseError
+		mg = m.groupdict()
+		if 'LIMIT' in mg:
+			info['limitType'] = self.limits[mg['LIMIT']]
+		if 'GAME' in mg:
+			(info['base'], info['category']) = self.games[mg['GAME']]
+		if 'SB' in mg:
+			info['sb'] = mg['SB']
+		if 'BB' in mg:
+			info['bb'] = mg['BB']
+		if 'CURRENCY' in mg:
+			info['currency'] = self.currencies[mg['CURRENCY']]
+		if 'MIXED' in mg:
+			if mg['MIXED'] is not None: info['mix'] = self.mixes[mg['MIXED']]
+				
+		info['type'] = 'ring'
+		if info['limitType'] == 'fl' and info['bb'] is not None and info['type'] == 'ring':
+			try:
+				info['sb'] = self.Lim_Blinds[mg['BB']][0]
+				info['bb'] = self.Lim_Blinds[mg['BB']][1]
+			except KeyError:
+				tmp = handText[0:200]
+				log.error(_("CakeToFpdb.determineGameType: Lim_Blinds has no lookup for '%s' - '%s'") % (mg['BB'], tmp))
+				raise FpdbParseError
+		return info
+	def readHandInfo(self, hand):
+		info = {}
+		m = self.re_GameInfo.search(hand.handText)
+		if m is None:
+			tmp = hand.handText[0:200]
+			log.error(_("CakeToFpdb.readHandInfo: '%s'") % tmp)
+			raise FpdbParseError
+		info.update(m.groupdict())
+		log.debug("readHandInfo: %s" % info)
+		for key in info:
+			if key == 'DATETIME':
+				m1 = self.re_DateTime.finditer(info[key])
+				datetimestr = "2000/01/01 00:00:00"
+				for a in m1:
+					datetimestr = "%s/%s/%s %s:%s:%s" % (a.group('Y'), a.group('M'),a.group('D'),a.group('H'),a.group('MIN'),a.group('S'))
+				hand.startTime = datetime.datetime.strptime(datetimestr, "%Y/%m/%d %H:%M:%S")
+				hand.startTime = HandHistoryConverter.changeTimezone(hand.startTime, "ET", "UTC")
+			if key == 'HID':
+				hand.handid = info[key]
+			if key == 'TABLE':
+				hand.tablename = info[key]
+			if key == 'BUTTON':
+				hand.buttonpos = info[key]
+			if key == 'MAX' and info[key] != None:
+				hand.maxseats = int(info[key])
+	def readButton(self, hand):
+		m = self.re_Button.search(hand.handText)
+		if m:
+			hand.buttonpos = int(m.group('BUTTON'))
+		else:
+			log.info('readButton: ' + _('not found'))
+	def readPlayerStacks(self, hand):
+		log.debug("readPlayerStacks")
+		m = self.re_PlayerInfo.finditer(hand.handText)
+		for a in m:
+			hand.addPlayer(int(a.group('SEAT')), a.group('PNAME'), a.group('CASH'))
+	def markStreets(self, hand):
+		if hand.gametype['base'] in ("hold"):
+			m =  re.search(r"(?P<PREFLOP>.+(?=\*\*\* FLOP \*\*\*)|.+)"
+					   r"(\*\*\* FLOP \*\*\*(?P<FLOP> \[\S\S,\S\S,\S\S\].+(?=\*\*\* TURN \*\*\*)|.+))?"
+					   r"(\*\*\* TURN \*\*\* (?P<TURN>\[\S\S\].+(?=\*\*\* RIVER \*\*\*)|.+))?"
+					   r"(\*\*\* RIVER \*\*\* (?P<RIVER>\[\S\S\].+))?", hand.handText,re.DOTALL)
+		hand.addStreets(m)
+	def readCommunityCards(self, hand, street):
+		if street in ('FLOP','TURN','RIVER'):
+			m = self.re_Board.search(hand.streets[street])
+			hand.setCommunityCards(street, m.group('CARDS').split(' '))
+	def readAntes(self, hand):
+		log.debug(_("reading antes"))
+		m = self.re_Antes.finditer(hand.handText)
+		for player in m:
+			hand.addAnte(player.group('PNAME'), player.group('ANTE'))
+	
+	def readBringIn(self, hand):
+		m = self.re_BringIn.search(hand.handText,re.DOTALL)
+		if m:
+			hand.addBringIn(m.group('PNAME'),  m.group('BRINGIN'))
+		
+	def readBlinds(self, hand):
+		liveBlind = True
+		for a in self.re_PostSB.finditer(hand.handText):
+			if liveBlind:
+				hand.addBlind(a.group('PNAME'), 'small blind', a.group('SB'))
+				liveBlind = False
+			else:
+				hand.addBlind(a.group('PNAME'), 'secondsb', a.group('SB'))
+		for a in self.re_PostBB.finditer(hand.handText):
+			hand.addBlind(a.group('PNAME'), 'big blind', a.group('BB'))
+		for a in self.re_PostBoth.finditer(hand.handText):
+			sb = Decimal(a.group('SB'))
+			bb = Decimal(a.group('BB'))
+			sbbb = sb + bb
+			hand.addBlind(a.group('PNAME'), 'both', str(sbbb))
+	def readHeroCards(self, hand):
+		for street in ('PREFLOP', 'DEAL'):
+			if street in hand.streets.keys():
+				m = self.re_HeroCards.finditer(hand.streets[street])
+				for found in m:
+					hand.hero = found.group('PNAME')
+					newcards = found.group('NEWCARDS').split(',')
+					hand.addHoleCards(street, hand.hero, closed=newcards, shown=False, mucked=False, dealt=True)
+	def readAction(self, hand, street):
+		m = self.re_Action.finditer(hand.streets[street])
+		for action in m:
+			acts = action.groupdict()
+			amount = action.group('BET') if action.group('BET') else None
+			actionType = action.group('ATYPE')
+			if actionType == ' folds':
+				hand.addFold( street, action.group('PNAME'))
+			elif actionType == ' checks':
+				hand.addCheck( street, action.group('PNAME'))
+			elif actionType == ' calls':
+				hand.addCall( street, action.group('PNAME'), action.group('BET') )
+			elif actionType == ' raises':
+				hand.addRaiseTo( street, action.group('PNAME'), action.group('BETTO') )
+			elif actionType == ' bets':
+				hand.addBet( street, action.group('PNAME'), action.group('BET') )
+			elif actionType == ' is all in':
+				hand.addAllIn(street, action.group('PNAME'), action.group('BET'))
+			else:
+				print (_("DEBUG:") + " " + _("Unimplemented %s: '%s' '%s'") % ("readAction", action.group('PNAME'), action.group('ATYPE')))
+	def readShowdownActions(self, hand):
+		for shows in self.re_ShowdownAction.finditer(hand.handText):			
+			cards = shows.group('CARDS').split(' ')
+			hand.addShownCards(cards, shows.group('PNAME'))
+	def readCollectPot(self,hand):
+		for m in self.re_CollectPot.finditer(hand.handText):
+			hand.addCollectPot(player=m.group('PNAME'),pot=m.group('POT'))
+	def readShownCards(self,hand):
+		for m in self.re_ShownCards.finditer(hand.handText):
+			if m.group('CARDS') is not None:
+				cards = m.group('CARDS')
+				cards = cards.split(' ')
+				string = m.group('STRING')
+				(shown, mucked) = (False, False)
+				if m.group('SHOWED') == "showed": shown = True
+				elif m.group('SHOWED') == "mucked": mucked = True
+				hand.addShownCards(cards=cards, player=m.group('PNAME'), shown=shown, mucked=mucked, string=string)

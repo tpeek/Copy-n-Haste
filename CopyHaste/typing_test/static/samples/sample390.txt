@@ -1,0 +1,26 @@
+
+FAILURE_STATES = [
+	'CREATE_FAILED',
+	'ROLLBACK_IN_PROGRESS',
+	'ROLLBACK_FAILED',
+	'ROLLBACK_COMPLETE',
+	'DELETE_IN_PROGRESS',
+	'DELETE_FAILED',
+	'DELETE_COMPLETE',
+	]
+def upload_file(file_path, bucket_name, key_name):
+	conn = boto.connect_s3()
+	try:
+		bucket = conn.get_bucket(bucket_name)
+	except boto.exception.S3ResponseError as e:
+		conn.create_bucket(bucket_name)
+		bucket = conn.get_bucket(bucket_name, validate=False)
+	key = boto.s3.key.Key(bucket)
+	key.key = key_name
+	key.set_contents_
+	key.set_acl('public-read')
+	url = "https://s3.amazonaws.com/{}/{}".format(bucket.name, key.name)
+	print( "URL: {}".format(url))
+	return url
+def create_stack(stack_name, template, region='us-east-1', blocking=True,
+				 temp_bucket='edx-sandbox-devops',

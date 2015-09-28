@@ -1,0 +1,125 @@
+logging.basicConfig(filename='split-network.log', level=logging.DEBUG)
+	return alignedRead.seq[pos], ord(alignedRead.qual[pos]) - 33
+	for fn in fnames:
+		if not os.path.exists(fn):
+			raise IOError('Error: \"{0}\" does not exist'.format(fn))
+	if not g.has_node(id):
+		g.add_node(id, kwargs)
+parser.add_argument('-b', '--base_quality', help='Minimum base quality', type=int, default=0)
+parser.add_argument('-m', '--map_quality', help='Minimum mapping quality', type=int, default=0)
+parser.add_argument('-v', '--variant_quality', help='Minimum mapping quality', type=int, default=0)
+parser.add_argument('vcf_file', help='VCF file of predicted variant sites', metavar='VCF_FILE')
+parser.add_argument('r1_file', help='BAM file for R1 reads', metavar='R1_BAM')
+parser.add_argument('r2_file', help='BAM file for R2 reads', metavar='R2_BAM')
+parser.add_argument('output', help='Output graph')
+args = parser.parse_args()
+try:
+	file_exists([args.vcf_file, args.r1_file, args.r2_file])
+	n_vcf = count_vcf_records(args.vcf_file)
+	vcfFile = vcf.Reader(filename=args.vcf_file)
+	samR1 = pysam.Samfile(args.r1_file, 'rb')
+	samR2 = pysam.Samfile(args.r2_file, 'rb')
+	varCount = 0
+	firstTime = dt.datetime.now()
+	lastTime = firstTime
+	frgRegistry = RegisteredObjectFactory(Fragment)
+	snpRegistry = RegisteredObjectFactory(SNP)
+		if not variant.is_snp:
+			continue
+		if variant.QUAL < args.variant_quality:
+			logging.info('%s was below quality threshold: vq=%d', variant, variant.QUAL)
+			continue
+		try:
+			snp = snpRegistry.requestObject(vcfRecord=variant)
+		except Exception as ex:
+			logging.info('Skipping: %s', ex)
+			continue
+		for n, col in enumerate(samR1.pileup(reference=snp.contig, start=snp.position-1, end=snp.position, truncate=True)):
+			if n > 1:
+				raise Exception('Pileup is assumed to produced only one exact column')
+			for pr in col.pileups:
+				aln = pr.alignment
+				if aln.is_secondary or pr.indel != 0:
+					logging.debug('Skipped secondary or indel: %s', aln)
+					continue
+				base, bq = read_base_and_quality(aln, pr.qpos)
+				mq = aln.mapq
+				if bq < args.base_quality or mq < args.map_quality:
+					logging.info('%s was below quality thresholds: bq=%d, mq=%s', base, bq, mq)
+					continue
+				if snp.isUndefinedAllele(base):
+					logging.info('%s was not ref %s nor alt %s', base, snp.reference, snp.variant)
+					continue
+				frg = frgRegistry.requestObject(name=aln.qname)
+				rpl = ReadPlacement(snp.contig, aln.pos)
+				if not frg.read1:
+					frg.read1 = rpl
+				elif rpl != frg.read1:
+					logging.warn('Tried to assign different read placement r1 [%s] to fragment [%s]', rpl, frg)
+				frg.read1.addSnpInstance(snp, base)
+		for n, col in enumerate(samR2.pileup(reference=snp.contig, start=snp.position-1, end=snp.position, truncate=True)):
+			if n > 1:
+				raise Exception('Pileup is assumed to produced only one exact column')
+			for pr in col.pileups:
+				aln = pr.alignment
+				if aln.is_secondary or pr.indel != 0:
+					logging.debug('Skipped secondary or indel: %s', aln)
+					continue
+				base, bq = read_base_and_quality(aln, pr.qpos)
+				mq = aln.mapq
+				if bq < args.base_quality or mq < args.map_quality:
+					logging.info('%s was below quality thresholds: bq=%d, mq=%s', base, bq, mq)
+					continue
+				if snp.isUndefinedAllele(base):
+					logging.info('%s was not ref %s nor alt %s', base, snp.reference, snp.variant)
+					continue
+				frg = frgRegistry.requestObject(name=aln.qname)
+				rpl = ReadPlacement(snp.contig, aln.pos)
+				if not frg.read2:
+					frg.read2 = rpl
+				elif rpl != frg.read2:
+					logging.warn('Tried to assign different read placement r2 [%s] to fragment [%s]', rpl, frg)
+				frg.read2.addSnpInstance(snp, base)
+		varCount += 1
+		if varCount % 100 == 0:
+			curTime = dt.datetime.now()
+			ta = (curTime - lastTime)
+			tb = (curTime - firstTime)
+			print "... processed {0}/{1} variants in {2} walltime: {3}".format(varCount, n_vcf, ta, tb)
+			lastTime = curTime
+	print 'Finished reading data, {0} variants'.format(varCount)
+	samR1.close()
+	samR2.close()
+	print 'Registered {0} fragments'.format(len(frgRegistry))
+	rejCount = {'contradictory': 0, 'self-loop': 0, 'unpaired': 0}
+	g = nx.Graph(type='split', version=1)
+	for frg in frgRegistry.elements():
+		if not frg.isPaired():
+			rejCount['unpaired'] += 1
+			continue
+		for snpR1, baseR1 in frg.read1.snpInstances.iteritems():
+			u = '{0}.{1}'.format(snpR1, baseR1)
+			for snpR2, baseR2 in frg.read2.snpInstances.iteritems():
+				v = '{0}.{1}'.format(snpR2, baseR2)
+				if snpR1 == snpR2:
+					if baseR1 != baseR2:
+						logging.warn('Contradictory bases for R1/R2 {0}/{1} at an overlapping SNP position {2}'.format(
+							baseR1, baseR2, snpR1))
+						rejCount['contradictory'] += 1
+						continue
+					else:
+						logging.warn('Self-loop for R1/R2 {0}/{1} at an overlapping SNP position {2}'.format(
+							baseR1, baseR2, snpR1))
+						rejCount['self-loop'] += 1
+						continue
+					g[u][v]['weight'] += 1
+				else:
+					add_node(g, u, quality=snpR1.quality)
+					add_node(g, v, quality=snpR2.quality)
+					g.add_edge(u, v, weight=1)
+	print "Created {0} nodes".format(g.number_of_nodes())
+	print 'Rejected snp instances: {0}'.format(rejCount)
+	nx.write_graphml(g, args.output)
+except Exception as e:
+	print e
+	sys.exit(1)

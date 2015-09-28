@@ -1,0 +1,33 @@
+
+rec_state=0
+rospack = rospkg.RosPack()
+path=rospack.get_path('budspeech')
+def load_yaml():
+	with open(path+'/src/master.yml', 'r') as readfile:
+		data=yaml.load(readfile)
+		try:
+			return [data['IP'],data['usr'],data['pwd']]
+		except:
+			return ['','','']
+		
+[master_IP,master_usr,master_pwd]=load_yaml()
+def enable_recognition(state):
+	global rec_state
+	rec_state=1
+	return []
+def disable_recognition(state):
+	global rec_state
+	rec_state=0
+	return []
+class PipeStream(sr.AudioSource):
+	def __init__(self, taudio):
+		self.stream = None
+		self.pipe=taudio.pipe
+	def __enter__(self):
+		self.SAMPLE_WIDTH = 2
+		self.RATE = 16000
+		self.CHANNELS = 1
+		self.CHUNK = 1024
+		self.stream = self.pipe.stdout
+		return self
+	def __exit__(self, exc_type, exc_va

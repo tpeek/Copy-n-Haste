@@ -1,0 +1,27 @@
+
+def load_simulated_plume(condition):
+	try:
+		if condition in 'lLleftLeft':
+			df = pd.read_csv('plume_sim/left_plume_bounds.csv')
+			return df
+		elif condition in 'rightRight':
+			df = pd.read_csv('plume_sim/right_plume_bounds.csv')
+			return df
+	except TypeError:
+		return pd.DataFrame.empty
+class Plume():
+	def __init__(self, condition):
+		self.condition = condition
+		self.data = load_simulated_plume(condition=condition)
+		try:
+			self.x_vals = self.data.x.values
+		except AttributeError:
+			pass
+	def find_nearest_plume_plane(self, x_val):
+		closest_plume_index = (np.abs(self.x_vals - x_val)).argmin()
+		plume_plane = self.data.loc[closest_plume_index]
+		
+		return plume_plane
+	def is_in_plume(self, position):
+		if self.condition is None:
+			

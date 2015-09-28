@@ -1,0 +1,23 @@
+
+UPGRADE_CODE = '{4F4F1C8E-BB7E-11E4-8C00-080027D2CC95}'
+INSTALL_SENTINEL = radtrack_pkg_win32.INSTALL_SENTINEL
+with open(INSTALL_SENTINEL, 'w') as f:
+	f.write(str(datetime.datetime.now()))
+include_files = glob.glob('*.py') + glob.glob(r'install\*win32.py') + [
+	('radtrack', 'radtrack'),
+	INSTALL_SENTINEL,
+	(r'..\foss-mirror\radtrack_pkg', 'radtrack_pkg')
+]
+includes = []
+build_exe_options = dict(
+	packages = [], excludes = [], includes=includes, include_files=include_files,
+	silent=True
+)
+bdist_msi_options = dict(
+	upgrade_code=UPGRADE_CODE)
+base = None
+executables = [
+	cx_Freeze.Executable(r'install\radtrack_start_win32.py', base=base, shortcutName='radtrack', shortcutDir='DesktopFolder')
+]
+class local_bdist_msi(cx_Freeze.bdist_msi):
+	def 

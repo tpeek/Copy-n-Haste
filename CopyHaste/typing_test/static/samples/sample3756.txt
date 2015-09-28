@@ -1,0 +1,9 @@
+print "The" + bcolors.BOLD + " SCCM Attack Vector " + bcolors.ENDC + "will utilize the SCCM configurations to deploy malicious software. \n\nYou need to have the SMSServer name and a PackageID you want to package on the website. Then you need to copy this configuration file to the startup directory for all of the users on the server."
+sms_server = raw_input("Enter the IP address or hostname of the SMS Server: ")
+package_id = raw_input("Enter the Package ID of the package you want to patch: ")
+configuration = % (sms_server, package_id)
+filewrite = file(setdir + "/reports/sccm_configuration.txt", "w")
+filewrite.write(configuration)
+filewrite.close()
+print_status("The SCCM configuration script has been successfully created.")
+print_status("You

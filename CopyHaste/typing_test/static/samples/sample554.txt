@@ -1,0 +1,32 @@
+
+	verify_callable_argspec,
+	Argument,
+	NoStarargs,
+	UnexpectedStarargs,
+	NoKwargs,
+	UnexpectedKwargs,
+	NotCallable,
+	NotEnoughArguments,
+	TooManyArguments,
+	MismatchedArguments,
+)
+class TestArgCheck(TestCase):
+	def test_not_callable(self):
+		not_callable = 'a'
+		with self.assertRaises(NotCallable):
+			verify_callable_argspec(not_callable)
+	def test_no_starargs(self):
+		def f(a):
+			pass
+		with self.assertRaises(NoStarargs):
+			verify_callable_argspec(f, expect_starargs=True)
+	def test_starargs(self):
+		def f(*args):
+			pass
+		verify_callable_argspec(f, expect_starargs=True)
+	def test_unexcpected_starargs(self):
+		def f(*args):
+			pass
+		with self.assertRaises(UnexpectedStarargs):
+			verify_callable_argspec(f, expect_starargs=False)
+	def tes

@@ -1,0 +1,26 @@
+
+__version__ = "$Revision$"
+version	 = "0.9.0"
+__author__  = "Lars Gust\u00e4bel (lars@gustaebel.de)"
+__date__	= "$Date: 2011-02-25 17:42:01 +0200 (Fri, 25 Feb 2011) $"
+__cvsid__   = "$Id: tarfile.py 88586 2011-02-25 15:42:01Z marc-andre.lemburg $"
+__credits__ = "Gustavo Niemeyer, Niels Gust\u00e4bel, Richard Townsend."
+try:
+except ImportError:
+	grp = pwd = None
+symlink_exception = (AttributeError, NotImplementedError)
+try:
+	symlink_exception += (WindowsError,)
+except NameError:
+	pass
+__all__ = ["TarFile", "TarInfo", "is_tarfile", "TarError"]
+if sys.version_info[0] < 3:
+else:
+_open = builtins.open
+NUL = b"\0"
+BLOCKSIZE = 512
+RECORDSIZE = BLOCKSIZE * 20
+GNU_MAGIC = b"ustar  \0"
+POSIX_MAGIC = b"ustar\x0000"
+LENGTH_NAME = 100
+LENGTH_LINK = 100

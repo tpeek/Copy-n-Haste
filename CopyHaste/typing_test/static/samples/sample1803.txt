@@ -1,0 +1,28 @@
+
+class SQLiteLockFile(LockBase):
+	"Demonstrate SQL-based locking."
+	testdb = None
+	def __init__(self, path, threaded=True):
+		LockBase.__init__(self, path, threaded)
+		self.lock_file = unicode(self.lock_file)
+		self.unique_name = unicode(self.unique_name)
+		if SQLiteLockFile.testdb is None:
+			_fd, testdb = tempfile.mkstemp()
+			os.close(_fd)
+			os.unlink(testdb)
+			del _fd, tempfile
+			SQLiteLockFile.testdb = testdb
+		self.connection = sqlite3.connect(SQLiteLockFile.testdb)
+		
+		c = self.connection.cursor()
+		try:
+			c.execute("create table locks"
+					  "("
+					  "   lock_file varchar(32),"
+					  "   unique_name varchar(32)"
+					  ")")
+		except sqlite3.OperationalError:
+			pass
+		else:
+			self.connection.commit()
+			atexit.register(os.

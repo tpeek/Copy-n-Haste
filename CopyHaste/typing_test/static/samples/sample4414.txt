@@ -1,0 +1,15 @@
+Project, Build, Job
+)
+app = create_app()
+app_context = app.app_context()
+app_context.push()
+parser = argparse.ArgumentParser(description='Manage builds')
+subparsers = parser.add_subparsers(dest='command')
+parser_add = subparsers.add_parser('add', help='add build')
+parser_add.add_argument('--project', metavar='slug', dest='project_slug', help='project slug')
+parser_add.add_argument('--label', dest='label', help='build label')
+parser_add.add_argument('--message', dest='message', help='build message')
+parser_add.add_argument('--sha', metavar='sha', dest='revision_sha', help='parent revision sha')
+parser_sync = subparsers.add_parser('sync', help='sync build details')
+parser_sync.add_argument('id', help='build ID', nargs='?')
+parser_sync.add_arg

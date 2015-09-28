@@ -1,0 +1,50 @@
+__author__ = 'whf'
+FORMAT = "%(asctime)-15s %(message)s"
+CUR_TIME = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+logging.basicConfig(filename="/data/taolijie/scripts-log/deploy-server.log", format=FORMAT, level=logging.DEBUG)
+def flush_redis():
+	REDIS_HOST = '127.0.0.1'
+	REDIS_PASSWORD = '111111'
+	REDIS_PORT = 6379
+	conn = redis.Redis(REDIS_HOST, REDIS_PORT, password=REDIS_PASSWORD)
+	conn.flushall()
+def deploy():
+	os.chdir('/root/projects/taolijie')
+	try:
+		outcome = subprocess.check_output(('/root/projects/taolijie/server-deploy.sh'), stderr=subprocess.STDOUT)
+		logging.info(outcome)
+	except Exception as e:
+		logging.error('deploy failed! Retry')
+		try:
+			outcome = subprocess.check_output(('/root/projects/taolijie/server-deploy.sh'), stderr=subprocess.STDOUT)
+			logging.info(outcome)
+		except Exception as e:
+			logging.error('deploy failed again, abort!')
+			return
+	logging.info('deployment finished without error')
+	return outcome
+class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
+	def do_POST(self):
+		logging.info('client addr:%s', self.client_address[0])
+		logging.info('client port:%s', self.client_address[1])
+		logging.info('method:%s', self.command)
+		json_str = self.rfile.read(int(self.headers['Content-Length']))
+		json_dict = None
+		try:
+			json_dict = json.loads(json_str)
+		except:
+			logging.error('decoding JSON failed; [%s]', json_str)
+			self.send_error(400)
+			return
+		branch_name = json_dict['ref']
+		if not branch_name == 'refs/heads/master':
+			logging.info('[%s] is not master branch, do nothing', branch_name)
+			self.send_response(200)
+			return
+		thread.start_new_thread(deploy, ())
+		self.send_response(200)
+	def log_error(self, format, *args):
+		logging.error(args)
+server_addr = ('', 10000)
+httpd = BaseHTTPServer.HTTPServer(server_addr, Handler)
+httpd.serve_forever()

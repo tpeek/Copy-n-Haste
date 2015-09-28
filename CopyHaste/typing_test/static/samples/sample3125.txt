@@ -1,0 +1,31 @@
+class BnfExpConfig(object):
+	def __init__(self):
+		self.wdir = "WORK/"
+		self.pretrain_data = self.wdir + 'train.pfile.gz'
+		self.pretrain_output = self.wdir + "rbm.ptr"
+		self.finetune_train_data = self.wdir + 'train.pfile.gz'
+		self.finetune_valid_data = self.wdir + 'valid.pfile.gz'
+		self.finetune_output = self.wdir + "final.nnet.raw"
+		self.nnet_kaldi_fmt = self.wdir + "final.nnet"
+		self.n_ins=250
+		self.n_outs=N_OUTS
+		self.hidden_layers_sizes=[1024, 1024, 1024, 1024, 1024, 42, 1024]
+		self.bnf_layer_index = 6
+		self.pretrain_layer_num = 5
+		self.shuffle = True
+		self.chunk_size = '200m'
+		self.pretrain_batch_size = 128
+		self.pretrain_gbrbm_lr = 0.005
+		self.pretrain_rbm_lr = 0.08
+		self.initial_momentum = 0.5
+		self.final_momentum = 0.9
+		self.initial_momentum_epoch = 2
+		self.pretraining_epochs = 4
+		self.finetune_batch_size = 256
+		self.finetune_momentum = 0.5
+		self.lrate = LearningRateExpDecay(start_rate=0.04,
+										  scale_by = 0.5,
+										  max_epochs = 1000,
+										  min_derror_ramp_start = 0.01,
+										  min_derror_stop = 0.01,
+										  init_error = 100)

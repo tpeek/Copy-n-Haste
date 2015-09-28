@@ -1,0 +1,30 @@
+
+
+def main(project_ws, figure_show_flag=False, figure_save_flag=True,
+		 figure_size=(1000,300), start_date=None, end_date=None,
+		 crop_str='', overwrite_flag=False):
+	input_folder = 'daily_stats'
+	output_folder = 'daily_plots'
+	crop_keep_list = list(parse_int_set(crop_str))
+	crop_skip_list = [44, 45, 46]
+	date_field   = 'Date'
+	doy_field	= 'DOY'
+	pmeto_field  = 'PMETo'
+	precip_field = 'PPT'
+	t30_field	= 'T30'
+
+	etact_field  = 'ETact'
+	etpot_field  = 'ETpot'
+	etbas_field  = 'ETbas'
+	irrig_field  = 'Irrigation'
+	season_field = 'Season'
+	runoff_field = 'Runoff'
+	dperc_field = 'DPerc'
+	niwr_field = 'NIWR'
+	header_lines = 2
+	figure_dynamic_size = False
+	figure_ylabel_size = '12pt'
+	sep = ','
+
+	try:
+		logging.info('\nPlot mean

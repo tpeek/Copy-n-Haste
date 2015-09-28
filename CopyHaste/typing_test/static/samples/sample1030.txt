@@ -1,0 +1,25 @@
+
+class DesignDocument():
+	def __init__(self, name, views, spatial_views=[], rev=None, options=None):
+		self.id = '_design/{0}'.format(name)
+		self.rev = rev
+		self.views = views
+		self.name = name
+		self.options = options
+		self.spatial_views = spatial_views
+	@classmethod
+	def _init_
+		ddoc_self = DesignDocument(design_doc_name, [])
+		views_json = json_object['views']
+		for view in views_json.items():
+			ddoc_self.views.append(View._init_
+		if 'spatial' in json_object:
+			spatial_json = json_object['spatial']
+			for view in spatial_json.items():
+				sp_view = View._init_
+				sp_view.is_spatial = True
+				ddoc_self.spatial_views.append(sp_view)
+		if 'options' in json_object:
+			ddoc_self.options = json_object['options']
+		return ddoc_self
+	d

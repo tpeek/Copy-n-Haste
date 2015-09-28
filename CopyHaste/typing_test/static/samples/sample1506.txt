@@ -1,0 +1,18 @@
+
+__author__ = 'Jacob'
+class TestStreamingDataLoader():
+	def setup(self):
+		parser = ArgumentParser(description="StreamDataLoader")
+		parser.add_argument('-c', '--config', dest="jsonFile", help="Json config file", required=True, action="store")
+		parser.add_argument('-d', '--data', dest="dataFile", help="CSV/TSV formatted file", required=False,
+							action="store")
+		jsonSamplePath = join(getcwd(), 'test_app', 'configFile')
+		print("Return Files: ", returnFiles(jsonSamplePath))
+		assert jsonSamplePath
+		self.args = parser.parse_args(['-c', returnFiles(jsonSamplePath)[0]])
+		assert self.args
+		assert self.args.jsonFile
+		self.model = LoaderModel(config=self.args.jsonFile)
+		assert self.model
+		assert self.model.jsonFile
+	def test_readJsonCo

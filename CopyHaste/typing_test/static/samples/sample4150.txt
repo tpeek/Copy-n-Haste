@@ -1,0 +1,25 @@
+print(sys.argv[:])
+cpptrajsrc = os.environ["CPPTRAJHOME"] + "/src/"
+filename = cpptrajsrc + sys.argv[1]
+indent = " " * 4
+classlist = find_class(cpptrajsrc)
+cpp = CppHeaderParser.CppHeader(filename)
+enum_to_string = True
+try:
+	if sys.argv[2] and sys.argv[2] == '-se':
+		enum_to_string = False
+except:
+	pass
+for classname in list(cpp.classes.keys()):
+	if cpp.classes[classname]['enums']['public']:
+		for enumlist in cpp.classes[classname]['enums']['public']:
+			print(indent + "
+			edictname = enumlist['name']
+			if 'Type' in edictname:
+				edictname = edictname.replace("Type","")
+			edictname = edictname + "Dict"
+			print(edictname + " = {")
+			for enumvar in enumlist['values']:
+				enumvarname = enumvar['name']
+				if enum_to_string:
+					print(

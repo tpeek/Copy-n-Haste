@@ -1,0 +1,23 @@
+with open(join(dirname(__file__), 'openaddr', 'VERSION')) as file:
+	version = file.read().strip()
+conditional_requirements = list()
+if sys.version_info[0] == 2:
+	conditional_requirements += [
+		'future >= 0.14.3',
+		'unicodecsv >= 0.11.2',
+		'subprocess32 == 3.2.6',
+		'python-memcached == 1.57',
+	]
+else:
+	conditional_requirements += [
+		'python3-memcached == 1.51',
+	]
+setup(
+	name = 'OpenAddresses-Machine',
+	version = version,
+	url = 'https://github.com/openaddresses/machine',
+	author = 'Michal Migurski',
+	author_email = 'mike-pypi@teczno.com',
+	description = 'In-progress scripts for running OpenAddresses on a complete data set and publishing the results.',
+	packages = ['openaddr', 'openaddr.util', 'openaddr.ci', 'openaddr.tests'],
+	entry_p

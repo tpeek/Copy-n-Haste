@@ -1,0 +1,27 @@
+
+AS_ADMIN = 'as_admin'
+SRC_DIR = 'radtrack_pkg'
+DST_DIRS = ['APS', 'Anaconda', 'tex']
+SUFFIX = '.zip'
+INSTALL_SENTINEL = 'install-sentinel'
+def uninstall_check():
+	if not os.path.exists(INSTALL_SENTINEL):
+		return
+	print('Cleaning up previous installation')
+	for d in DST_DIRS:
+		if os.path.exists(d):
+			print('Removing: ' + d)
+			shutil.rmtree(d)
+	os.remove(INSTALL_SENTINEL)
+def unzip_all():
+	zip_names = glob.glob(os.path.join(SRC_DIR, '*' + SUFFIX))
+	is_running_as_admin = sys.argv[-1] == AS_ADMIN
+	if not zip_names:
+		return not is_running_as_admin
+	if not is_running_as_admin:
+		script = sys.argv[0]
+		if script:
+			script = os.path.abspath(script)
+		params = '"' + '" "'.join([script] + sys.argv[1:] + [AS_ADMIN]) + '"'
+		try:
+			p = win32com

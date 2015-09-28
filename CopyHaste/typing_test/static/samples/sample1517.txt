@@ -1,0 +1,21 @@
+
+try:
+except ImportError:
+parser = argparse.ArgumentParser(usage=__doc__)
+parser.add_argument("--variant-sets", nargs="+", default=[])
+parser.add_argument("--read-sets", nargs="+", default=[])
+parser.add_argument("--variant-set-labels", nargs="+")
+parser.add_argument("--read-set-labels", nargs="+")
+parser.add_argument("--max-variants", type=int)
+parser.add_argument("--associate",
+	metavar=("VARIANT_SET", "READ_SET"),
+	nargs=2,
+	action="append",
+	default=[])
+parser.add_argument("--variant-filter")
+parser.add_argument("--ensembl-version")
+parser.add_argument("--neighboring-loci-offsets",
+	nargs="+", type=int, default=[])
+parser.add_argument("--extra-info-below-each-pie", nargs="+")
+parser.add_argument("--sort-order",
+	choices=("priority", "ge

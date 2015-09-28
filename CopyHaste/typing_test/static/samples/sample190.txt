@@ -1,0 +1,35 @@
+
+numPlayers = 0
+timer = 180
+numCategories = 12
+categoryList = []
+letter = ""
+def getNum():
+	
+	num = 0
+	loop = True
+	while loop:
+		try:
+			num = input('')
+			num = int(num)
+			loop = False
+		except:
+			print("Sorry, that's not a number. Please enter the numerical digit.")
+	return num
+def getCategories(num):
+	allCats = []
+	chosenCats = []
+	f = open("categories.txt", "r")
+	rawData = f.read()
+	f.close()
+	allCats = rawData.split("\n")
+	for i in range(num):
+		chosenCats += [ allCats[random.randrange(len(allCats))]  ]
+	return chosenCats
+def getLetter():
+	alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	return alphabet[random.randrange(26)]
+print("Welcome to Scattegories!")
+print("Please enter the number of players")
+numPlayers = getNum()
+print("Please ent

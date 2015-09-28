@@ -1,0 +1,36 @@
+class DumpOSC:
+	def blob_to_hex(self, b):
+		return " ".join([ (hex(v/16).upper()[-1] + hex(v%16).upper()[-1]) for v in b ])
+	def callback(self, path, args, types, src):
+		write = sys.stdout.write
+		write(path + " ,")
+		write(types)
+		for a, t in zip(args, types):
+			write(" ")
+			if t == None:
+				write("[unknown type]")
+			elif t == 'b':
+				write("[" + self.blob_to_hex(a) + "]")
+			else:
+				write(str(a))
+		write('\n')
+	def __init__(self, port = None):
+		try:
+			self.server = liblo.Server(port)
+		except liblo.ServerError as err:
+			sys.exit(str(err))
+		print("listening on URL: " + self.server.get_url())
+		self.server.add_method(None, None, self.callback)
+	def run(self):
+		while True:
+			self.server.recv(10)
+if __name__ == '__main__':
+	if len(sys.argv) == 1 or sys.argv[1] in ("-h", "--help"):
+		sys.exit("Usage: " + sys.argv[0] + " port")
+	if len(sys.argv) < 2:
+		sys.exit("please specify a port or URL")
+	app = DumpOSC(sys.argv[1])
+	try:
+		app.run()
+	except KeyboardInterrupt:
+		del app

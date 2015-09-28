@@ -1,0 +1,25 @@
+
+class EdkIIWorkspace:
+	def __init__(self):
+		self.StartTime = time.time()
+		self.PrintRunTime = False
+		self.PrintRunStatus = False
+		self.RunStatus = ''
+		if os.environ.get('WORKSPACE') == None:
+			print 'ERROR: WORKSPACE not defined.	Please run EdkSetup
+			return False
+
+		self.CurrentWorkingDir = os.getcwd()
+		
+		self.WorkspaceDir = os.path.realpath(os.environ.get('WORKSPACE'))
+		(Drive, Path) = os.path.splitdrive(self.WorkspaceDir)
+		if Drive == '':
+			(Drive, CwdPath) = os.path.splitdrive(self.CurrentWorkingDir)
+			if Drive != '':
+				self.WorkspaceDir = Drive + Path
+		else:
+			self.WorkspaceDir = Drive.upper() + Path
+
+		self.WorkspaceRelativeWorkingDir = self.WorkspaceRelativePath (self.CurrentWorkingDir)
+			
+		tr

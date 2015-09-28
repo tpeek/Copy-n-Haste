@@ -1,0 +1,36 @@
+
+def cigar_modify(cigar):
+	temp=[[]]
+	for x in cigar:
+		if ord(x)>64 and ord(x)<91:
+			temp[-1].append(x)
+			temp.append([])
+		else:
+			if temp[-1]==[]:
+				temp[-1].append(x)
+			else:
+				temp[-1][-1]+=x
+	temp.remove([])
+	for x in temp:
+		if x[1]=='S' and not int(x[0])>min_length:
+			x[1]='I'
+	return ''.join(''.join(y) for y in temp)
+def cigar_integrate(pin):
+	pcigar=re.compile(r)
+	cigar=cigar_modify(pin[5])
+	pos_start=int(pin[3])
+	cigars=[]
+	for m in pcigar.finditer(cigar):
+		cigars.append((m.groups()[0],m.groups()[1]))
+	read_start=0
+	read_end=0
+	Seq_pos=[]
+	Read_Pos=[]
+	Map_Pos=[]
+	rec_seq=0
+	rec_map=int(pin[3])
+	for x in cigars:
+		if x[1]=='I':
+			rec_seq1=rec_seq
+			rec_seq=rec_seq1+int(x[0])
+			Seq_pos.append(pin[9][rec_seq1:rec_seq])

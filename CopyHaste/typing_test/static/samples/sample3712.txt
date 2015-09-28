@@ -1,0 +1,21 @@
+ANALYTICS_KEYSPACE,
+								 SENSOR_DATA_KEYSPACE,
+								 TAGS_TABLE_NAME,
+								 AGGREGATES_TABLE_NAME)
+class CassandraDAO(object):
+	def __init__(self):
+		self.sensor_data_session = None
+	def connect(self):
+		cluster = Cluster()
+		self.sensor_data_session = cluster.connect(SENSOR_DATA_KEYSPACE)
+		self.analytics_session = cluster.connect(ANALYTICS_KEYSPACE)
+	def get_data(self, device_name, device_id, metric_name, start):
+		start_date = datetime.datetime.
+			DATE_FORMAT)
+		table_name = "%s_%s" % (device_name, metric_name)
+		cql_select = ("SELECT * FROM %s WHERE device_id='%s' "
+					  "AND timestamp>'%s';" % (table_name,
+											   device_id,
+											   start_date))
+		rows = self.sensor_data_session.execute(cql_select)
+		data = []

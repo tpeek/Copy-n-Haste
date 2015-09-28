@@ -1,0 +1,18 @@
+__author__ = 'Sean Lip'
+IGNORED_FILE_SUFFIXES = ['.pyc', '.DS_Store']
+INTERACTION_THUMBNAIL_WIDTH_PX = 178
+INTERACTION_THUMBNAIL_HEIGHT_PX = 146
+class InteractionAnswerUnitTests(test_utils.GenericTestBase):
+	def test_rules_property(self):
+		interaction = base.BaseInteraction()
+		interaction.answer_type = 'Null'
+		interaction.normalize_answer('15')
+		self.assertEqual(interaction.rules, [])
+		interaction.answer_type = 'NonnegativeInt'
+		self.assertEqual(len(interaction.rules), 1)
+		interaction.normalize_answer('15')
+		with self.assertRaisesRegexp(Exception, 'not a valid object class'):
+			interaction.answer_type = 'FakeObjType'
+			interaction.normalize_answer('15')
+class InteractionUnitTests(test_utils.GenericTestBase):
+	def _is_camel_cased(s

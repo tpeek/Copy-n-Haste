@@ -1,0 +1,27 @@
+
+	_CipherContext, _GCMCipherContext
+)
+	CipherBackend, HMACBackend, HashBackend, PBKDF2HMACBackend
+)
+	AES, ARC4, Blowfish, CAST5, TripleDES
+)
+	CBC, CFB, CFB8, CTR, ECB, GCM, OFB
+)
+HashMethods = namedtuple(
+	"HashMethods", ["ctx", "hash_init", "hash_update", "hash_final"]
+)
+@utils.register_interface(CipherBackend)
+@utils.register_interface(HashBackend)
+@utils.register_interface(HMACBackend)
+@utils.register_interface(PBKDF2HMACBackend)
+class Backend(object):
+	name = "commoncrypto"
+	def __init__(self):
+		self._binding = Binding()
+		self._ffi = self._binding.ffi
+		self._lib = self._binding.lib
+		self._cipher_registry = {}
+		self._register_default_ciphers()
+		self._hash_mapping = {
+			"md5": HashMethods(
+				"CC_MD5_CTX *", self._lib.CC_MD5_Init,

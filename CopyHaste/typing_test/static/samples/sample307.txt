@@ -1,0 +1,14 @@
+
+AddonID='plugin.Andy'
+ADDON=xbmcaddon.Addon(id=AddonID)
+DATA_PATH	=xbmc.translatePath(os.path.join('special://profile','addon_data',AddonID,''))
+ADDON_PATH   =xbmc.translatePath(os.path.join('special://home'   ,'addons',AddonID,''))
+SETTINGS_PATH=xbmc.translatePath(os.path.join('special://home'   ,'addons',AddonID,'xml_settings'))
+XML_PATH	 =xbmc.translatePath(os.path.join('special://profile','addon_data',AddonID,'XML_FILES'))
+def addon(): return ADDON
+def viewtype(): return ADDON.getSetting('viewtype')
+def xml_files(): return create_directory(DATA_PATH,"XML_FILES")
+def xml_file(): return create_file(XML_PATH,"advancedsettings.xml")
+def pc_custom_pc_file(): return create_file(DATA_PATH,"custom_pc.list")
+def pc_enable_pc():
+	if ADDON.getSet

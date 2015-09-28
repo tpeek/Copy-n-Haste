@@ -1,0 +1,29 @@
+logging.captureWarnings(True)
+app = Flask(__name__)
+app.config.
+LOGGING = PrettyLog()
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+	db_session.remove()
+def cached(timeout=10 * 60, key='view/%s'):
+	def decorator(f):
+		@wraps(f)
+		def decorated_function(*args, **kwargs):
+			cache_key = key % request.path
+			rv = CACHE.get(cache_key)
+			if rv is not None:
+				return rv
+			rv = f(*args, **kwargs)
+			CACHE.set(cache_key, rv, timeout=timeout)
+			return rv
+		return decorated_function
+	return decorator
+@app.route('/')
+def index():
+	return send_file('static/index.html')
+@app.route('/api/champions/<username>/<location>/')
+def profile(username, location):
+	try:
+		LOGGING.push(
+			"*'" + username + "'*
+			"'@ is requesting their user 

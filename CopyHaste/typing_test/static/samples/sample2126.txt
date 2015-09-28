@@ -1,0 +1,21 @@
+
+class TestNegativeAutoTest(base.TestCase):
+	_service = 'compute'
+	fake_input_desc = {"name": "list-flavors-with-detail",
+					   "http-method": "GET",
+					   "url": "flavors/detail",
+					   "json-schema": {"type": "object",
+									   "properties":
+									   {"minRam": {"type": "integer"},
+										"minDisk": {"type": "integer"}}
+									   },
+					   "resources": ["flavor", "volume", "image"]
+					   }
+	def setUp(self):
+		super(TestNegativeAutoTest, self).setUp()
+		self.useFixture(fake_config.ConfigFixture())
+		self.stubs.Set(config, 'TempestConfigPrivate', fake_config.FakePrivate)
+	def _check_prop_entries(self, result, entry):
+		entries = [a for a in result if entry in a[0]]
+		self.assertIsNotNone(entries)
+		self.assertGreater(len

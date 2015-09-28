@@ -1,0 +1,23 @@
+VERSION = "pilprint 0.3/2003-05-05"
+letter = (1.0*72, 1.0*72, 7.5*72, 10.0*72)
+def description(filepath, image):
+	title = os.path.splitext(os.path.split(filepath)[1])[0]
+	format = " (%dx%d "
+	if image.format:
+		format = " (" + image.format + " %dx%d "
+	return title + format % image.size + image.mode + ")"
+if len(sys.argv) == 1:
+	print("PIL Print 0.2a1/96-10-04 -- print image files")
+	print("Usage: pilprint files...")
+	print("Options:")
+	print("  -c			colour printer (default is monochrome)")
+	print("  -p			print via lpr (default is stdout)")
+	print("  -P <printer>  same as -p but use given printer")
+	sys.exit(1)
+try:
+	opt, argv = getopt.getopt(sys.argv[1:], "cdpP:")
+except getopt.error as v:
+	print(v)
+	sys.exit(1)
+printer = None
+monochrome =

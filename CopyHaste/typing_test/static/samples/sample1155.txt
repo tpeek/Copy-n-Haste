@@ -1,0 +1,17 @@
+
+class Ui_webstream(object):
+	def setupUi(self, webstream):
+		webstream.setObjectName("webstream")
+		webstream.resize(640, 480)
+		sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+		sizePolicy.setHorizontalStretch(0)
+		sizePolicy.setVerticalStretch(0)
+		sizePolicy.setHeightForWidth(webstream.sizePolicy().hasHeightForWidth())
+		webstream.setSizePolicy(sizePolicy)
+		self.img_stream = QtGui.QLabel(webstream)
+		self.img_stream.setGeometry(QtCore.QRect(0, 0, 640, 480))
+		sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+		sizePolicy.setHorizontalStretch(0)
+		sizePolicy.setVerticalStretch(0)
+		sizePolicy.setHeightForWidth(self.img_stream.sizePolicy().hasHeightForWidth())
+		self.img_str

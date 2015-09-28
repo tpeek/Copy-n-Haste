@@ -1,0 +1,23 @@
+class TestError(TestCase):
+	def test_exit(self):
+		with self.assertRaises(SystemExit):
+			grapple.error('')
+class TestBamToFq(TestCase):
+	def setUp(self):
+		self._test_file = os.path.join('test_files', 'lambda_iontorrent.bam')
+	def test_valid_file(self):
+		try:
+			grapple.bam_to_fq(self._test_file)
+		except Exception as e:
+			self.fail(e.message)
+	def test_invalid_file(self):
+		with self.assertRaises(ValueError):
+			grapple.bam_to_fq(os.path.join('test_files', 'lambda_ref.fa'))
+	def test_absent_file(self):
+		with self.assertRaises(CalledProcessError):
+			grapple.bam_to_fq('this_file_does_not_exist.bam')
+	def test_no_file(self):
+		with self.assertRaises(ValueError):
+			grapple.bam_to_fq('')
+	def test_none_file(self):
+		with self.assertRaises

@@ -1,0 +1,33 @@
+
+
+DATABASE_VERSION = 5
+
+gPcdDatabaseAutoGenC = TemplateString()
+gPcdPhaseMap = {
+	"PEI_PCD_DRIVER"	:   "PEI",
+	"DXE_PCD_DRIVER"	:   "DXE"
+}
+
+gPcdDatabaseAutoGenH = TemplateString()
+
+
+gEmptyPcdDatabaseAutoGenC = TemplateString()
+def PackGuid(GuidStructureValue):
+	GuidString = GuidStructureStringToGuidString(GuidStructureValue)
+	Guid = GuidString.split('-')
+	Buffer = pack('=LHHBBBBBBBB', 
+				int(Guid[0], 16), 
+				int(Guid[1], 16), 
+				int(Guid[2], 16), 
+				int(Guid[3][-4:-2], 16), 
+				int(Guid[3][-2:], 16),
+				int(Guid[4][-12:-10], 16),
+				int(Guid[4][-10:-8], 16),
+				int(Guid[4][-8:-6], 16),
+				int(Guid[4][-6:-4], 16),
+				int(Guid[4][-4:-2], 16),
+				int(Guid[4][-2:], 16)
+				)
+	return Buffer
+
+def toHex

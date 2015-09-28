@@ -1,0 +1,38 @@
+
+try:
+except ImportError:
+	try:
+	except ImportError:
+		sqlite3 = None
+	Any, Bool, Dict, Instance, Integer, List, Unicode, TraitError,
+)
+@undoc
+class DummyDB(object):
+	def execute(*args, **kwargs):
+		return []
+	
+	def commit(self, *args, **kwargs):
+		pass
+	
+	def __enter__(self, *args, **kwargs):
+		pass
+	
+	def __exit__(self, *args, **kwargs):
+		pass
+@decorator
+def needs_sqlite(f, self, *a, **kw):
+	if sqlite3 is None or not self.enabled:
+		return []
+	else:
+		return f(self, *a, **kw)
+if sqlite3 is not None:
+	DatabaseError = sqlite3.DatabaseError
+	OperationalError = sqlite3.OperationalError
+else:
+	@undoc
+	class DatabaseError(Exception):
+		"Dummy exception when sqlite could not be
+	
+	@undoc
+	class OperationalError(Exception):
+		"Dummy exception wh

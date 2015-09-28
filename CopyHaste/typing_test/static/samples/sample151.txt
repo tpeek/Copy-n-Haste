@@ -1,0 +1,26 @@
+
+def path_name_check(Path_Name):
+  if not Path_Name[-1]=='/':
+	Path_Name+='/'
+  return Path_Name
+def csv_info_readin(SVelter_in):
+  hash1={}
+  fin=open(SVelter_in)
+  for line in fin:
+	pin=line.strip().split()
+	if not pin==[]:
+	  if not pin[2] in hash1.keys():
+		hash1[pin[2]]={}
+	  if not int(pin[3]) in hash1[pin[2]].keys():
+		hash1[pin[2]][int(pin[3])]={}
+	  if not int(pin[-1]) in hash1[pin[2]][int(pin[3])].keys():
+		hash1[pin[2]][int(pin[3])][int(pin[-1])]=[]
+	  if not pin in hash1[pin[2]][int(pin[3])][int(pin[-1])]:
+		hash1[pin[2]][int(pin[3])][int(pin[-1])].append(pin)
+  fin.close()
+  hash2={}
+  for k1 in hash1.keys():
+	hash2[k1]=[]
+	for k2 in sorted(hash1[k1].keys()):
+	  for k3 in sorted(hash1[k1][k2].keys()):
+		for k4 in hash1[k1][k2][

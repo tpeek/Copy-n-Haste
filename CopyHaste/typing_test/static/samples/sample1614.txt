@@ -1,0 +1,25 @@
+
+def vectorize(M):
+	temp = []
+	for i in range(M.shape[0]*M.shape[1]):
+		temp.append(M.T.item(i))
+	V = np.asarray(temp)
+	return V
+def matrixize(V, C_dimension):
+	temp = np.zeros(shape = (C_dimension, len(V)/C_dimension))
+	for i in range(len(V)/C_dimension):
+		temp.T[i] = V[i*C_dimension : (i+1)*C_dimension]
+	W = temp
+	return W
+def getFeatureVector(FeatureVectorsFileName, articleID):
+	FeatureVector = np.zeros(25)
+	with open(FeatureVectorsFileName, 'r') as f:
+		for line in f:
+			line = line.split("\t")
+			if line[0] == str(articleID):
+				FeatureVector = np.asarray(line[1].strip('[]').strip('\n').split(';'))
+	return FeatureVector
+def parseLine(line):
+		userID, tim, pool_articles = line.split("\t")
+		userID, tim = int(userID), int(tim)
+		pool_a

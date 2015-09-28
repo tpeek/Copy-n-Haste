@@ -1,0 +1,27 @@
+parser = optparse.OptionParser(
+	'Usage: %prog [-m <message>] [-q] <src> <dest-a> <dest-b>')
+parser.add_option('-m', '--message',
+				  dest='message',
+				  default=None,
+				  help='commit message')
+parser.add_option('-q', '--quiet',
+				  dest='quiet',
+				  default=False,
+				  action='store_true',
+				  help='operate quietly')
+options, args = parser.parse_args()
+if options.quiet:
+	logging.root.setLevel(logging.CRITICAL)
+if len(args) not in (2, 3):
+	parser.print_usage()
+	sys.exit(1)
+b_s = blueprint.cli.read(options, args)
+try:
+	b_da = blueprint.Blueprint(args[-2])
+except blueprint.NameError:
+	logging.error('invalid blueprint name {0}'.format(args[-2]))
+	sys.exit(1)
+try:
+	b_db = blueprint.Blueprint(args[-1])
+except blueprint.NameError:
+	

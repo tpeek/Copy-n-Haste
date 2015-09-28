@@ -1,0 +1,24 @@
+log = logging.getLogger('sql_utils')
+def table_exists(name, session):
+	try:
+		table_schema(name, session)
+	except NoSuchTableError:
+		return False
+	return True
+def table_schema(name, session):
+	return Table(name, MetaData(bind=session.bind), autoload=True)
+def table_columns(table, session):
+	res = []
+	if isinstance(table, basestring):
+		table = table_schema(table, session)
+	for column in table.columns:
+		res.append(column.name)
+	return res
+def table_add_column(table, name, col_type, session, default=None):
+	if isinstance(table, basestring):
+		table = table_schema(table, session)
+	if name in table_columns(table, session):
+		return
+	if not isinstance(col_type, TypeEngine):
+		col_type = col_type()
+	type_string = session.bind.engine.dialect.typ

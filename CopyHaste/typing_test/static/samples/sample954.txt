@@ -1,0 +1,24 @@
+
+def recursive_check(target, work, loc=""):
+	words = re.split("_|-|,| ", work)
+	global path_sep
+	path = path = loc + path_sep + target
+	match = True
+	for word in words:
+		if word not in target.lower():
+			match = False
+	if match:
+		print "'" + work + "'" + " found in " + "'" + path + "'"
+		return True
+	if os.path.isdir(path):
+		contents = os.listdir(path)
+		for content in contents:
+			if recursive_check(content, work, path):
+				return True
+	return False
+path_sep = "/"
+if "windows" in platform:
+	path_sep = "\\"
+parser = argparse.ArgumentParser()
+parser.add_argument('-f', '--file', dest='file', type=str, required=True, action='store', help='CSV file to parse.')
+parser.add_argument('-t', '--target', dest='path', type=str, action='store', requ

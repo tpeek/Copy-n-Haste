@@ -1,0 +1,18 @@
+
+ProgName = "Greek NT format handler"
+ProgVersion = "0.07"
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+class GreekNT( Bible ):
+	def __init__( self, sourceFilepath, givenName=None, encoding='utf-8' ):
+		Bible.__init__( self )
+		self.objectNameString = "Greek NT Bible object"
+		self.objectTypeString = "GreekNT"
+		self.sourceFilepath, self.givenName, self.encoding  = sourceFilepath, givenName, encoding
+		self.title = self.version = self.date = None
+		self.tree = self.header = self.frontMatter = self.divs = self.divTypesString = None
+		self.lang = self.language = None
+		self.possibleFilenames = []
+		if os.path.isdir( self.sourceFilepath ):
+			fileList = os.listdir( self.sourceFilepath )
+			for filename in fileList:
+				if filenam

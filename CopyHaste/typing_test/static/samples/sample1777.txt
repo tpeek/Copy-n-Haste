@@ -1,0 +1,19 @@
+
+script_dir = os.path.dirname(__file__)
+rel_data_path = "data/distributions/"
+os.chdir(rel_data_path)
+arrays = {}
+for file in glob("*.csv"):
+	abspath = os.path.abspath(file)
+	filename, extension = os.path.splitext ( os.path.basename(abspath) )
+	print abspath
+	arrays["{}".format(filename)] = np.loadtxt(open(file, "rb"), delimiter=",")
+fig, axs = sns.plt.subplots(1, 1)
+axs.plot(arrays["bins"], arrays["ctrl_full_hist"], label='full tunnel')
+axs.plot(arrays["bins"], arrays["ctrl_upwind_hist"], label='upwind half')
+axs.plot(arrays["bins"], arrays["ctrl_downwind_hist"], label='downwind half')
+fig.suptitle("Sharri's Position Distributions", fontsize=14)
+axs.set_ylabel("Probabilities")
+axs.set_xlabel("Croosswind Distributions")
+axs.legend()
+plt.sav

@@ -1,0 +1,30 @@
+
+class TestNetflix (TestCase) :
+	def test_rmse_1 (self) :
+		i = [1,1]
+		v = netflix_rmse(i)
+		self.assertEqual(v, 1)
+	def test_eval_2 (self) :
+		i = [2, 2, 2, 2, 2, 2]
+		v = netflix_rmse(i)
+		self.assertEqual(v, 2)
+	def test_predict_1 (self) :
+		i = "1"
+		j = 2
+		movie_avg_rating = {"1":4,"2":3}
+		user_avg_rating = {1: 3, 2: 4}
+		offset = {"1": 0, "2": 0}
+		r = netflix_predict(i, j, movie_avg_rating, user_avg_rating, offset)
+		self.assertEqual(r, 4.0)
+	def test_predict_2 (self) :
+		i = "3"
+		j = 2
+		movie_avg_rating = {"1":4,"2":3}
+		user_avg_rating = {1: 3, 2: 4}
+		offset = {"1": 0, "2": 0}
+		r = netflix_predict(i, j, movie_avg_rating, user_avg_rating, offset)
+		self.assertEqual(r, 4.0)
+	def test_predict_3 (self) :
+		i = "1"
+		j = 8
+		movi

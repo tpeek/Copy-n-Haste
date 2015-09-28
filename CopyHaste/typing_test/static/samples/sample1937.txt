@@ -1,0 +1,22 @@
+try:
+except:
+alphanum = re.compile('[\W_]+')
+kCLASSIFIER_FIELDS = ["category", "ans_type", "gender"]
+class Classifier(FeatureExtractor):
+	def __init__(self, bigram_path, question_db):
+		self._qdb = question_db
+		self._bigrams = pickle.load(open(bigram_path, 'rb'))
+		self._majority = {}
+		self._frequencies = defaultdict(dict)
+		self._cache = None
+		self._fv = None
+		self._pd = None
+		self._classifiers = {}
+		self._name = 'classifier'
+		self.add_classifier('data/classifier/category.pkl', 'category')
+		self.add_classifier('data/classifier/ans_type.pkl', 'ans_type')
+		self.add_classifier('data/classifier/gender.pkl', 'gender')
+		self.cache_majorities('category')
+		self.cache_majorities('ans_type')
+		self.cache_majorities('gender')
+	def cache_ma

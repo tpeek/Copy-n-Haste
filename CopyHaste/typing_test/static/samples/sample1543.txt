@@ -1,0 +1,28 @@
+
+						unicode_literals)
+@cleanup
+def test_invisible_Line_rendering():
+	N = 10**7
+	x = np.linspace(0,1,N)
+	y = np.random.normal(size=N)
+	fig = plt.figure()
+	ax = plt.subplot(111)
+	l = mpl.lines.Line2D(x,y)
+	l.set_visible(False)
+	t_no_line = min(repeat(fig.canvas.draw, number=1, repeat=3))
+	ax.add_line(l)
+	t_unvisible_line = min(repeat(fig.canvas.draw, number=1, repeat=3))
+	slowdown_factor = (t_unvisible_line/t_no_line)
+	slowdown_threshold = 2
+	assert_true(slowdown_factor < slowdown_threshold)
+@cleanup
+def test_set_line_coll_dash():
+	fig = plt.figure()
+	ax = fig.add_subplot(1, 1, 1)
+	np.random.seed(0)
+	cs = ax.contour(np.random.randn(20, 30), linestyles=[(0, (3, 3))])
+	assert True
+@cleanup
+def test_line_colors():
+	fig = plt.figure()
+	ax = fi

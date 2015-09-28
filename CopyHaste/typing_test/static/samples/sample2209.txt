@@ -1,0 +1,28 @@
+
+try:
+except ImportError:
+class Ec2Inventory(object):
+	def __init__(self):
+		self.inventory = {}
+		self.index = {}
+		self.parse_cli_args()
+		self.read_settings()
+		if self.args.refresh_cache:
+			self.do_api_calls_update_cache()
+		elif not self.is_cache_valid():
+			self.do_api_calls_update_cache()
+		if self.args.host:
+			data_to_print = self.get_host_info()
+		elif self.args.list:
+			if len(self.inventory) == 0:
+				data_to_print = self.get_inventory_
+			else:
+				data_to_print = self.json_format_dict(self.inventory, True)
+		print data_to_print
+	def is_cache_valid(self):
+		if self.args.tags_only:
+			to_check = self.cache_path_tags
+		else:
+			to_check = self.cache_path_cache
+		if os.path.isfile(to_check):
+			mod_time = os.path.getmtime(to_chec

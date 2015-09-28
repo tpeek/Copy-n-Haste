@@ -1,0 +1,27 @@
+
+class Header(GingaPlugin.GlobalPlugin):
+	def __init__(self, fv):
+		super(Header, self).__init__(fv)
+		self.channel = {}
+		self.active = None
+		self.info = None
+		self.columns = [('Keyword', 'kwd'),
+						('Value', 'value'),
+						('Comment', 'comment'),
+						]
+		self.cell_sort_funcs = []
+		for kwd, key in self.columns:
+			self.cell_sort_funcs.append(self._mksrtfnN(key))
+		fv.set_callback('add-channel', self.add_channel)
+		fv.set_callback('delete-channel', self.delete_channel)
+		fv.set_callback('active-image', self.focus_cb)
+		
+	def build_gui(self, container):
+		nb = GtkHelp.Notebook()
+		nb.set_group_id(-30)
+		nb.set_tab_pos(gtk.POS_BOTTOM)
+		nb.set_scrollable(False)
+		nb.set_show_tabs(False)
+		nb.set_show_border(False)
+		nb.show()
+		self.

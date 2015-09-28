@@ -1,0 +1,19 @@
+try:
+	_trans = glocale.get_addon_translator(__file__)
+except ValueError:
+	_trans = glocale.translation
+_ = _trans.gettext
+								  EnumeratedListOption, DestinationOption,
+								  StringOption)
+class AncestralCollapsibleTreeReport(Report):
+	def __init__(self, database, options, user):
+		Report.__init__(self, database, options, user)
+		self.map = {}
+		menu = options.menu
+		self.max_gen = menu.get_option_by_name('maxgen').get_value()
+		self.male_bg = menu.get_option_by_name('male_bg').get_value()
+		self.female_bg = menu.get_option_by_name('female_bg').get_value()
+		self.exp_male_bg = menu.get_option_by_name('exp_male_bg').get_value()
+		self.exp_female_bg = \
+			menu.get_option_by_name('exp_female_bg').get_value()
+		self.dest_path = conv_to

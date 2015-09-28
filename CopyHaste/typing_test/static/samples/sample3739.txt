@@ -1,0 +1,21 @@
+__author__ = 'Sean Lip'
+CAN_EDIT_STR = 'can_edit'
+class GalleryPageTest(test_utils.GenericTestBase):
+	def setUp(self):
+		super(GalleryPageTest, self).setUp()
+		self.signup(self.EDITOR_EMAIL, self.EDITOR_USERNAME)
+		self.EDITOR_ID = self.get_user_id_
+		self.signup(self.ADMIN_EMAIL, self.ADMIN_USERNAME)
+		self.ADMIN_ID = self.get_user_id_
+	def test_gallery_page(self):
+		response = self.testapp.get(feconf.GALLERY_URL)
+		self.assertEqual(response.status_int, 200)
+		response.mustcontain('Gallery', 'Categories')
+	def test_gallery_handler_demo_exploration(self):
+		response_dict = self.get_json(feconf.GALLERY_DATA_URL)
+		self.assertEqual({
+			'is_admin': False,
+			'is_moderator': False,
+			'is_super_admin': False,
+			'explorations_list': [],
+			'se

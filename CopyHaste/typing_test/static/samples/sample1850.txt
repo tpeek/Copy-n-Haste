@@ -1,0 +1,22 @@
+
+sys.path.append("..")
+__all__ = ["TemplateContent"]
+class TemplateContent:
+	def __init__(self, name, description, units):
+		self.name = name
+		self.description = description
+		self.units = units
+	@staticmethod
+	def
+		name = args[TEMPLATE.TEMPLATE_NAME]
+		description = args[TEMPLATE.DESCRIPTION]
+		def convert_to_unit(unit_dict):
+			provider = int(unit_dict[TEMPLATE.VIRTUAL_ENVIRONMENT_PROVIDER])
+			if provider == VE_PROVIDER.DOCKER:
+				return DockerTemplateUnit(unit_dict)
+			elif provider == VE_PROVIDER.AZURE:
+				return ""
+			else:
+				raise Exception("unsupported virtual environment provider")
+		virtual_environments = map(convert_to_unit, args[TEMPLATE.VIRTUAL_ENVIRONMENTS])
+		return TemplateContent(name, description, virtual_environment

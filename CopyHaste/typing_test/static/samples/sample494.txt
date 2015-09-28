@@ -1,0 +1,19 @@
+
+class AdvancedUserRecipe1290663986(BasicNewsRecipe):
+	title		  = u'Animal Pol\u00EDtico'
+	publisher	  = u'Animal Pol\u00EDtico'
+	category	   = u'News, Mexico'
+	description	= u'Noticias Pol\u00EDticas'
+	__author__	 = 'leamsi'
+	masthead_url   = 'http://www.animalpolitico.com/wp-content/themes/animal_mu/images/logo.png'
+	oldest_article = 1
+	max_articles_per_feed = 100
+	language	   = 'es_MX'
+	remove_tags_before = dict(name='div', id='main')
+	remove_tags = [dict(name='div', attrs={'class':'fb-like-button'})]
+	keep_only_tags = [dict(name='h1', attrs={'class':'entry-title'}),
+					  dict(name='div', attrs={'class':'entry-content'})]
+	remove_javascript = True
+	INDEX = 'http://www.animalpolitico.com/'
+	def generic_parse(self, soup):
+		articles = []

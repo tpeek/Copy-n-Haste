@@ -1,0 +1,20 @@
+
+class Controller(wsgi.Controller):
+	def __init__(self):
+		self.volume_api = volume.API()
+		super(Controller, self).__init__()
+	def _get_metadata(self, context, snapshot_id):
+		try:
+			snapshot = self.volume_api.get_snapshot(context, snapshot_id)
+			meta = self.volume_api.get_snapshot_metadata(context, snapshot)
+		except exception.SnapshotNotFound:
+			msg = _('snapshot does not exist')
+			raise exc.HTTPNotFound(explanation=msg)
+		return meta
+	@wsgi.serializers(xml=common.MetadataTemplate)
+	def index(self, req, snapshot_id):
+		context = req.environ['cinder.context']
+		return {'metadata': self._get_metadata(context, snapshot_id)}
+	@wsgi.serializers(xml=common.MetadataTemplate)
+	@wsgi.deserializers(xml=common.MetadataDeserializer)
+	def create(

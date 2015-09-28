@@ -1,0 +1,18 @@
+Session = model.meta.Session
+class TestReviewModel(TestController):
+	def test_project(self):
+		assert hasattr(model.Project, 'id')
+		assert hasattr(model.Project, 'leader_id')
+		assert hasattr(model.Project, 'initial_assignment_id')
+		assert hasattr(model.Project, 'name')
+		assert hasattr(model.Project, 'description')
+		assert hasattr(model.Project, 'code')
+		assert hasattr(model.Project, 'screening_mode')
+		assert hasattr(model.Project, 'tag_privacy')
+		assert hasattr(model.Project, 'num_labels_thus_far')
+		assert hasattr(model.Project, 'sort_by')
+		assert hasattr(model.Project, 'initial_round_size')
+		assert hasattr(model.Project, 'date_created')
+		assert hasattr(model.Project, 'date_modified')
+		assert hasattr(model.Project, 'leader')
+		

@@ -1,0 +1,21 @@
+
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def calc_asl(ifile, var_id, ofile):
+	dset_in = xray.open_dataset(ifile)
+	gio.check_xrayDataset(dset_in, var_id)
+	south_lat, north_lat, west_lon, east_lon = gio.regions['asl']
+	darray = dset_in[var_id].sel(latitude=slice(south_lat, north_lat), 
+								 longitude=slice(west_lon, east_lon))
+	assert darray.dims == ('time', 'latitude', 'longitude'), \
+	"Order of the data must be time, latitude, longitude"
+	lat_values = darray['latitude'].values

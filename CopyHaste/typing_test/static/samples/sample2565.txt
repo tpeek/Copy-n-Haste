@@ -1,0 +1,23 @@
+
+setuptools.setup(
+	name='oslo',
+	version='1',
+	description="Namespace for common components for OpenStack",
+	long_description="Namespace for common components for OpenStack",
+	classifiers=[
+		'Development Status :: 4 - Beta',
+		'License :: OSI Approved :: Apache Software License',
+		'Operating System :: POSIX :: Linux',
+		'Programming Language :: Python :: 2.6',
+		'Programming Language :: Python :: 2.7',
+		'Environment :: No Input/Output (Daemon)',
+		'Environment :: OpenStack',
+	],
+	keywords='openstack',
+	author='OpenStack',
+	author_email='openstack@lists.openstack.org',
+	url='http://www.openstack.org/',
+	license='Apache Software License',
+	zip_safe=True,
+	packages=setuptools.find_packages(exclude=['ez_setup',
+											   'examples', 'te

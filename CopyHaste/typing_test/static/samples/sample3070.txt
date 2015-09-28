@@ -1,0 +1,35 @@
+g_ImplementationHelper = unohelper.ImplementationHelper()
+g_implName = "com.sun.star.wizards.agenda.CallWizard"
+class CallWizard(unohelper.Base, XJobExecutor, XServiceInfo):
+	def __init__(self, ctx):
+		self.ctx = ctx
+	def trigger(self, args):
+		try:
+			fw = AgendaWizardDialogImpl(self.ctx.ServiceManager)
+			fw.startWizard(self.ctx.ServiceManager)
+		except Exception as e:
+			print ("Wizard failure exception " + str(type(e)) +
+				   " message " + str(e) + " args " + str(e.args) +
+				   traceback.format_exc())
+	@classmethod
+	def callRemote(self):
+		try:
+			ConnectStr = \
+				"uno:socket,host=localhost,port=2002;urp;StarOffice.ComponentContext"
+			xLocMSF = Desktop.connect(ConnectStr)
+			lw = AgendaWizardDialogImpl(xLocMSF)
+			lw.startWizard(xLocMSF)
+		except Exception as e:
+			print ("Wizard failure exception " + str(type(e)) +
+				   " message " + str(e) + " args " + str(e.args) +
+				   traceback.format_exc())
+	def getImplementationName(self):
+		return g_implName
+	def supportsService(self, ServiceName):
+		return g_ImplementationHelper.supportsService(g_implName, ServiceName)
+	def getSupportedServiceNames(self):
+		return g_ImplementationHelper.getSupportedServiceNames(g_implName)
+g_ImplementationHelper.addImplementation( \
+	CallWizard,
+	g_implName,
+	("com.sun.star.task.Job",),)

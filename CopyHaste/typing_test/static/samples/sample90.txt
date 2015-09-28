@@ -1,0 +1,33 @@
+
+__version__ = "0.7"
+def i16(c):
+	return ord(c[0]) + (ord(c[1])<<8)
+def i32(c):
+	return ord(c[0]) + (ord(c[1])<<8) + (ord(c[2])<<16) + (ord(c[3])<<24)
+BIT2MODE = {
+	1: ("P", "P;1"),
+	4: ("P", "P;4"),
+	8: ("P", "P"),
+	16: ("RGB", "BGR;16"),
+	24: ("RGB", "BGR"),
+	32: ("RGB", "BGRX")
+}
+def _accept(prefix):
+	return prefix[:2] == "BM"
+class BmpImageFile(ImageFile.ImageFile):
+	format = "BMP"
+	format_description = "Windows Bitmap"
+	def _bitmap(self, header = 0, offset = 0):
+		if header:
+			self.fp.seek(header)
+		read = self.fp.read
+		s = read(4)
+		s = s + ImageFile._safe_read(self.fp, i32(s)-4)
+		if len(s) == 12:
+			bits = i16(s[10:])
+			self.size = i16(s[4:]), i16(s[6:])
+			compression = 0
+			lutsize = 3
+			colors = 0
+		elif len(s) in [40, 64]:
+	

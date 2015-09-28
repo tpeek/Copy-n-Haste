@@ -1,0 +1,19 @@
+
+logo=os.path.join(common.addon_path, 'resources', 'images', 'redx.png')
+class FacebookResolver(Plugin, UrlResolver, PluginSettings):
+	implements = [UrlResolver, PluginSettings]
+	name = "facebook"
+	domains = [ "facebook.com" ]
+	def __init__(self):
+		p = self.get_setting('priority') or 100
+		self.priority = int(p)
+		self.net = Net()
+	def get_media_url(self, host, media_id):
+		try:
+			web_url = self.get_url(host, media_id)
+			link = self.net.http_GET(web_url).content
+			if link.find('Video Unavailable') >= 0:
+				err_title = 'Content not available.'
+				err_message = 'The requested video was not found.'
+				common.addon.log_error(self.name + ' - fetching %s - %s - %s ' % (web_url,err_title,err_message))
+				xbmc.executebuiltin('XBMC.Notificat

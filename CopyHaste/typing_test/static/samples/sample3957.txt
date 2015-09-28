@@ -1,0 +1,10 @@
+modpath = sys.modules['newdominion.dominion.aliens'].__file__
+modpath = '/'.join(modpath.split('/')[:-1]) + "/aliens/"
+bodydefs = [ {'hx':60, 'hy':77, 'lx':40, 'ly':85, 'rx':78, 'ry':85, 'fx':67, 'fy':120},
+			 {'hx':58, 'hy':75, 'lx':45, 'ly':79, 'rx':71, 'ry':79, 'fx':60, 'fy':120},
+			 {'hx':60, 'hy':75, 'lx':55, 'ly':80, 'rx':66, 'ry':80, 'fx':60, 'fy':118},
+			 {'hx':50, 'hy':65, 'lx':40, 'ly':70, 'rx':63, 'ry':70, 'fx':50, 'fy':110},
+			 {'hx':50, 'hy':65, 'lx':40, 'ly':70, 'rx':63, 'ry':70, 'fx':50, 'fy':110},
+			 {'hx':50, 'hy':65, 'lx':40, 'ly':70, 'rx':63, 'ry':70, 'fx':50, 'fy':110},
+			 {'hx':50, 'hy':65, 'lx':40, 'ly':70, 'rx':63, 'ry':70, 'fx':50, 'fy':110},
+			 {'hx':50, 'hy':65, 'lx':40, 'ly':70, 'rx':63, 'ry':70, 'fx':50, '

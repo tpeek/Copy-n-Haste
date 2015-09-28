@@ -1,0 +1,25 @@
+class ERMap:
+	def __init__(self):
+		self.header = None
+		self.data = None
+		self.startlongitude = 0
+		self.startlatitude = 0
+		self.endlongitude = 0
+		self.endlatitude = 0
+		self.deltalongitude = 0
+		self.deltalatitude = 0
+	def read_ermapper(self, ifile):
+		ers_index = ifile.find('.ers')
+		if ers_index > 0:
+			data_file = ifile[0:ers_index]
+			header_file = ifile
+		else:
+			data_file = ifile
+			header_file = ifile + '.ers'
+		
+		self.header = self.read_ermapper_header(header_file)
+		nroflines = int(self.header['nroflines'])
+		nrofcellsperlines = int(self.header['nrofcellsperline'])
+		self.data = self.read_ermapper_data(data_file, offset=int(self.header['headeroffset']))
+		self.data = numpy.reshape(self.data,(nroflines,nrofcellsperlines))
+		l

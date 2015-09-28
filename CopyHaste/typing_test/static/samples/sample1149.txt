@@ -1,0 +1,31 @@
+
+conf_thres=0.5
+shout='hey buddy'
+aw_response=''
+num_response=['',0]
+path=rospkg.RosPack().get_path('budspeech')
+radio=radiopy.Player()
+radio_pid=-1
+POWER=1
+sender=[]
+client = wolframalpha.Client('ETRTW6-QUVU77J24J')
+rospack = rospkg.RosPack()
+path=rospack.get_path('budspeech')
+urllib_resp_timeout=0.2
+def load_yaml():
+	with open(path+'/src/master.yml', 'r') as readfile:
+		data=yaml.load(readfile)
+		try:
+			return [data['IP'],data['usr'],data['pwd']]
+		except:
+			return ['','','']
+[master_IP,master_usr,master_pwd]=load_yaml()
+def connect_to_master():
+	try: 
+		db = MySQLdb.connect(master_IP,master_usr,master_pwd,'FB')
+		cursor = db.cursor()
+		cursor.execute("SELECT type FROM objects")
+		db.commit();
+		db.close();
+		return 1
+	except MySQLdb.Op

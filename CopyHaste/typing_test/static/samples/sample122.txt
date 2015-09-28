@@ -1,0 +1,15 @@
+
+class TestNetflix (TestCase) :
+	def test_eval_1 (self) :
+		if os.path.isfile("/u/ebanner/netflix-tests/il3345-cache.txt") :
+			f = open("/u/ebanner/netflix-tests/il3345-cache.txt", "rb")
+			movieAvg, userAvg, datesAvg, movieToDate, solution = pickle.load(f)
+			f.close()
+		else :
+			cache = requests.get('http://www.cs.utexas.edu/users/ebanner/netflix-tests/il3345-cache.txt')	
+			movieAvg, userAvg, datesAvg, movieToDate, solution = pickle.loads(cache.content) 
+		prediction = netflix_eval(9992, 1729134, movieAvg, userAvg, datesAvg, movieToDate)
+		self.assertTrue(rmse(solution[(9992, 1729134)], prediction) < 1.00)
+	def test_eval_2 (self) :
+		if os.path.isfile("/u/ebanner/netflix-tests/il3345-cache.txt") :
+			f = open("/u/ebanner/netflix-tests/

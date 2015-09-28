@@ -1,0 +1,62 @@
+implementation_name = "org.libreoffice.example.toolpanel.pocFactory"
+implementation_services = ("org.libreoffice.example.toolpanel.pocFactory",)
+xdlPath = "toolpanels/poc.xdl"
+extensionID = "org.libreoffice.example.toolpanel"
+class pocToolPanel( unohelper.Base, XToolPanel ):
+		def __init__ ( self, xPanelWindow, ctx ):
+				self.ctx = ctx
+				self.PanelWindow = xPanelWindow
+				self.Window = xPanelWindow
+		def createAccessible( self, i_parentAccessible ):
+				return self.PanelWindow
+class pyPanel( unohelper.Base, XUIElement ):
+		def __init__ ( self, ctx, xFrame, xParentWindow, url ):
+				self.ctx = ctx
+				self.xParentWindow = xParentWindow
+				self.toolpanel = None
+				self.m_panelRootWindow = None
+				self.Frame = xFrame
+				self.ResourceURL = url
+				self.Type = unoTOOLPANEL
+		def getRealInterface( self ):
+				if not self.toolpanel:
+						rootWindow = self.getOrCreatePanelRootWindow()
+						self.toolpanel = pocToolPanel(rootWindow, self.ctx)
+				return self.toolpanel
+		def getOrCreatePanelRootWindow( self ):
+				pip = self.ctx.getValueByName("/singletons/com.sun.star.deployment.PackageInformationProvider" )
+				s = pip.getPackageLocation(extensionID)
+				dialogUrl = s + "/" + xdlPath
+				provider = self.ctx.ServiceManager.createInstanceWithContext("com.sun.star.awt.ContainerWindowProvider",self.ctx)  
+				self.m_panelRootWindow = provider.createContainerWindow(dialogUrl,"",self.xParentWindow, None)
+				return self.m_panelRootWindow
+		def postDisposing( self ):
+				super.postDisposing()
+				if self.m_panelRootWindow:
+					self.m_panelRootWindow.dispose()
+					self.m_panelRootWindow = None
+				self.toolpanel = None
+				return
+class pocFactory( unohelper.Base, XUIElementFactory ):
+		def __init__ ( self, ctx ):
+				self.ctx = ctx
+		def createUIElement( self, url, properties ):
+			xParentWindow = None
+			xFrame = None
+			xUIElement = None
+			for arg in properties:
+				if arg.Name == "Frame":
+					xFrame = arg.Value
+				elif arg.Name == "ParentWindow":
+					xParentWindow = arg.Value
+			if xFrame and xParentWindow:
+				try:
+					xUIElement = pyPanel(self.ctx, xFrame, xParentWindow, url)
+				except Exception as e:
+					print(e)
+			return xUIElement
+g_ImplementationHelper = unohelper.ImplementationHelper ()
+g_ImplementationHelper.addImplementation (pocFactory,
+					implementation_name,
+					implementation_services,
+					)

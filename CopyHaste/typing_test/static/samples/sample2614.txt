@@ -1,0 +1,21 @@
+
+class PixelTransition(ShaderTransition):
+	PIXEL_TRANSITION_FS =
+	fs = StringProperty(PIXEL_TRANSITION_FS)
+class RippleTransition(ShaderTransition):
+	RIPPLE_TRANSITION_FS =
+	fs = StringProperty(RIPPLE_TRANSITION_FS)
+class BlurTransition(ShaderTransition):
+	BLUR_TRANSITION_FS =
+	fs = StringProperty(BLUR_TRANSITION_FS)
+class RVBTransition(ShaderTransition):
+	RVB_TRANSITION_FS =
+	fs = StringProperty(RVB_TRANSITION_FS)
+	def on_progress(self, progress):
+		self.render_ctx['resolution'] = map(float, self.screen_out.size)
+		super(RVBTransition, self).on_progress(progress)
+class RotateTransition(ShaderTransition):
+	direction = OptionProperty('left', options=('left', 'right', 'up', 'down'))
+	ROTATE_TRANSITION_HEADER =
+	ROTATE_TRANSITION_FOOTER =
+	ROT

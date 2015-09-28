@@ -1,0 +1,35 @@
+try:
+except:
+	
+class Addon:
+	
+		
+	def __init__(self, addon_id, argv=None):
+		self.addon = xbmcaddon.Addon(id=addon_id)
+		if argv:
+			self.url = argv[0]
+			self.handle = int(argv[1])
+			self.queries = self.parse_query(argv[2][1:])
+		
+	def get_author(self):
+		return self.addon.getAddonInfo('author')
+			
+	def get_changelog(self):
+		return self.addon.getAddonInfo('changelog')
+			
+	def get_description(self):
+		return self.addon.getAddonInfo('description')
+			
+	def get_disclaimer(self):
+		return self.addon.getAddonInfo('disclaimer')
+			
+	def get_fanart(self):
+		return self.addon.getAddonInfo('fanart')
+			
+	def get_icon(self):
+		return self.addon.getAddonInfo('icon')
+			
+	def get_id(self):
+		return self.addon.getAddonInfo('id')
+			
+	def get_name(s

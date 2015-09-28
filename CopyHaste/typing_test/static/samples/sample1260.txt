@@ -1,0 +1,31 @@
+
+class MagicsDisplay(object):
+	def __init__(self, magics_manager):
+		self.magics_manager = magics_manager
+	
+	def _lsmagic(self):
+		mesc = magic_escapes['line']
+		cesc = magic_escapes['cell']
+		mman = self.magics_manager
+		magics = mman.lsmagic()
+		out = ['Available line magics:',
+			   mesc + ('  '+mesc).join(sorted(magics['line'])),
+			   '',
+			   'Available cell magics:',
+			   cesc + ('  '+cesc).join(sorted(magics['cell'])),
+			   '',
+			   mman.auto_status()]
+		return '\n'.join(out)
+	def _repr_pretty_(self, p, cycle):
+		p.text(self._lsmagic())
+	
+	def __str__(self):
+		return self._lsmagic()
+	
+	def _jsonable(self):
+		magic_dict = {}
+		mman = self.magics_manager
+		magics = mman.lsmagic()
+		for key, subdict in magics.items():
+			d = {}
+			

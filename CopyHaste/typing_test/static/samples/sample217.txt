@@ -1,0 +1,25 @@
+
+__version__ = "0.5"
+def i32(c):
+	return ord(c[0]) + (ord(c[1])<<8) + (ord(c[2])<<16) + (ord(c[3])<<24)
+def o32(i):
+	return chr(i&255) + chr(i>>8&255) + chr(i>>16&255) + chr(i>>24&255)
+split = re.compile(r"^%%([^:]*):[ \t]*(.*)[ \t]*$")
+field = re.compile(r"^%[%!\w]([^:]*)[ \t]*$")
+def Ghostscript(tile, size, fp):
+	decoder, tile, offset, data = tile[0]
+	length, bbox = data
+	file = tempfile.mktemp()
+	command = ["gs",
+			   "-q",
+			   "-g%dx%d" % size,
+			   "-dNOPAUSE -dSAFER",
+			   "-sDEVICE=ppmraw",
+			   "-sOutputFile=%s" % file,
+			   "- >/dev/null 2>/dev/null"]
+	command = string.join(command)
+	try:
+		gs = os.popen(command, "w")
+		if bbox[0] != 0 or bbox[1] != 0:
+			gs.write("%d %d translate\n" % (-bbox[0], -bbox[1]))
+		fp.seek(offset)

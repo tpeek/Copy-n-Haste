@@ -1,0 +1,23 @@
+
+hasher = hashlib.md5()
+isPrivate = True
+def getNameHash(fileName):
+	if not os.path.exists('gdiSheets'):
+		os.makedirs('gdiSheets')
+	hasher.update(fileName+'movie theatre popcorn')
+	return 'gdiSheets/%s.csv' % hasher.hexdigest()
+def spreadConnect(userName, __password, fileName):
+	client = gdata.spreadsheet.service.SpreadsheetsService()
+	client.email = userName
+	client.password = __password
+	__password = "*"*len(__password)
+	client.ssl = False
+	client.source = fileName
+	try:
+		client.ProgrammaticLogin()
+		print "Connected to Google Spreadsheet via username %s & password %s" % (userName,__password)
+	except:
+		print "Error, Google Spreadsheet Login Failed, username %s & password %s" % (userName,__password)
+		client.password = None
+		quit()
+	re

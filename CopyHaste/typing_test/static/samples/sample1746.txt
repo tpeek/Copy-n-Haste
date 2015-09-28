@@ -1,0 +1,22 @@
+
+code_start=
+code_tmpl=
+head_tmpl=
+test_root = os.path.dirname(os.path.abspath(__file__))
+if __name__ == "__main__":
+	with open(os.path.join(test_root, "counter_names"), "r") as file_in, \
+		 open(os.path.join(test_root, "../src/apmetric.c"), "w") as file_out, \
+		 open(os.path.join(test_root, "../build/metric_def"), "w") as head_out:
+		lines = file_in.read().split("\n")
+		
+		file_out.write(code_start)
+		for line in lines:
+			match = re.match("([^;]*);([^;]*);([^;]*)", line)
+			if match is not None:
+				type_name = match.group(1)
+				prop_name = match.group(2)
+				short_name = match.group(3)
+				short_name = short_name.lower()
+				short_name = short_name.replace(" ", "_")
+				short_name = short_name.replace("-", "_")
+				code_snippet = code

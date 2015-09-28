@@ -1,0 +1,35 @@
+
+try:
+except ImportError:
+	signal = None
+try:
+except ImportError:
+_POLL_TIMEOUT = 3600.0
+class TimeoutError(Exception):
+	pass
+class IOLoop(Configurable):
+	_EPOLLIN = 0x001
+	_EPOLLPRI = 0x002
+	_EPOLLOUT = 0x004
+	_EPOLLERR = 0x008
+	_EPOLLHUP = 0x010
+	_EPOLLRDHUP = 0x2000
+	_EPOLLONESHOT = (1 << 30)
+	_EPOLLET = (1 << 31)
+	NONE = 0
+	READ = _EPOLLIN
+	WRITE = _EPOLLOUT
+	ERROR = _EPOLLERR | _EPOLLHUP
+	_instance_lock = threading.Lock()
+	_current = threading.local()
+	@staticmethod
+	def instance():
+		if not hasattr(IOLoop, "_instance"):
+			with IOLoop._instance_lock:
+				if not hasattr(IOLoop, "_instance"):
+					IOLoop._instance = IOLoop()
+		return IOLoop._instance
+	@staticmethod
+	def initialized():
+		return hasattr(IOLoop, "_instance")
+	def install(s

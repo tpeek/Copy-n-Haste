@@ -1,0 +1,19 @@
+
+sys.path = [os.path.join(os.path.dirname(os.path.realpath(__file__)),'..')]+sys.path
+class Tests(unittest.TestCase):
+	
+	def match(self, tree, names):
+		tc  = TreeCleaner()
+		return tc.match_alignment_and_tree_sequence_ids(\
+									names, TreeNode.read(StringIO(tree)))
+	def test_match_alignment_and_tree_sequence_ids(self):
+		self.match('(a,(b,c));',_('a b c'))
+		
+	def test_match_alignment_and_tree_sequence_ids_tree_not_align(self):
+		self.assertRaises(Exception, self.match, '(a,(b,c));',_('a b'))
+		
+	def test_match_alignment_and_tree_sequence_ids_align_not_tree(self):
+		self.assertRaises(Exception, self.match, '(a,(b,c));',_('a b c d'))
+		
+	def test_match_alignment_and_tree_sequence_ids_underscores(self):
+		self.match('(\'a_2\',(b,c));',_

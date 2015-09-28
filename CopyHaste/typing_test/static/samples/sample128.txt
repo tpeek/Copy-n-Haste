@@ -1,0 +1,33 @@
+
+class TestNetflix (TestCase) :
+	def test_read_1 (self) :
+		s	= "1:\n"
+		i = netflix_read(s)
+		self.assertEqual(i,  1)
+	def test_read_2 (self) :
+		s	= "999999:\n"
+		i = netflix_read(s)
+		self.assertEqual(i, 999999)
+	def test_read_3 (self) :
+		s	= "100\n"
+		i = netflix_read(s)
+		self.assertEqual(i,  100)
+	def test_read_4 (self) :
+		s	= "999999\n"
+		i  = netflix_read(s)
+		self.assertEqual(i,  999999)
+	def test_eval_1 (self) :
+		getCaches()
+		v = netflix_eval(1, [30878])
+		close()
+		self.assertEqual(1, len(v))
+	def test_eval_2 (self) :
+		getCaches()
+		v = netflix_eval(10, [1952305, 1531863])
+		close()
+		self.assertEqual(2, len(v))
+	def test_eval_3 (self) :
+		getCaches()
+		v = netflix_eval(1000, [2326571, 977808, 1010534])
+		close()
+		self.asse

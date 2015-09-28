@@ -1,0 +1,173 @@
+def add_indra_lib_path():
+	root = os.path.realpath(__file__)
+	dir = os.path.dirname(root)
+	if dir not in sys.path:
+		sys.path.insert(0, dir)
+	while root != os.path.sep:
+		root = os.path.dirname(root)
+		dir = os.path.join(root, 'indra', 'lib', 'python')
+		if os.path.isdir(dir):
+			if dir not in sys.path:
+				sys.path.insert(0, dir)
+			break
+	else:
+		print >>sys.stderr, "This script is not inside a valid installation."
+		sys.exit(1)
+add_indra_lib_path()
+def getstatusall(command):
+	(input, out, err) = os.popen3(command, 't')
+	status = input.close()
+	output = out.read()
+	error = err.read()
+	status = out.close()
+	status = err.close()
+	return status, output, error
+def getstatusoutput(command):
+	status, output, error = getstatusall(command)
+	return status, output
+def die(msg):
+	print >>sys.stderr, msg
+	sys.exit(1)
+MESSAGE_TEMPLATE = 'message_template.msg'
+PRODUCTION_ACCEPTABLE = (compatibility.Same, compatibility.Newer)
+DEVELOPMENT_ACCEPTABLE = (
+	compatibility.Same, compatibility.Newer,
+	compatibility.Older, compatibility.Mixed)
+MAX_MASTER_AGE = 60 * 60 * 4
+def retry(times, function, *args, **kwargs):
+	for i in range(times):
+		try:
+			return function(*args, **kwargs)
+		except Exception, e:
+			if i == times - 1:
+				raise e
+def compare(base_parsed, current_parsed, mode):
+	compat = current_parsed.compatibleWithBase(base_parsed)
+	if mode == 'production':
+		acceptable = PRODUCTION_ACCEPTABLE
+	else:
+		acceptable = DEVELOPMENT_ACCEPTABLE
+	if type(compat) in acceptable:
+		return True, compat
+	return False, compat
+def fetch(url):
+	if url.startswith('file://'):
+		file_name = url[len('file://'):]
+		return open(file_name).read()
+	else:
+		return ''.join(urllib.urlopen(url).readlines())
+def cache_master(master_url):
+	master_cache = local_master_cache_filename()
+	master_cache_url = 'file://' + master_cache
+	if (os.path.exists(master_cache)
+		and time.time() - os.path.getmtime(master_cache) < MAX_MASTER_AGE):
+		return master_cache_url
+	print "Refreshing master cache
+	def get_and_test_master():
+		new_master_contents = fetch(master_url)
+		llmessage.parseTemplateString(new_master_contents)
+		return new_master_contents
+	try:
+		new_master_contents = retry(3, get_and_test_master)
+	except IOError, e:
+		print "WARNING: unable to download new master, probably due to network error.  Your message template compatibility may be suspect."
+		print "Cause: %s" % e
+		return master_cache_url
+	try:
+		tmpname = '%s.%d' % (master_cache, os.getpid())
+		mc = open(tmpname, 'wb')
+		mc.write(new_master_contents)
+		mc.close()
+		try:
+			os.rename(tmpname, master_cache)
+		except OSError:
+			os.unlink(master_cache)
+			os.rename(tmpname, master_cache)
+	except IOError, e:
+		print "WARNING: Unable to write master message template to %s, proceeding without cache." % master_cache
+		print "Cause: %s" % e
+		return master_url
+	return master_cache_url
+def local_template_filename():
+	d = os.path.dirname(os.path.realpath(__file__))
+	return os.path.join(d, 'messages', MESSAGE_TEMPLATE)
+def getuser():
+	try:
+		return getpass.getuser()
+	except ImportError:
+		return win32api.GetUserName()
+def local_master_cache_filename():
+	d = tempfile.gettempdir()
+	user = getuser()
+	return os.path.join(d, 'master_message_template_cache.%s.msg' % user)
+def run(sysargs):
+	parser = optparse.OptionParser(
+		usage="usage: %prog [FILE] [FILE]",
+		description=__doc__)
+	parser.add_option(
+		'-m', '--mode', type='string', dest='mode',
+		default='development',
+		help=)
+	parser.add_option(
+		'-u', '--master_url', type='string', dest='master_url',
+		default='http://secondlife.com/app/message_template/master_message_template.msg',
+		help=)
+	parser.add_option(
+		'-c', '--cache_master', action='store_true', dest='cache_master',
+		default=False,  help=)
+	options, args = parser.parse_args(sysargs)
+	if options.mode == 'production':
+		options.cache_master = False
+	if len(args) == 2:
+		master_filename, current_filename = args
+		print "master:", master_filename
+		print "current:", current_filename
+		master_url = 'file://%s' % master_filename
+		current_url = 'file://%s' % current_filename
+	elif len(args) == 1:
+		master_url = None
+		current_filename = args[0]
+		print "master:", options.master_url
+		print "current:", current_filename
+		current_url = 'file://%s' % current_filename
+	elif len(args) == 0:
+		master_url  = None
+		current_url = None
+	else:
+		die("Too many arguments")
+	if master_url is None:
+		master_url = options.master_url
+	if current_url is None:
+		current_filename = local_template_filename()
+		print "master:", options.master_url
+		print "current:", current_filename
+		current_url = 'file://%s' % current_filename
+	current = fetch(current_url)
+	current_parsed = llmessage.parseTemplateString(current)
+	if options.cache_master:
+		master_url = cache_master(master_url)
+	def parse_master_url():
+		master = fetch(master_url)
+		return llmessage.parseTemplateString(master)
+	try:
+		master_parsed = retry(3, parse_master_url)
+	except (IOError, tokenstream.ParseError), e:
+		if options.mode == 'production':
+			raise e
+		else:
+			print "WARNING: problems retrieving the master
+			print "Syntax-checking the local template ONLY, no compatibility check is being run."
+			print "Cause: %s\n\n" % e
+			return 0
+	acceptable, compat = compare(
+		master_parsed, current_parsed, options.mode)
+	def explain(header, compat):
+		print header
+		print '\n\t'.join(compat.explain().split('\n'))
+	if acceptable:
+		explain("--- PASS ---", compat)
+	else:
+		explain("*** FAIL ***", compat)
+		return 1
+if __name__ == '__main__':
+	sys.exit(run(sys.argv[1:]))

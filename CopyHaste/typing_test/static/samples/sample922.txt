@@ -1,0 +1,27 @@
+
+TERMINATOR = "\r\n\r\n"
+class GameWidget(Gtk.DrawingArea):
+	def __init__(self):
+		Gtk.DrawingArea.__init__(self)
+		self.juego = False
+		self.client = False
+		self.client_thread = False
+		self.game_thread = False
+		self.server_thread = False
+		self.show_all()
+	def do_draw(self, context):
+		rect = self.get_allocation()
+		if self.juego:
+			self.juego.escalar((rect.width, rect.height))
+	def setup_init(self, datos):
+		tipo = datos.get('tipo', False)
+		if tipo == 'single':
+			xid = self.get_property('window').get_xid()
+			os.putenv('SDL_WINDOWID', str(xid))
+			self.juego = Juego(datos)
+			self.juego.config()
+			self.game_thread = threading.Thread(
+				target=self.juego.run, name='game')
+			self.game_thread.start()
+		elif tipo == 'multi':
+			pass

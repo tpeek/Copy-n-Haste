@@ -1,0 +1,19 @@
+
+def gamma_matrix(t):
+	gamma_matrix = np.array([[1, t, t**2, t**3, t**4, t**5],
+							 [0, 1, 2 * t, 3 * t**2, 4 * t**3, 5 * t**4],
+							 [0, 0, 2, 6 * t, 12 * t**2, 20 * t**3]])
+	return gamma_matrix
+def gamma_matrix_end(t):
+	gamma_matrix_end = np.array([[1, t, t**2, t**3, t**4, t**5],
+								 [0, 1, 2 * t, 3 * t**2, 4 * t**3, 5 * t**4],
+								 [0, 0, 2, 6 * t, 12 * t**2, 20 * t**3],
+								 [0, 0, 0, 6, 24 * t, 60 * t**2],
+								 [0, 0, 0, 0, 24, 120 * t],
+								 [0, 0, 0, 0, 0, 0]])
+	return gamma_matrix_end
+def gamma_matrix_start(t):
+	gamma_matrix_start = np.array([[0, 0, 0, 0, 0, 0],
+								   [0, -1, -2 * t, -3 * t**2, -4 * t**3, -5 * t**4],
+								   [0, 0, -2, -6 * t, -12 * t**2, -20 * t**3],
+								   [0, 0, 0, -6, -24 

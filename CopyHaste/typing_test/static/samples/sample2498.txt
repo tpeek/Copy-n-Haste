@@ -1,0 +1,23 @@
+
+def get_or_create(session, model, **kwargs):
+	instance = session.query(model).filter_by(**kwargs).first()
+	if instance:
+		return False, instance
+	else:
+		instance = model(**kwargs)
+		return True, instance
+def add_get_or_create(session, model, **kwargs):
+	new_record, record = get_or_create(session, model, **kwargs)
+	if new_record:
+		session.add(record)
+	return new_record, record
+def try_add_categories(session, record, category_names, create_categories=True):
+	for category_name in category_names:
+		normalized_name = category_name.strip()
+		if create_categories:
+			new_category, category_record = add_get_or_create(session, 
+				Category,
+				name=normalized_name)
+		else:
+			category_record = session.query(Category). \
+				filter(Category.name

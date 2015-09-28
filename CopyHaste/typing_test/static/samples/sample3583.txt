@@ -1,0 +1,46 @@
+try:
+except ImportError:
+try:
+except ImportError:
+class HTTPBasicsTest (BitcreditTestFramework):		
+	def run_test(self):
+		url = urlparse.urlparse(self.nodes[0].url)
+		authpair = url.username + ':' + url.password
+		headers = {"Authorization": "Basic " + base64.b64encode(authpair)}
+		
+		conn = httplib.HTTPConnection(url.hostname, url.port)
+		conn.connect()
+		conn.request('GET', '/', '{"method": "getbestblockhash"}', headers)
+		out1 = conn.getresponse().read();
+		assert_equal('"error":null' in out1, True)
+		assert_equal(conn.sock!=None, True)
+		conn.request('GET', '/', '{"method": "getchaintips"}', headers)
+		out2 = conn.getresponse().read();
+		assert_equal('"error":null' in out1, True)
+		assert_equal(conn.sock!=None, True)
+		conn.close()
+		headers = {"Authorization": "Basic " + base64.b64encode(authpair), "Connection": "keep-alive"}
+		
+		conn = httplib.HTTPConnection(url.hostname, url.port)
+		conn.connect()
+		conn.request('GET', '/', '{"method": "getbestblockhash"}', headers)
+		out1 = conn.getresponse().read();
+		assert_equal('"error":null' in out1, True)
+		assert_equal(conn.sock!=None, True)
+		conn.request('GET', '/', '{"method": "getchaintips"}', headers)
+		out2 = conn.getresponse().read();
+		assert_equal('"error":null' in out1, True)
+		assert_equal(conn.sock!=None, True)
+		conn.close()
+		headers = {"Authorization": "Basic " + base64.b64encode(authpair), "Connection":"close"}
+		
+		conn = httplib.HTTPConnection(url.hostname, url.port)
+		conn.connect()
+		conn.request('GET', '/', '{"method": "getbestblockhash"}', headers)
+		out1 = conn.getresponse().read();
+		assert_equal('"error":null' in out1, True)
+		assert_equal(conn.sock!=None, False)
+		
+		
+if __name__ == '__main__':
+	HTTPBasicsTest ().main ()

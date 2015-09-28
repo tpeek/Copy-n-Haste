@@ -1,0 +1,33 @@
+
+numpoints = 4000
+energy = 2.5e+6 
+ 
+myBunch = beam.RbParticleBeam6D(numpoints) 
+alphaX = 0.0 
+betaX = 15. 
+emitX = 3.3e-07 
+myBunch.setTwissParamsByName2D(alphaX, betaX, emitX, 'twissX') 
+ 
+alpha = 4.6 
+betaY = 0.012 
+emitY = 1.7e-06 
+myBunch.setTwissParamsByName2D(alpha, betaY, emitY, 'twissY') 
+ 
+alfaZT = -3.3 
+beta   = 0.9 
+emittance = 0.58e-06 
+myBunch.setTwissParamsByName2D(alfaZT, beta, emittance, 'twissZ') 
+ 
+myDist = myBunch.getDistribution6D() 
+myDist.setDistributionType('gaussian') 
+myDist.setMaxRmsFactor(3.)
+ 
+myBunch.makeParticlePhaseSpace6D() 
+mySpace = myBunch.getDistribution6D()
+myArray = mySpace.getPhaseSpace6D().getArray6D()
+x  = myArray[0,:] * 1000.
+xmin = min(x)
+xmax = max(x)
+if -xmin > xmax:
+	xmax = math.fabs(xmin)
+else

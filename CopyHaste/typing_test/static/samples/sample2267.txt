@@ -1,0 +1,20 @@
+
+startdir = os.getcwd()
+genConformers = oe.oeomega.OEOmega()
+genConformers.SetMaxConfs(20)
+genConformers.SetStrictStereo(False)
+sys.argv.append('/home/pgupta13/prep_ligand/protomers_2J79_GTL.smi')
+sys.argv.append('protomers_2J79_GTL')
+parser = argparse.ArgumentParser(description='Generate AMBER parameters')
+parser.add_argument('inF',help='input file')
+parser.add_argument('prefix', help='output prefix')
+args = parser.parse_args()
+if os.path.exists(args.prefix+'.prmtop'):
+  raise Exception('Ligand %s already parameterized'%(args.prefix))
+ligand = oe.oechem.OEMol()
+ifs = oe.oechem.oemolistream()
+ofs = oe.oechem.oemolostream()
+print 'Parameterizing '+args.inF
+ifs.open(args.inF)
+oe.oechem.OEReadMolecule(ifs,ligand)
+oe.oechem.OECanonicalOrderAtom

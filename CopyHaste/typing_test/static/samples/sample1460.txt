@@ -1,0 +1,23 @@
+
+def getArgs(flag,listed):
+	searchText = '-'+flag+'='
+	for pos in range(len(listed)):
+		if listed[pos].startswith(searchText):
+			return listed.pop(pos).replace(searchText,'')
+	return 'null'
+def main(args,user):
+	if user == 'mendel':
+		if 'cluster' in args.keys():
+			workingDir = args['workingDir']
+			inDir = workingDir.replace('libraries','nlpTrainers')
+			outDir = workingDir.replace('libraries','optimizeScores')
+			 
+		else:
+			workingDir = getcwd().split('/')
+			inDir = '/'.join(workingDir[0:workingDir.index('ChatterGrabber')+1])+'/nlpTrainers'
+			outDir = '/'.join(workingDir[0:workingDir.index('ChatterGrabber')+1])+'/optimizeScores'
+		
+		if 'nlpTrainers' not in inDir:
+			inDir += '/nlpTrainers'
+		if 'optimizeScores' not in outDir:
+			ou

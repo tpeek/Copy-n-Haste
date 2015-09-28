@@ -1,0 +1,216 @@
+class VisualStudioVersion(object):
+  def __init__(self, short_name, description,
+			   solution_version, project_version, flat_sln, uses_vcxproj,
+			   path, sdk_based, default_toolset=None):
+	self.short_name = short_name
+	self.description = description
+	self.solution_version = solution_version
+	self.project_version = project_version
+	self.flat_sln = flat_sln
+	self.uses_vcxproj = uses_vcxproj
+	self.path = path
+	self.sdk_based = sdk_based
+	self.default_toolset = default_toolset
+  def ShortName(self):
+	return self.short_name
+  def Description(self):
+	return self.description
+  def SolutionVersion(self):
+	return self.solution_version
+  def ProjectVersion(self):
+	return self.project_version
+  def FlatSolution(self):
+	return self.flat_sln
+  def UsesVcxproj(self):
+	return self.uses_vcxproj
+  def ProjectExtension(self):
+	return self.uses_vcxproj and '.vcxproj' or '.vcproj'
+  def Path(self):
+	return self.path
+  def ToolPath(self, tool):
+	return os.path.normpath(os.path.join(self.path, "VC/bin", tool))
+  def DefaultToolset(self):
+	return self.default_toolset
+  def SetupScript(self, target_arch):
+	assert target_arch in ('x86', 'x64')
+	sdk_dir = os.environ.get('WindowsSDKDir')
+	if self.sdk_based and sdk_dir:
+	  return [os.path.normpath(os.path.join(sdk_dir, 'Bin/SetEnv.Cmd')),
+			  '/' + target_arch]
+	else:
+	  if target_arch == 'x86':
+		return [os.path.normpath(
+		  os.path.join(self.path, 'Common7/Tools/vsvars32.bat'))]
+	  else:
+		assert target_arch == 'x64'
+		arg = 'x86_amd64'
+		if (os.environ.get('PROCESSOR_ARCHITECTURE') == 'AMD64' or
+			os.environ.get('PROCESSOR_ARCHITEW6432') == 'AMD64'):
+		  arg = 'amd64'
+		return [os.path.normpath(
+			os.path.join(self.path, 'VC/vcvarsall.bat')), arg]
+def _RegistryQueryBase(sysdir, key, value):
+  if sys.platform not in ('win32', 'cygwin'):
+	return None
+  cmd = [os.path.join(os.environ.get('WINDIR', ''), sysdir, 'reg.exe'),
+		 'query', key]
+  if value:
+	cmd.extend(['/v', value])
+  p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+  text = p.communicate()[0]
+  if p.returncode:
+	return None
+  return text
+def _RegistryQuery(key, value=None):
+  text = None
+  try:
+	text = _RegistryQueryBase('Sysnative', key, value)
+  except OSError, e:
+	if e.errno == errno.ENOENT:
+	  text = _RegistryQueryBase('System32', key, value)
+	else:
+	  raise
+  return text
+def _RegistryGetValue(key, value):
+  text = _RegistryQuery(key, value)
+  if not text:
+	return None
+  match = re.search(r'REG_\w+\s+([^\r]+)\r\n', text)
+  if not match:
+	return None
+  return match.group(1)
+def _RegistryKeyExists(key):
+  if not _RegistryQuery(key):
+	return False
+  return True
+def _CreateVersion(name, path, sdk_based=False):
+  if path:
+	path = os.path.normpath(path)
+  versions = {
+	  '2012': VisualStudioVersion('2012',
+								  'Visual Studio 2012',
+								  solution_version='12.00',
+								  project_version='4.0',
+								  flat_sln=False,
+								  uses_vcxproj=True,
+								  path=path,
+								  sdk_based=sdk_based,
+								  default_toolset='v110'),
+	  '2012e': VisualStudioVersion('2012e',
+								   'Visual Studio 2012',
+								   solution_version='12.00',
+								   project_version='4.0',
+								   flat_sln=True,
+								   uses_vcxproj=True,
+								   path=path,
+								   sdk_based=sdk_based,
+								   default_toolset='v110'),
+	  '2010': VisualStudioVersion('2010',
+								  'Visual Studio 2010',
+								  solution_version='11.00',
+								  project_version='4.0',
+								  flat_sln=False,
+								  uses_vcxproj=True,
+								  path=path,
+								  sdk_based=sdk_based),
+	  '2010e': VisualStudioVersion('2010e',
+								   'Visual Studio 2010',
+								   solution_version='11.00',
+								   project_version='4.0',
+								   flat_sln=True,
+								   uses_vcxproj=True,
+								   path=path,
+								   sdk_based=sdk_based),
+	  '2008': VisualStudioVersion('2008',
+								  'Visual Studio 2008',
+								  solution_version='10.00',
+								  project_version='9.00',
+								  flat_sln=False,
+								  uses_vcxproj=False,
+								  path=path,
+								  sdk_based=sdk_based),
+	  '2008e': VisualStudioVersion('2008e',
+								   'Visual Studio 2008',
+								   solution_version='10.00',
+								   project_version='9.00',
+								   flat_sln=True,
+								   uses_vcxproj=False,
+								   path=path,
+								   sdk_based=sdk_based),
+	  '2005': VisualStudioVersion('2005',
+								  'Visual Studio 2005',
+								  solution_version='9.00',
+								  project_version='8.00',
+								  flat_sln=False,
+								  uses_vcxproj=False,
+								  path=path,
+								  sdk_based=sdk_based),
+	  '2005e': VisualStudioVersion('2005e',
+								   'Visual Studio 2005',
+								   solution_version='9.00',
+								   project_version='8.00',
+								   flat_sln=True,
+								   uses_vcxproj=False,
+								   path=path,
+								   sdk_based=sdk_based),
+  }
+  return versions[str(name)]
+def _ConvertToCygpath(path):
+  if sys.platform == 'cygwin':
+	p = subprocess.Popen(['cygpath', path], stdout=subprocess.PIPE)
+	path = p.communicate()[0].strip()
+  return path
+def _DetectVisualStudioVersions(versions_to_check, force_express):
+  version_to_year = {
+	  '8.0': '2005', '9.0': '2008', '10.0': '2010', '11.0': '2012'}
+  versions = []
+  for version in versions_to_check:
+	keys = [r'HKLM\Software\Microsoft\VisualStudio\%s' % version,
+			r'HKLM\Software\Wow6432Node\Microsoft\VisualStudio\%s' % version,
+			r'HKLM\Software\Microsoft\VCExpress\%s' % version,
+			r'HKLM\Software\Wow6432Node\Microsoft\VCExpress\%s' % version]
+	for index in range(len(keys)):
+	  path = _RegistryGetValue(keys[index], 'InstallDir')
+	  if not path:
+		continue
+	  path = _ConvertToCygpath(path)
+	  full_path = os.path.join(path, 'devenv.exe')
+	  express_path = os.path.join(path, 'vcexpress.exe')
+	  if not force_express and os.path.exists(full_path):
+		versions.append(_CreateVersion(version_to_year[version],
+			os.path.join(path, '..', '..')))
+	  elif os.path.exists(express_path):
+		versions.append(_CreateVersion(version_to_year[version] + 'e',
+			os.path.join(path, '..', '..')))
+	keys = [r'HKLM\Software\Microsoft\VisualStudio\SxS\VC7',
+			r'HKLM\Software\Wow6432Node\Microsoft\VisualStudio\SxS\VC7']
+	for index in range(len(keys)):
+	  path = _RegistryGetValue(keys[index], version)
+	  if not path:
+		continue
+	  path = _ConvertToCygpath(path)
+	  versions.append(_CreateVersion(version_to_year[version] + 'e',
+		  os.path.join(path, '..'), sdk_based=True))
+  return versions
+def SelectVisualStudioVersion(version='auto'):
+  if version == 'auto':
+	version = os.environ.get('GYP_MSVS_VERSION', 'auto')
+  version_map = {
+	'auto': ('10.0', '9.0', '8.0', '11.0'),
+	'2005': ('8.0',),
+	'2005e': ('8.0',),
+	'2008': ('9.0',),
+	'2008e': ('9.0',),
+	'2010': ('10.0',),
+	'2010e': ('10.0',),
+	'2012': ('11.0',),
+	'2012e': ('11.0',),
+  }
+  version = str(version)
+  versions = _DetectVisualStudioVersions(version_map[version], 'e' in version)
+  if not versions:
+	if version == 'auto':
+	  return _CreateVersion('2005', None)
+	else:
+	  return _CreateVersion(version, None)
+  return versions[0]

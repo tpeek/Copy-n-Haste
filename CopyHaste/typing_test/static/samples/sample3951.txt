@@ -1,0 +1,21 @@
+__author__ = "Nick Sweet"
+__copyright__ = "Copyright 2015, Cohrint"
+__credits__ = ["Nick Sweet", "Nisar Ahmed"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Nick Sweet"
+__email__ = "nick.sweet@colorado.edu"
+__status__ = "Development"
+class FeasibleLayer(Layer):
+	def __init__(self, max_robot_radius=0.20, **kwargs):
+		super(FeasibleLayer, self).__init__(**kwargs)
+		self.max_robot_radius = max_robot_radius
+		self.point_region = None
+		self.pose_region = None
+	def define_feasible_regions(self, static_elements):
+		feasible_space = box(*self.bounds)
+		self.point_region = feasible_space
+		self.pose_region = feasible_space.buffer(-self.max_robot_radius)
+		for element in static_elements:
+			if isinstance(element, MapObject):
+				self.

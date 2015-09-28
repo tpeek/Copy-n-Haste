@@ -1,0 +1,17 @@
+
+ProgName = "Bible Punctuation Systems handler"
+ProgVersion = "0.43"
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+class BiblePunctuationSystems:
+	def __init__( self ):
+		self.__DataDict = None
+	def loadData( self, XMLFolder=None ):
+		if not self.__DataDict:
+			picklesGood = False
+			dataFilepath = os.path.join( os.path.dirname(__file__), "DataFiles/" )
+			standardPickleFilepath = os.path.join( dataFilepath, "DerivedFiles", "BiblePunctuationSystems_Tables.pickle" )
+			if XMLFolder is None and os.access( standardPickleFilepath, os.R_OK ):
+				standardXMLFolder = os.path.join( dataFilepath, "PunctuationSystems/" )
+				pickle8, pickle9 = os.stat(standardPickleFilepath)[8:10]
+				picklesGood = True
+				for filename in os.listdir( s

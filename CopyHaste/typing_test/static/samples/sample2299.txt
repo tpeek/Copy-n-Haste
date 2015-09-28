@@ -1,0 +1,35 @@
+
+try:
+except ImportError:
+__author__ = 'Brian Quinlan (brian@sweetapp.com)'
+FIRST_COMPLETED = 'FIRST_COMPLETED'
+FIRST_EXCEPTION = 'FIRST_EXCEPTION'
+ALL_COMPLETED = 'ALL_COMPLETED'
+_AS_COMPLETED = '_AS_COMPLETED'
+PENDING = 'PENDING'
+RUNNING = 'RUNNING'
+CANCELLED = 'CANCELLED'
+CANCELLED_AND_NOTIFIED = 'CANCELLED_AND_NOTIFIED'
+FINISHED = 'FINISHED'
+_FUTURE_STATES = [
+	PENDING,
+	RUNNING,
+	CANCELLED,
+	CANCELLED_AND_NOTIFIED,
+	FINISHED
+]
+_STATE_TO_DESCRIPTION_MAP = {
+	PENDING: "pending",
+	RUNNING: "running",
+	CANCELLED: "cancelled",
+	CANCELLED_AND_NOTIFIED: "cancelled",
+	FINISHED: "finished"
+}
+LOGGER = logging.getLogger("concurrent.futures")
+class Error(Exception):
+	pass
+class CancelledError(Error):
+	pass
+class TimeoutError(Error):
+	pass
+class _W

@@ -1,0 +1,22 @@
+
+datadir = "../data/encode"
+seq_suffix = ".seq.gz"
+def main():
+	util.enable_reversecomplement()
+	args   = loadargs()
+	models = loadmodels(args)
+	trdata = None
+	tedata = None
+	tfids  = load_tfids(args)
+	for tfid in tfids:
+		if "calib" in args.steps:
+			print "-------------- calib:", tfid, "--------------"
+			trdata = load_traindata(tfid, args)
+			util.calibrate(models, trdata, args.calibdir, nfold=args.nfold, ncalib=args.ncalib)
+		if "train" in args.steps:
+			print "-------------- train:", tfid, "--------------"
+			trdata = load_traindata(tfid, args)
+			util.train(models, trdata, args.calibdir, args.finaldir, nfold=1,		  ntrial=args.ntrial)
+	if "test" in args.steps:
+		tedata = load_testdata(tedata, tfids, args)
+		util.save_metrics(tedata, "t

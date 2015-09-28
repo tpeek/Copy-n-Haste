@@ -1,0 +1,22 @@
+get_supported_devices,
+											get_num_channels,
+											get_metrics_names)
+_SUPPORTED_DEVICES = get_supported_devices()
+_SUPPORTED_METRICS = get_supported_metrics()
+class CassandraSubscriber(object):
+	def __init__(self, device_type, device_id, rabbitmq_address):
+		self.subscribers = {}
+		self.rabbitmq_address = rabbitmq_address
+		self.device_type = device_type
+		self.device_id = device_id
+		self.cassandra_dao = CassandraDAO()
+		self.threads = []
+	def start(self):
+		self.cassandra_dao.connect()
+		metrics = get_metrics_names(self.device_type)
+		for metric in metrics:
+			self.subscribers[metric] = PikaSubscriber(
+				device_name=self.device_type,
+				device_id=self.device_id,
+				rabbitmq_address=self.rabbitmq_address,
+				metric_name=m

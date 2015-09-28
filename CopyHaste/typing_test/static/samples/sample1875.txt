@@ -1,0 +1,27 @@
+
+class Attribute(object):
+	def __init__(self, theType, value=None):
+		self._type = theType
+		self.setValue(value)
+	def getType(self):
+		return self._type
+	def getValue(self):
+		return self._value
+	def getStrValue(self):
+		return str(self._value)
+	def setValue(self, value):
+		if value is None:
+			self._value = self._type()
+		else:
+			self._value = self._type(value)
+class AutoAttributes(Serializable):
+	ACODEC = 'zip'
+	def __init__(self, **kwargs):
+		self.declare(**kwargs)
+	def __getattribute__(self, name):
+		if name.startswith('_') and name[1:] in self.dict:
+			return self.dict[name[1:]].getValue()
+		return object.__getattribute__(self, name)
+	def __setattr__(self, name, value):
+		if name.startswith('_') and name[1:] in self.dict:
+			self.dic

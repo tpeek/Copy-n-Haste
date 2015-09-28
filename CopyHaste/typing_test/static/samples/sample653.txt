@@ -1,0 +1,34 @@
+
+	dispatch,
+	cache_forward,
+	needcache,
+	encache,
+	enkeycache,
+	dekeycache
+)
+class Place(Node):
+	extrakeys = {
+		'name',
+		'character'
+	}
+	def __getitem__(self, key):
+		if key == 'name':
+			return self.name
+		elif key == 'character':
+			return self.character.name
+		else:
+			if not self.engine.caching:
+				return super().__getitem__(key)
+			(branch, tick) = self.engine.time
+			cache_forward(self._cache, key, branch, tick)
+			if needcache(self._cache, key, branch, tick):
+				value = super().__getitem__(key)
+				encache(
+					self, self._cache, key, value
+				)
+			r = self._cache[key][branch][tick]
+			if r is None:
+				raise KeyError("Key {} not set now".format(key))
+			return r
+	def __setitem__(self, key, value):
+		super().__setitem__(key, va

@@ -1,0 +1,20 @@
+class PeopleTab(object):
+	def __init__(self):
+		if self.username not in ["thoudon", "lclavet"]:
+			self.sendEmailToEveryoneBtn.hide()
+			self.sendEmailToEveryoneButRobinBtn.hide()
+		self.email = ""
+		self.cell = ""
+		self.sendEmailBtn.clicked.connect(self.send_email_clicked)
+		self.sendEmailToEveryoneBtn.clicked.connect(self.send_email_to_everyone_clicked)
+		self.sendEmailToEveryoneButRobinBtn.clicked.connect(self.send_email_to_everyone_but_robin_clicked)
+		self.profilPicLblList = [
+								 self.profilePicLbl_01,
+							  self.profilePicLbl_02,
+							  self.profilePicLbl_04,
+							  self.profilePicLbl_05,
+							  self.profilePicLbl_06,
+							  self.profilePicLbl_07,
+							  self.profilePicLbl_08,
+							  self.profilePicLbl_09,
+						

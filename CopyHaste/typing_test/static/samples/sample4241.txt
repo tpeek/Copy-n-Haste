@@ -1,0 +1,19 @@
+class Task(object):
+	def __init__(self, main, id=0, project_name="", sequence_name="", shot_number="", asset_id="", task_description="", task_department="", task_status="", task_assignation="", task_end="", task_bid="", task_confirmation=0, task_priority="default"):
+		self.id = id
+		self.main = main
+		self.project = project_name
+		try:
+			self.project_shortname = self.main.cursor.execute(, (self.project,)).fetchone()[0]
+		except:
+			self.project_shortname = ""
+		self.sequence= sequence_name
+		self.shot = shot_number
+		self.asset_id = asset_id
+		self.description = task_description
+		self.department = task_department
+		self.status = task_status
+		self.assignation = task_assignation
+		self.end = task_end
+		self.bid = task_bid
+		self.confirmati

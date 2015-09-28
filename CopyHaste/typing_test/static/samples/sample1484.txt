@@ -1,0 +1,17 @@
+﻿
+rootDir = ADDON_PATH
+if rootDir[-1] == ';':rootDir = rootDir[0:-1]
+resDir = os.path.join(rootDir, 'resources')
+skinsDir = os.path.join(resDir, 'skins')
+addon_image_path = os.path.join( resDir, "skins", "Default", "media")
+background = (os.path.join( addon_image_path, "idle", "Background"))
+digits = os.path.join( addon_image_path, "idle", "Digits")
+backMEDIA_LOC = xbmc.translatePath(os.path.join(MEDIA_LOC, "idle", 'pstvlidle.png'))
+cacheDir = xbmc.translatePath('special://profile/addon_data/script.twitXBMC/cache/')
+if not os.path.exists(cacheDir): os.makedirs(cacheDir)
+EXIT_SCRIPT = ( 9, 6, 10, 247, 275, 61467, 216, 257, 61448, )
+CANCEL_DIALOG = EXIT_SCRIPT + ( 1, 2, 3, 4, 12, 122, 75, 7, 92, )
+FLIP1=210
+DIGIT1 = 211
+DIGIT11 = 2111
+DIGIT

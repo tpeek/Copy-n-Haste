@@ -1,0 +1,27 @@
+def parse_attributes():
+	schema = urllib.urlopen('http://www.w3.org/MarkUp/SCHEMA/aria-attributes-1.xsd')
+	tree = ET.parse(schema)
+	for node in tree.iter():
+		node.tag = re.sub(r'{.*}', r'', node.tag)
+	type_map = {
+		'states': 'state',
+		'props': 'property'
+	}
+	properties = {}
+	groups = tree.getroot().findall('attributeGroup')
+	print groups
+	for group in groups:
+		print(group.get('name'))
+		name_match = re.match(r'ARIA\.(\w+)\.attrib', group.get('name'))
+		if not name_match:
+			continue
+		group_type = name_match.group(1)
+		print group_type
+		if group_type not in type_map:
+			continue
+		type = type_map[group_type]
+		for child in group:
+			name = re.sub(r'aria-', r'', child.attrib['name'])
+			property = {}
+			property['type'] = type
+			if 'ty

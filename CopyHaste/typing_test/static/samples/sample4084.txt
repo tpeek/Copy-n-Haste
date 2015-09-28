@@ -1,0 +1,34 @@
+_MOD = 'abcFormat.testFiles.py'
+environLocal = environment.Environment(_MOD)
+_DOC_IGNORE_MODULE_OR_PACKAGE = True
+fyrareprisarn =
+mysteryReel =
+fullRiggedShip =
+aleIsDear =
+kitchGirl =
+williamAndNancy =
+morrisonsJig =
+hectorTheHero =
+kingOfTheFairies =
+sicutRosa =
+theAleWifesDaughter =
+theBeggerBoy =
+theBattleOfTheSnaBas =
+draughtOfAle =
+valentineJigg =
+slurTest =
+tieTest =
+crescTest =
+dimTest =
+staccTest =
+bowTest =
+accTest =
+graceTest =
+guineapigTest =
+testPrimitive =
+testPrimitivePolyphonic =
+testPrimitiveTuplet =
+ALL  = [fyrareprisarn, mysteryReel, fullRiggedShip, aleIsDear, kitchGirl, 
+		williamAndNancy, morrisonsJig, hectorTheHero, kingOfTheFairies, 
+		sicutRosa, theAleWifesDaughter, theBeggerBoy, theBattleOfTheSnaBas,
+		draughtOfAle,

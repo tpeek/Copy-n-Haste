@@ -1,0 +1,20 @@
+
+class DisplayPublisher(Configurable):
+	def _validate_data(self, data, metadata=None):
+		if not isinstance(data, dict):
+			raise TypeError('data must be a dict, got: %r' % data)
+		if metadata is not None:
+			if not isinstance(metadata, dict):
+				raise TypeError('metadata must be a dict, got: %r' % data)
+	def publish(self, data, metadata=None, source=None):
+		if 'text/plain' in data:
+			print(data['text/plain'], file=io.stdout)
+	def clear_output(self, wait=False):
+		print('\033[2K\r', file=io.stdout, end='')
+		io.stdout.flush()
+		print('\033[2K\r', file=io.stderr, end='')
+		io.stderr.flush()
+class CapturingDisplayPublisher(DisplayPublisher):
+	outputs = List()
+	def publish(self, data, metadata=None, source=None):
+		self.outputs.append((data,

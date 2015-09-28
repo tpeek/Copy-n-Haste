@@ -1,0 +1,17 @@
+
+LastModifiedDate = '2015-04-10'
+ShortProgName = "GetKJVVerseNumber"
+ProgName = "Get KJV Verse Number"
+ProgVersion = '0.10'
+ProgNameVersion = '{} v{}'.format( ProgName, ProgVersion )
+ProgNameVersionDate = '{} {} {}'.format( ProgNameVersion, _("last modified"), LastModifiedDate )
+sys.path.append( '.' )
+def main():
+	if BibleOrgSysGlobals.verbosityLevel > 0:
+		print( ProgNameVersion )
+	ourBibleOrganizationalSystem = BibleOrganizationalSystem( "GENERIC-KJV-66-ENG" )
+	ourVersificationSystem = ourBibleOrganizationalSystem.getVersificationSystemName()
+	ourBibleSingleReference = BibleSingleReference( ourBibleOrganizationalSystem )
+	print( _("Use QUIT or EXIT to finish.") )
+	while True:
+		userInput = input( '\n' + _("Enter a verse number 1..31102 or

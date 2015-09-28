@@ -1,0 +1,31 @@
+﻿
+
+def CATEGORIES():
+	channels = DoubanFM.GetChannels()
+	n = len(channels)
+	for name, url in channels:
+		addLink(name.encode('utf-8'), str(url), 1, n)
+
+def PlayList(url):
+	playlist=xbmc.PlayList(0) 
+	playlist.clear()
+	songs = DoubanFM.GetSongs(url)
+	for song in songs:
+		pic = song.pop('pic')
+		url = song.pop('url')
+		listitem=xbmcgui.ListItem(song['title'])
+		listitem.setInfo('Music', song)
+		listitem.setThumbnailImage(pic)
+		playlist.add(url, listitem)
+
+	print 'Added '+str(playlist.size()) + ' songs'
+	xbmc.Player().play(playlist)
+
+def get_params():
+	param=[]
+	paramstring=sys.argv[2]
+	if len(paramstring)>=2:
+			params=sys.argv[2]
+			cleanedparams=params.replace('?','')
+			if (params[len(params)-1]=='/'):
+					p

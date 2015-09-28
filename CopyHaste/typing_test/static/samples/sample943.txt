@@ -1,0 +1,25 @@
+
+if sys.version_info >= (3,):
+	generator_method_type = 'method'
+	str_cls = str
+else:
+	unittest_compat.inject_into_unittest()
+	generator_method_type = 'instancemethod'
+	str_cls = unicode
+if hasattr(sys, 'argv'):
+	arglist = ['--test-repositories']
+	userargs = [arg for arg in sys.argv if arg in arglist]
+	for arg in userargs:
+		if arg in sys.argv:
+			sys.argv.remove(arg)
+else:
+	userargs = []
+def _open(filepath, *args, **kwargs):
+	if not os.path.exists(filepath):
+		filepath = os.path.join("..", filepath)
+	return open(filepath, 'rb', *args, **kwargs)
+def generate_test_methods(cls, stream):
+	attributes = list(cls.__dict__.keys())
+	if 'pre_generate' in attributes:
+		func = getattr(cls, 'pre_generate')
+		if not func.__class__.__name__ == generator_m

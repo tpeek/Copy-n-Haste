@@ -1,0 +1,23 @@
+__author__ = "Nick Sweet"
+__copyright__ = "Copyright 2015, Cohrint"
+__credits__ = ["Nick Sweet", "Nisar Ahmed"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Nick Sweet"
+__email__ = "nick.sweet@colorado.edu"
+__status__ = "Development"
+class ShapeLayer(Layer):
+	def __init__(self, elements, invisible_elements=[], **kwargs):
+		super(ShapeLayer, self).__init__(**kwargs)
+		self.elements = elements
+		self.invisible_elements = invisible_elements
+		self.update_static = False
+	def update_plot(self, elements=None, update_static=None, **kwargs):
+		if elements is None:
+			elements = self.elements
+		if update_static is None:
+			update_static = self.update_static
+		self.static_patches = []
+		self.dynamic_patches = []
+		if update_static:
+			

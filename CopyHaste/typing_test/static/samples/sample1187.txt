@@ -1,0 +1,27 @@
+
+def es_
+	return 0.6108 * np.exp((17.27 * t) / (t + 237.3)) 
+def es_ice_
+	return 0.6108 * np.exp((21.87 * t) / (t + 265.5)) 
+def is_winter(et_cell, foo_day):
+	if et_cell.stn_lat > 0 and (foo_day.month < 4 or foo_day.month > 10):
+		return True
+	else:
+		return False
+def pair_
+	return 101.3 * np.power((293.0 - 0.0065 * elevation) / 293.0, 5.26)
+def ea_
+	return p * q / (0.622 + 0.378 * q)
+	
+def q_
+	return 0.622 * ea / (p - 0.378 * ea)
+def tdew_
+	return (237.3 * np.log(ea / 0.6108)) / (17.27 - np.log(ea / 0.6108))
+def valid_date(input_date):
+	try:
+		input_dt = datetime.datetime.strptime(input_date, "%Y-%m-%d")
+		return input_date
+	except ValueError:
+		msg = "Not a valid date: '{0}'.".format(input_date)
+		raise argparse.ArgumentTypeError(msg)
+def

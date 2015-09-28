@@ -1,0 +1,18 @@
+
+CREATE_DB_DIR = 'mkdir -p /testrepl/data/db' 
+CREATE_LOG_DIR = 'mkdir -p /testrepl/data/log'
+CREATE_KEY = 'echo "this is a test" >> /testrepl/data/key'
+CHMOD_KEY = 'chmod 600 /testrepl/data/key'
+START_MONGOD = 'mongod --fork --replSet rs --dbpath /testrepl/data/db --logpath /testrepl/data/log/server.log --port 50000 --keyFile /testrepl/data/key'
+def start_localhost():
+	os.system('kill 2 `pgrep mongo`')
+	os.system('rm -rf /testrepl')
+	os.system('mkdir -p /testrepl/data/db')
+	os.system('mkdir -p /testrepl/data/log')
+	os.system('echo "this is a test" >> /testrepl/data/key')
+	os.system('chmod 600 /testrepl/data/key')
+	os.system(START_MONGOD)
+def ssh_command(user, host):
+	child = pxssh.pxssh()
+	child.login(host, user)
+	child.sendline('kill 2 `p

@@ -1,0 +1,26 @@
+
+class State(object):
+	def __init__(self, name, image, *atlist, **properties):
+		if image and not isinstance(image, renpy.display.core.Displayable):
+			image = renpy.easy.displayable(image)
+		self.name = name
+		self.image = image
+		self.atlist = atlist
+		self.properties = properties
+	def add(self, sma):
+		sma.states[self.name] = self
+	def get_image(self):
+		rv = self.image
+		for i in self.atlist:
+			rv = i(rv)
+		if self.properties:
+			rv = renpy.display.layout.Position(rv, **self.properties)
+		return rv
+	def motion_copy(self, child):
+		if self.image is not None:
+			child = self.image
+		return State(self.name, child, *self.atlist)
+class Edge(object):
+	def __init__(self, old, delay, new, trans=None, prob=1):
+		self.old = old
+		self.delay = de

@@ -1,0 +1,32 @@
+clusterDir = "/home/NDSSL/study/ChatterGrabber/libraries/"
+parent = clusterDir
+if parent not in path:
+	path.insert(0, parent)
+prefix = ''
+files = ['vaccAutNLPScores.csv']
+cores = 8
+iterations = 8
+sweepRange = [0.9]
+degrees =  []
+SVMMode = 'number'
+SVMNumber = 1000
+NLPFreqLimit = []
+stops = 0
+fileName = "/home/NDSSL/study/ChatterGrabber/libraries/ShakesVaccC/ShakesVaccC828Score.txt"
+index = 828
+gen = 11
+SVMMode = 'number'
+NLPFreqLimit.append(5)
+SVMNumber = int(3000*6*0.4*0.4)
+degrees.append(5)
+mode = ["decision tree"]
+SVMNumber = int(3000*4*0.1*0.1)
+SVMNumber = int(3000*5*0.1*0.1)
+NLPFreqLimit.append(5)
+degrees.append(4)
+NLPFreqLimit.append(2)
+degrees.append(2)
+SVMMode = 'ratio'
+SVMNumber = int(3000*3*0.2*0.2)
+SVMMode = 'number'
+mode = ["max

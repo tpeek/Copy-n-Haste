@@ -1,0 +1,16 @@
+def read_hdf5(path, hierarchy=False):
+	with h5py.File(path, mode='r') as h:
+		X = h['X'].value
+		Y_leaf = h['Y_leaf'].value.astype(int)
+		if hierarchy:
+			Y_hierarchy = h['Y_hierarchy'].value.astype(bool)
+			return np.swapaxes(np.swapaxes(X, 1, 2), 2, 3), Y_leaf, Y_hierarchy
+	return np.swapaxes(np.swapaxes(X, 1, 2), 2, 3), Y_leaf
+def get_iter_caffemodel(data_dir):
+	models = filter(lambda x: x.endswith('caffemodel'), listdir(join(data_dir, 'temp')))
+	iters = [int(re.findall('\d+', x)[0]) for x in models]
+	iters, models = zip(*sorted(zip(iters, models), key=lambda x: x[0]))
+	return iters, [join(data_dir, 'temp', x) for x in models]
+def get_accuracy(Y_predict, Y_truth):
+	if Y_predict.dtype == bool:
+		return float(np.count_nonzero(Y_predict[np.

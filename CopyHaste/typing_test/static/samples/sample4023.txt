@@ -1,0 +1,20 @@
+OUTPUT_FILE = 'output.extended/'
+def get_year_links():
+	
+	links = ['http://www.abc.net.au/news/archive/2004', 
+			 'http://www.abc.net.au/news/archive/2005', 
+			 'http://www.abc.net.au/news/archive/2006', 
+			 'http://www.abc.net.au/news/archive/2007', 
+			 'http://www.abc.net.au/news/archive/2008', 
+			 'http://www.abc.net.au/news/archive/2009', 
+			 'http://www.abc.net.au/news/archive/2010', 
+			 'http://www.abc.net.au/news/archive/2011', 
+			 'http://www.abc.net.au/news/archive/2012', 
+			 'http://www.abc.net.au/news/archive/2013', 
+			 'http://www.abc.net.au/news/archive/2014']
+	
+	return links
+def get_day_links(year_url):
+	f = urllib.request.urlopen(year_url)
+	soup = BeautifulSoup(f.read())
+	nav = soup.find("div", { "class" : "c75l" })

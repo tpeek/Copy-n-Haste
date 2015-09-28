@@ -1,43 +1,14 @@
+// the problem is that before, we were grabbing a response object.
+// now, we are sending the code sample in as a variable that django
+// deals with. but the multiline throws of the javascript. shit.
+
+// I should be able to just change up the typing test app to insert it directly.
+// maybe?
+
+// strToTest[0] = code;
+// strToTestType = code;
 var secs = 0;
 var strToTest;
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min)) + min;
-}
-
-
-$.ajax({url: 'https://api.github.com/search/repositories?q=language:python+sort:updated+size:>200000'}).done(function(data) {
-  var l = data.items.length;
-  var i = getRandomInt(0, l - 1);
-  var item = data.items[i];
-  var repo = item.name;
-  var user = item.owner.login;
-
-  $.ajax({url: 'https://api.github.com/search/code?q=language:python+repo:' + item.full_name}).done(function(codeData) {
-    var cl = codeData.items.length;
-    var ci = getRandomInt(0, cl - 1);
-    var citem = codeData.items[ci];
-    var path = citem.path;
-    $.ajax({
-           method : "POST",
-            url : "/play/content/",
-            data : {"user": user,
-                    "repo": repo,
-                    "path": path,
-                    "opponent": opponent,
-                    "role": role}
-        }).done(function(response){
-          $('#type').val(response);
-          strToTest[0] = response;
-          strToTestType = response;
-        }).fail(function(){
-            alert("fail");
-        });
-  });
-});
-
-
-
 
 
 $(document).delegate('#typed', 'keydown', function(e) {
@@ -76,7 +47,8 @@ var hasStarted = false;
 // - If you update the array, be sure to update the intToTestCnt
 //   with the number of ACTIVE testing strings
 var intToTestCnt = 1;
-strToTest = new Array("Loading, please wait...")
+var toType = document.getElementById("type").value
+strToTest = new Array(toType)
 var strToTestType = "";
 
 var checkStatusInt;
@@ -133,9 +105,6 @@ function beginTest()
  //Apply focus to the text box the user will type the test into
  document.JobOp.typed.focus();
  document.JobOp.typed.select();
-
-
-
 }
 
 //User to deter from Copy and Paste, also acting as a testing protection system

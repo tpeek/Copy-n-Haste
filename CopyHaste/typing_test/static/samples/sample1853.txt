@@ -1,0 +1,15 @@
+
+hackathon = db_adapter.find_first_object_by(Hackathon, name="sample")
+if hackathon is None:
+	hackathon = Hackathon(name="sample", display_name="Open Hackathon",
+						  description="This is a demo for Open Hackathon Project",
+						  event_start_time=get_now(), event_end_time=get_now() + timedelta(days=365),
+						  registration_start_time=get_now(),
+						  registration_end_time=get_now() + timedelta(days=365),
+						  judge_start_time=get_now(), judge_end_time=get_now() + timedelta(days=365),
+						  basic_info=json.dumps({
+							  HACKATHON_BASIC_INFO.AUTO_APPROVE: True,
+							  HACKATHON_BASIC_INFO.RECYCLE_ENABLED: False,
+							  HACKATHON_BASIC_INFO.ORGANIZERS: [],
+							  HACKATHON_BASIC_INFO.BANNERS: "",
+							  HACKATHON_BASIC

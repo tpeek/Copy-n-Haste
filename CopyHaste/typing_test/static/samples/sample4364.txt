@@ -1,0 +1,21 @@
+class TestNetflix(TestCase):
+	def test_user_avg_rating_1(self):
+		id = "367127"
+		user_avg_rating = netflix_user_avg_rating(id)
+		self.assertEqual(user_avg_rating, 1.9097611089577984)
+	def test_user_avg_rating_2(self):
+		id = "302"
+		user_avg_rating = netflix_user_avg_rating(id)
+		self.assertEqual(user_avg_rating, 2.847578995493077)
+	def test_user_avg_rating_3(self):
+		id = "266"
+		user_avg_rating = netflix_user_avg_rating(id)
+		self.assertEqual(user_avg_rating, 4.515033608887492)
+	def test_movie_avg_rating_1(self):
+		id = "156"
+		movie_avg_rating = netflix_movie_avg_rating(id)
+		self.assertEqual(movie_avg_rating, 3.495170558748013)
+	def test_movie_avg_rating_2(self):
+		id = "4660"
+		movie_avg_rating = netflix_movie_avg_rating(id)
+		self.as

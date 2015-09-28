@@ -1,0 +1,17 @@
+def infer(model_root, save_location, corpus):
+	model = ldamodel.LDAModel(0, 0)
+	model.load_model(model_root)
+	var_gamma = [[0 for x in range(model.num_topics)]
+				 for x in range(corpus.num_docs)]
+	filename = save_location + "-lda-likelihood.dat"
+	file_pointer = open(filename, "w")
+	for index in range(0, corpus.num_docs):
+		if ((index % 100) == 0) and (index > 0):
+			print("Document %d" % index)
+		document = corpus.doc_list[index]
+		phi = [[0 for x in range(model.num_topics)] for x in range(document.unique_word_count)]
+		likelihood = util_functions.lda_inference(document, model, var_gamma[index], phi)
+		file_pointer.write("%5.5f\n" % likelihood)
+	file_pointer.close()
+	filename = save_location + "-gamma.dat"
+	file_utils.save_gamma(filename,

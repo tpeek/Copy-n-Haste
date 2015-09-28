@@ -1,0 +1,19 @@
+trans_5C = bytes((x ^ 0x5C) for x in range(256))
+trans_36 = bytes((x ^ 0x36) for x in range(256))
+digest_size = None
+class HMAC:
+	blocksize = 64
+	def __init__(self, key, msg = None, digestmod = None):
+		if not isinstance(key, (bytes, bytearray)):
+			raise TypeError("key: expected bytes or bytearray, but got %r" % type(key).__name__)
+		if digestmod is None:
+			_warnings.warn("HMAC() without an explicit digestmod argument "
+						   "is deprecated.", PendingDeprecationWarning, 2)
+			digestmod = _hashlib.md5
+		if callable(digestmod):
+			self.digest_cons = digestmod
+		elif isinstance(digestmod, str):
+			self.digest_cons = lambda d=b'': _hashlib.new(digestmod, d)
+		else:
+			self.digest_cons = lambda d=b'': digestmod.new(d)
+		self.outer = self.di

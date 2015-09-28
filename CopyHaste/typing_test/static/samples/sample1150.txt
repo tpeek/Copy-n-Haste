@@ -1,0 +1,30 @@
+
+rospack = rospkg.RosPack()
+path=rospack.get_path('budspeech')
+def load_yaml():
+	with open(path+'/src/master.yml', 'r') as readfile:
+		data=yaml.load(readfile)
+		try:
+			return [data['IP'],data['usr'],data['pwd']]
+		except:
+			return ['','','']
+		
+[master_IP,master_usr,master_pwd]=load_yaml()
+def cam_command(com):
+	com=com.data
+	IPCAM.motor.stop=False
+	IPCAM.video.stop=False
+	t3 = Thread(target=IPCAM.video.stream, args=('/var/www/pics/',))
+	if com=='shake':
+		IPCAM.motor.stop=True
+		IPCAM.video.stop=True
+		IPCAM.motor.shake_head(0.4,2)
+	elif com=='nod':
+		IPCAM.motor.stop=True
+		IPCAM.video.stop=True
+		IPCAM.motor.nod_head(0.3,2)
+	elif com=='up':
+		IPCAM.motor.stop=True
+		IPCAM.video.stop=True
+		IPCAM.motor.send_command('up','1')
+	elif com=

@@ -1,0 +1,23 @@
+
+__all__ = ['RegularSpatial']
+class _RegularSpatial(ClusterMixin, TransformerMixin):
+	def __init__(self, d_min, metric='euclidean'):
+		self.d_min = d_min
+		self.metric = metric
+	def fit(self, X, y=None):
+		cluster_ids = [0]
+		for i in range(1, len(X)):
+			d = libdistance.dist(
+				X, X[i], metric=self.metric, X_indices=np.array(cluster_ids, dtype=np.intp))
+			if np.all(d > self.d_min):
+				cluster_ids.append(i)
+		self.cluster_center_indices_ = cluster_ids
+		self.cluster_centers_ = X[np.array(cluster_ids)]
+		self.n_clusters_ = len(cluster_ids)
+		return self
+	def predict(self, X):
+		labels, inertia = libdistance.assign_nearest(
+			X, self.cluster_centers_, metric=self.metric)
+		return labels
+	def fit_predict(self, X, y=None):
+		return self.fi

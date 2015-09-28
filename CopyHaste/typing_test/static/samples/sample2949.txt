@@ -1,0 +1,73 @@
+_NEWLINE_PATTERN = re.compile('[\n\r]')
+def main():
+  parser = argparse.ArgumentParser(description='Convert JSON files to JS.')
+  parser.add_argument('--source_lang', default='en',
+					  help='ISO 639-1 source language code')
+  parser.add_argument('--source_lang_file',
+					  default=os.path.join('json', 'en.json'),
+					  help='Path to .json file for source language')
+  parser.add_argument('--source_synonym_file',
+					  default=os.path.join('json', 'synonyms.json'),
+					  help='Path to .json file with synonym definitions')
+  parser.add_argument('--output_dir', default='js/',
+					  help='relative directory for output files')
+  parser.add_argument('--key_file', default='keys.json',
+					  help='relative path to input keys file')
+  parser.add_argument('--quiet', action='store_true', default=False,
+					  help='do not write anything to standard output')
+  parser.add_argument('files', nargs='+', help='input files')
+  args = parser.parse_args()
+  if not args.output_dir.endswith(os.path.sep):
+	args.output_dir += os.path.sep
+  source_defs = read_json_file(os.path.join(os.curdir, args.source_lang_file))
+  for key, value in source_defs.items():
+	if _NEWLINE_PATTERN.search(value):
+	  print('ERROR: definition of {0} in {1} contained a newline character.'.
+			format(key, args.source_lang_file))
+	  sys.exit(1)
+  sorted_keys = source_defs.keys()
+  sorted_keys.sort()
+  synonym_defs = read_json_file(os.path.join(
+	  os.curdir, args.source_synonym_file))
+  synonym_text = '\n'.join(['Blockly.Msg.{0} = Blockly.Msg.{1};'.format(
+	  key, synonym_defs[key]) for key in synonym_defs])
+  for arg_file in args.files:
+	(_, filename) = os.path.split(arg_file)
+	target_lang = filename[:filename.index('.')]
+	if target_lang not in ('qqq', 'keys', 'synonyms'):
+	  target_defs = read_json_file(os.path.join(os.curdir, arg_file))
+	  for key, value in target_defs.items():
+		if _NEWLINE_PATTERN.search(value):
+		  print('WARNING: definition of {0} in {1} contained '
+				'a newline character.'.
+				format(key, arg_file))
+		  target_defs[key] = _NEWLINE_PATTERN.sub(' ', value)
+	  outname = os.path.join(os.curdir, args.output_dir, target_lang + '.js')
+	  with codecs.open(outname, 'w', 'utf-8') as outfile:
+		outfile.write(.format(target_lang.replace('-', '.')))
+		for key in sorted_keys:
+		  if key in target_defs:
+			value = target_defs[key]
+			comment = ''
+			del target_defs[key]
+		  else:
+			value = source_defs[key]
+			comment = '  // untranslated'
+		  value = value.replace('"', '\\"')
+		  outfile.write(u'Blockly.Msg.{0} = "{1}";{2}\n'.format(
+			  key, value, comment))
+		if target_defs:
+		  extra_keys = [key for key in target_defs if key not in synonym_defs]
+		  synonym_keys = [key for key in target_defs if key in synonym_defs]
+		  if not args.quiet:
+			if extra_keys:
+			  print('These extra keys appeared in {0}: {1}'.format(
+				  filename, ', '.join(extra_keys)))
+			if synonym_keys:
+			  print('These synonym keys appeared in {0}: {1}'.format(
+				  filename, ', '.join(synonym_keys)))
+		outfile.write(synonym_text)
+	  if not args.quiet:
+		print('Created {0}.'.format(outname))
+if __name__ == '__main__':
+  main()

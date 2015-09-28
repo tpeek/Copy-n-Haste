@@ -1,0 +1,23 @@
+states = {
+	"OK": 0,
+	"WARNING": 1,
+	"CRITICAL": 2,
+	"UNKNOWN": 3
+	}
+def report(state, msg):
+	print "%s: %s" % (state, msg)
+	exit(states[state])
+def get_loc_over_ssh(host, func):
+	try:
+		return subprocess.check_output(['ssh', host, '-l', 'zulip',
+										'psql -t -c "SELECT %s()"' % (func,)],
+									   stderr=subprocess.STDOUT)
+	except subprocess.CalledProcessError as e:
+		report('CRITICAL', 'ssh failed: %s: %s' % (str(e),e.output))
+def loc_to_abs_offset(loc_str):
+	m = re.match(r'^\s*([0-9a-fA-F]+)/([0-9a-fA-F]+)\s*$', loc_str)
+	if not m:
+		raise ValueError("Unknown xlog location format: " + loc_str)
+	(xlog_file, file_offset) = (m.group(1), m.group(2))
+	return 0xFF000000 * int(xlog_file, 16) + int(file_offset, 16)
+secondary_replay_loc =

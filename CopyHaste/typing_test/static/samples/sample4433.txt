@@ -1,0 +1,23 @@
+sys.path.append('/home/ellie/anaconda')
+def mainIso(save=false):
+	mp=shapely.geometry.MultiPolygon([shapely.geometry.shape(pol['geometry']) for pol in fiona.open('data/Texas_VTD.shp')])
+	cm = plt.get_cmap('YlOrRd')
+	num_colours=5
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	minx, miny, maxx, maxy = mp.bounds
+	w, h = maxx - minx, maxy - miny
+	ax.set_xlim(minx - 0.2 * w, maxx + 0.2 * w)
+	ax.set_ylim(miny - 0.2 * h, maxy + 0.2 * h)
+	ax.set_aspect(1)
+	
+	patches = []
+	
+	for idx, p in enumerate(mp):
+		quo=isoperi(p)
+		colour=cm(getColour(quo, num_colours))
+		patches.append(PolygonPatch(p, fc=colour, ec='
+	ax.add_collection(PatchCollection(patches, match_original=True))
+	ax.set_xticks([])
+	ax.set_yticks([])
+	plt.title("Shapefile polygons render

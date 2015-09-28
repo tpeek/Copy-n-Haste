@@ -1,0 +1,19 @@
+
+try:
+except:
+class SickBeard(object):
+	def __init__(self, base_url='http://localhost:8081', api_key='cf6a9873e3f6dd25abbb654c7e362d9d'):
+		self.apikey = api_key
+		self.baseurl = base_url
+	def __repr__(self):
+		return '[script.tvguide.SickBeard] SickBeard(base_url=%s, apikey=%s)' % (self.baseurl, self.apikey)
+	def _buildUrl(self, cmd, parms={}):
+		parmsCopy = parms.copy()
+		parmsCopy.update({'cmd' : cmd})
+		url = '%s/api/%s/?%s' % (self.baseurl, self.apikey, urllib.urlencode(parmsCopy))
+		return url
+	def isShowManaged(self, tvdbid):
+		xbmc.log("script.pseudotv.live-sickbeard: isShowManaged Creating Cache")
+		response = json.load(urllib.urlopen(self._buildUrl('show', {'tvdbid' : tvdbid})))
+		return response['result'] == 'success'
+	def addNew

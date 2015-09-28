@@ -1,0 +1,21 @@
+
+spaceCharacters = "".join(spaceCharacters)
+class LintError(Exception):
+	pass
+class Filter(_base.Filter):
+	def __iter__(self):
+		open_elements = []
+		contentModelFlag = "PCDATA"
+		for token in _base.Filter.__iter__(self):
+			type = token["type"]
+			if type in ("StartTag", "EmptyTag"):
+				name = token["name"]
+				if contentModelFlag != "PCDATA":
+					raise LintError("StartTag not in PCDATA content model flag: %(tag)s" % {"tag": name})
+				if not isinstance(name, str):
+					raise LintError("Tag name is not a string: %(tag)r" % {"tag": name})
+				if not name:
+					raise LintError("Empty tag name")
+				if type == "StartTag" and name in voidElements:
+					raise LintError("Void element reported as StartTag token: %(tag)s" % {"tag": name})
+				el

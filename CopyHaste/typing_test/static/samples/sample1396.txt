@@ -1,0 +1,22 @@
+
+def linstack(streams, allign=False):
+	stack=streams[np.argmax([len(stream) for stream in streams])].copy()
+	for tr in stack:
+		tr.data=tr.data/np.sqrt(np.mean(np.square(tr.data)))
+	for i in xrange(1,len(streams)):
+		for tr in stack:
+			matchtr=streams[i].select(station=tr.stats.station,\
+									   channel=tr.stats.channel)
+			if matchtr:
+				tr.data=np.sum((matchtr[0].data/np.sqrt(np.mean(np.square(matchtr[0].data))),\
+							   tr.data), axis=0)
+	return stack
+def PWS_stack(streams, weight=2, allign=False):
+	Linstack=linstack(streams)
+	instaphases=[]
+	print "Computing instantaneous phase"
+	for stream in streams:
+		instaphase=stream.copy()
+		for tr in instaphase:
+			analytic=hilbert(tr.data)
+			envelope=np.sqrt(np.sum((np.square(analytic)

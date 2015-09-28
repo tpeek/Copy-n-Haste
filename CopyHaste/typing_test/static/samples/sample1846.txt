@@ -1,0 +1,26 @@
+
+__author__ = 'Yifu Huang'
+sys.path.append("..")
+	find_unassigned_endpoints,
+)
+	WindowsConfigurationSet,
+	LinuxConfigurationSet,
+	OSVirtualHardDisk,
+	ConfigurationSet,
+	ConfigurationSetInputEndpoint,
+)
+	current_thread,
+)
+class TemplateUnit(Component):
+	BLOB_BASE = '%s-%s-%s-%s-%s-%s-%s-%s.vhd'
+	MEDIA_BASE = 'https://%s.%s/%s/%s'
+	def __init__(self, virtual_environment):
+		self.virtual_environment = virtual_environment
+	def get_image_type(self):
+		return self.virtual_environment[AZURE_UNIT.T_I][AZURE_UNIT.T_I_T]
+	def is_vm_image(self):
+		return self.get_image_type() == AZURE_UNIT.VM
+	def get_vm_image_name(self):
+		return self.virtual_environment[AZURE_UNIT.T_I][AZURE_UNIT.T_I_N] if self.is_vm_image() else None
+	def get_image_name(self):
+		re

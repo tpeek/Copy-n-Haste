@@ -1,0 +1,56 @@
+if sys.version >= '3':
+	xrange = range
+def can_convert_list(self, obj):
+	return isinstance(obj, (list, tuple, xrange))
+ListConverter.can_convert = can_convert_list
+def launch_gateway():
+	if "PYSPARK_GATEWAY_PORT" in os.environ:
+		gateway_port = int(os.environ["PYSPARK_GATEWAY_PORT"])
+	else:
+		SPARK_HOME = os.environ["SPARK_HOME"]
+		on_windows = platform.system() == "Windows"
+		script = "./bin/spark-submit.cmd" if on_windows else "./bin/spark-submit"
+		submit_args = os.environ.get("PYSPARK_SUBMIT_ARGS", "pyspark-shell")
+		if os.environ.get("SPARK_TESTING"):
+			submit_args = ' '.join([
+				"--conf spark.ui.enabled=false",
+				submit_args
+			])
+		command = [os.path.join(SPARK_HOME, script)] + shlex.split(submit_args)
+		callback_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		callback_socket.bind(('127.0.0.1', 0))
+		callback_socket.listen(1)
+		callback_host, callback_port = callback_socket.getsockname()
+		env = dict(os.environ)
+		env['_PYSPARK_DRIVER_CALLBACK_HOST'] = callback_host
+		env['_PYSPARK_DRIVER_CALLBACK_PORT'] = str(callback_port)
+		if not on_windows:
+			def preexec_func():
+				signal.signal(signal.SIGINT, signal.SIG_IGN)
+			proc = Popen(command, stdin=PIPE, preexec_fn=preexec_func, env=env)
+		else:
+			proc = Popen(command, stdin=PIPE, env=env)
+		gateway_port = None
+		while gateway_port is None and proc.poll() is None:
+			timeout = 1
+			readable, _, _ = select.select([callback_socket], [], [], timeout)
+			if callback_socket in readable:
+				gateway_connection = callback_socket.accept()[0]
+				gateway_port = read_int(gateway_connection.makefile(mode="rb"))
+				gateway_connection.close()
+				callback_socket.close()
+		if gateway_port is None:
+			raise Exception("Java gateway process exited before sending the driver its port number")
+		if on_windows:
+			def killChild():
+				Popen(["cmd", "/c", "taskkill", "/f", "/t", "/pid", str(proc.pid)])
+			atexit.register(killChild)
+	gateway = JavaGateway(GatewayClient(port=gateway_port), auto_convert=True)
+	java_
+	java_
+	java_
+	java_
+	java_
+	java_
+	java_
+	return gateway

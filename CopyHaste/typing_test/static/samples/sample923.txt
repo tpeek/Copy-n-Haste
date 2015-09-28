@@ -1,0 +1,27 @@
+
+RESOLUCION_INICIAL = (800, 600)
+BASE_PATH = os.path.dirname(__file__)
+GObject.threads_init()
+class Juego(GObject.GObject):
+	__gsignals__ = {
+		"update": (GObject.SIGNAL_RUN_LAST,
+			GObject.TYPE_NONE, [])}
+	def __init__(self, datos):
+		GObject.GObject.__init__(self)
+		self.game_dict = datos
+		self.resolucionreal = RESOLUCION_INICIAL
+		self.escenario = False
+		self.ventana = False
+		self.reloj = False
+		self.estado = False
+		self.jugador = False
+		self.jugadores = pygame.sprite.RenderUpdates()
+		print self.game_dict
+	def escalar(self, resolucion):
+		self.resolucionreal = resolucion
+	def config(self):
+		pygame.init()
+		self.reloj = pygame.time.Clock()
+		pygame.event.set_blocked(
+			[MOUSEMOTION, MOUSEBUTTONUP,
+			MOUSEBUTTONDOWN, JOYAXISMOTI

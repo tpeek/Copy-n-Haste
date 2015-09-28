@@ -1,0 +1,37 @@
+
+class Reader(object):
+	def __init__(self, data):
+		if isinstance(data,list):
+			self._str = data
+		else:
+			self._str = data.split('\n')
+		self.reset()
+	def __getitem__(self, n):
+		return self._str[n]
+	def reset(self):
+		self._l = 0
+	def read(self):
+		if not self.eof():
+			out = self[self._l]
+			self._l += 1
+			return out
+		else:
+			return ''
+	def seek_next_non_empty_line(self):
+		for l in self[self._l:]:
+			if l.strip():
+				break
+			else:
+				self._l += 1
+	def eof(self):
+		return self._l >= len(self._str)
+	def read_to_condition(self, condition_func):
+		start = self._l
+		for line in self[start:]:
+			if condition_func(line):
+				return self[start:self._l]
+			self._l += 1
+			if self.eof():
+				return self[start:self._l+1]
+		return []
+	def r

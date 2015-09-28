@@ -1,0 +1,20 @@
+
+class BinpkgEnvExtractor(CompositeTask):
+	__slots__ = ('settings',)
+	def saved_env_exists(self):
+		return os.path.exists(self._get_saved_env_path())
+	def dest_env_exists(self):
+		return os.path.exists(self._get_dest_env_path())
+	def _get_saved_env_path(self):
+		return os.path.join(os.path.dirname(self.settings['EBUILD']),
+			"environment.bz2")
+	def _get_dest_env_path(self):
+		return os.path.join(self.settings["T"], "environment")
+	def _start(self):
+		saved_env_path = self._get_saved_env_path()
+		dest_env_path = self._get_dest_env_path()
+		shell_cmd = "${PORTAGE_BUNZIP2_COMMAND:-${PORTAGE_BZIP2_COMMAND} -d} -c -- %s > %s" % \
+			(_shell_quote(saved_env_path),
+			_shell_quote(dest_env_path))
+		extractor_proc = SpawnProcess(
+			args=[BASH_BIN

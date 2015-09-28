@@ -1,0 +1,17 @@
+class Compare2HtmlTestCase(test.TestCase):
+	def test_main(self):
+		results = [{"val2": 0.0111, "field": u"time", "val1": 0.0222,
+					"type": "CHANGED", "test_name": u"test.one"},
+				   {"val2": 0.111, "field": u"time", "val1": 0.222,
+					"type": "CHANGED", "test_name": u"test.two"},
+				   {"val2": 1.11, "field": u"time", "val1": 2.22,
+					"type": "CHANGED", "test_name": u"test.three"}]
+		fake_kw = {"heading":
+				   {"title": compare2html.__title__,
+					"description": compare2html.__description__,
+					"parameters": [("Difference Count", len(results))]
+					},
+				   "generator": "compare2html %s" % compare2html.__version__,
+				   "results": results}
+		with mock.patch("mako.template.Template") as mock_mako:
+			compare2html.create_rep

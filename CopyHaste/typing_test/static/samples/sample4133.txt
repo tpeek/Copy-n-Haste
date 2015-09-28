@@ -1,0 +1,25 @@
+logging.captureWarnings(True)
+BREADTH = 15
+DEPTH = 15
+PLAYER_LIST = 0
+MATCH_COUNT = 0
+SESSION = RiotSession(API_KEY)
+LOGGING = PrettyLog()
+def get_featured():
+	featured = SESSION.get_featured()
+	LOGGING.push("Success. Got featured games.")
+	LOGGING.push("Getting participants of featured games...")
+	matches = [match for match in featured]
+	participants = []
+	for match in matches:
+		for participant in match['participants']:
+			participants.append(participant['summonerName'].encode('utf-8'))
+	return participants
+def crawl_player(player, depth, breadth):
+	global PLAYER_LIST
+	if depth != 0:
+		LOGGING.push(
+			"Crawling player *'" + str(player) +
+			"'* at a depth of @" + str(DEPTH - depth) + "@."
+		)
+		matches = SESSION.get_match_list(player=pla

@@ -1,0 +1,22 @@
+os.environ['DJANGO_SETTINGS_MODULE'] = "zproject.settings"
+sys.path.append('/home/zulip/deployments/current')
+sys.path.append('/home/zulip/deployments/current/zerver')
+states = {
+	"OK": 0,
+	"WARNING": 1,
+	"CRITICAL": 2,
+	"UNKNOWN": 3
+	}
+def report(state, short_msg, too_old=None):
+	too_old_data = ""
+	if too_old:
+		too_old_data = "\nLast call to get_message for recently out of date mirrors:\n" + "\n".join(
+			["%16s: %s" % (user.user_profile.email,
+						   user.last_visit.strftime("%Y-%m-%d %H:%M %Z")
+						   ) for user in too_old]
+			)
+	print "%s: %s%s" % (state, short_msg, too_old_data)
+	exit(states[state])
+now = datetime.datetime.utcnow()
+all_users = UserActivity.objects.filter(query__in=["get_events_backend", "/api/v1/events"],
+								

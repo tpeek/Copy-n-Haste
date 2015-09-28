@@ -1,0 +1,26 @@
+
+def _check_daylong(tr):
+	if len(tr.data)-len(np.nonzero(tr.data)) < 0.5*len(tr.data):
+		qual=False
+	else:
+		qual=True
+	return qual
+def shortproc(st, lowcut, highcut, filt_order, samp_rate, debug=0):
+	for tr in st:
+		if debug > 4:
+			tr.plot()
+		qual=_check_daylong(tr)
+		if not qual:
+			msg="Data have more zeros than actual data, please check the raw" +\
+					"data set-up and manually sort it"
+			raise ValueError(msg)
+		if tr.stats.sampling_rate != samp_rate:
+			tr.resample(samp_rate)
+		tr=tr.detrend('simple')
+		tr.data=bandpass(tr.data, lowcut, highcut,
+					tr.stats.sampling_rate, filt_order, True)
+		tr.stats.channel=tr.stats.channel[0]+tr.stats.channel[2]
+		if debug > 4:
+			tr.plot()
+	return st
+def dayproc(tr, lowcut, highcut, filt_order

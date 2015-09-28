@@ -1,0 +1,18 @@
+DEBUG = False
+def any(name, alternates):
+	"Return a named group pattern matching list of alternates."
+	return "(?P<%s>" % name + "|".join(alternates) + ")"
+def make_pat():
+	kw = r"\b" + any("KEYWORD", keyword.kwlist) + r"\b"
+	builtinlist = [str(name) for name in dir(builtins)
+										if not name.startswith('_') and \
+										name not in keyword.kwlist]
+	builtin = r"([^.'\"\\
+	comment = any("COMMENT", [r"
+	stringprefix = r"(\br|u|ur|R|U|UR|Ur|uR|b|B|br|Br|bR|BR|rb|rB|Rb|RB)?"
+	sqstring = stringprefix + r"'[^'\\\n]*(\\.[^'\\\n]*)*'?"
+	dqstring = stringprefix + r'"[^"\\\n]*(\\.[^"\\\n]*)*"?'
+	sq3string = stringprefix + r")?"
+	dq3string = stringprefix + r')?'
+	string = any("STRING", [sq3string, dq3string, sqstring, dqstring])
+	return kw + "

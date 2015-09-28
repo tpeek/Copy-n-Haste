@@ -1,0 +1,22 @@
+
+class TestNetflix(TestCase) :
+		
+	def test_read_1(self) :
+		r = StringIO("2043:\n1417435\n2312054\n")
+		w = StringIO()
+		netflix_read(r, w)
+		self.assertEqual(w.getvalue(), "2043:\n3.6\n4.5\nRMSE: 2.53\n")
+	def test_read_2(self) :
+		r = StringIO("1:\n30878\n2647871\n1283744\n2488120\n317050\n")
+		w = StringIO()
+		netflix_read(r, w)
+		self.assertEqual(w.getvalue(), "1:\n3.7\n3.3\n3.7\n4.7\n3.7\nRMSE: 0.77\n")
+	def test_read_3(self) :
+		r = StringIO("10007:\n1204847\n2160216\n248206\n835054\n1064667\n2419805\n")
+		w = StringIO()
+		netflix_read(r, w)
+		self.assertEqual(w.getvalue(), "10007:\n2.9\n3.5\n2.9\n2.9\n2.7\n3.3\nRMSE: 1.31\n")
+	def test_rmse_1(self):
+		x = rmse((2, 4, 10))
+		self.assertEqual(x, 6.324555320336759)
+	def test_rmse_2(sel

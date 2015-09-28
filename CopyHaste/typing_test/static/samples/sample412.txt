@@ -1,0 +1,30 @@
+
+DEFAULT_ZONE = -1
+TITLE = '
+DEFAULT_PROJECTION = 'UTM'
+DEFAULT_DATUM = 'wgs84'
+DEFAULT_UNITS = 'm'
+DEFAULT_FALSE_EASTING = 500000
+DEFAULT_FALSE_NORTHING = 10000000
+class Geo_reference:
+	def __init__(self,
+				 zone=DEFAULT_ZONE,
+				 xllcorner=0.0,
+				 yllcorner=0.0,
+				 datum=DEFAULT_DATUM,
+				 projection=DEFAULT_PROJECTION,
+				 units=DEFAULT_UNITS,
+				 false_easting=DEFAULT_FALSE_EASTING,
+				 false_northing=DEFAULT_FALSE_NORTHING,
+				 NetCDFObject=None,
+				 ASCIIFile=None,
+				 read_title=None):
+		if zone is None:
+			zone = DEFAULT_ZONE
+		self.false_easting = int(false_easting)
+		self.false_northing = int(false_northing)
+		self.datum = datum
+		self.projection = projection
+		self.zone = int(zone)
+		self.units = units
+		self.xllcor

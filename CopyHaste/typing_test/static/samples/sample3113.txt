@@ -1,0 +1,59 @@
+write = getattr(sys.stdout, 'buffer', sys.stdout).write
+def write_bin_entry(entry):
+	l = len(entry)
+	if l != 32 and l != 64:
+		entry = "0" * 64
+		l = 0
+	elif l < 64:
+		entry += "0" * (64 - l)
+	write(struct.pack('B', int(l / 32)))
+	write(struct.pack('B', 0))
+	write(struct.pack('H', 0))
+	write(struct.pack('I', 0))
+	i = 0
+	for j in range(0, 16):
+		for k in range(0, 2):
+			if l <= k * 16 * 2:
+				c = 0
+			else:
+				c = int(entry[i:i+2], 16)
+				i += 2
+			write(struct.pack('B', c))
+def write_bin(bits):
+	write(struct.pack('B', 0x44))
+	write(struct.pack('B', 0x56))
+	write(struct.pack('B', 0x44))
+	write(struct.pack('B', 0x48))
+	write(struct.pack('B', 0x52))
+	write(struct.pack('B', 0x4d))
+	write(struct.pack('B', 0x55))
+	write(struct.pack('B', 0x46))
+	write(struct.pack('<I', 0))
+	write(struct.pack('<I', 0))
+	write(struct.pack('<I', 32))
+	write(struct.pack('<H', 8))
+	write(struct.pack('<H', 2))
+	write(struct.pack('<Q', 32))
+	for idx in range(len(bits)):
+		write_bin_entry(bits[idx])
+def parse_hex_line(bits, line):
+	m = re.match(r"^([0-9A-Fa-f]+):([0-9A-Fa-f]+)$", line)
+	if m == None:
+		return
+	idx = int(m.group(1), 16)
+	val = m.group(2)
+	for i in range(len(bits), idx):
+		bits.append("")
+	bits.insert(idx, val)
+def parse_hex():
+	bits = []
+	for line in sys.stdin:
+		if not line:
+			continue
+		if line.startswith("
+			continue
+		parse_hex_line(bits, line)
+	return bits
+if __name__ == "__main__":
+	bits = parse_hex()
+	write_bin(bits)

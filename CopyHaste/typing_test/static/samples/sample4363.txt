@@ -1,0 +1,39 @@
+class TestNetflix(TestCase):
+	
+	dicts = []
+	def test_load_caches_1(self):
+		global dicts
+		dicts = load_caches()
+		for x in dicts:
+			self.assertTrue(type(x) is dict)
+	
+	def test_RMSE_1(self):
+		a = [1, 2, 3]
+		b = [1, 2, 3]
+		v = RMSE(a, b)
+		self.assertEqual(v, 0)
+	
+	def test_RMSE_2(self):
+		a = 1
+		b = 2
+		v = RMSE(a, b)
+		self.assertEqual(v, 1)
+	def test_RMSE_3(self):
+		a = (0, 0)
+		b = (0, 0)
+		v = RMSE(a, b)
+		self.assertEqual(v, 0)
+	def test_predict_1(self):
+		global dicts
+		actual = dicts[4]
+		actualRtg = actual[(2043, 1417435)]
+		
+		p = predict(1417435, 2043)
+		self.assertTrue(RMSE(actualRtg, p) < 1.00)
+	def test_predict_2(self):
+		global dicts
+		actual = dicts[4]
+		
+		actualRtg = actual[(886,  1118399)]
+		
+		p = predict(1118399, 8

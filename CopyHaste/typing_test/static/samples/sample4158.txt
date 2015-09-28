@@ -1,0 +1,25 @@
+ERROR_EXCESSIVE = "Excessive"
+_CONFIG = {}
+def config_loaded(config):
+	global _CONFIG
+	_CONFIG = config
+	return
+def plugins_loaded():
+	current_app.jinja_env.filters["thumbnail"] = filter_thumbnail
+	current_app.jinja_env.filters["type"] = filter_contenttype
+	current_app.jinja_env.filters["url"] = filter_url
+	current_app.jinja_env.filters["path"] = filter_path
+	return
+def before_render(var, template):
+	var["saltshaker"] = saltshaker
+	var["stapler"] = stapler
+	var["rope"] = rope
+	var["glue"] = glue
+	var["barcode"] = barcode
+	var["timemachine"] = timemachine
+	var["gutter"] = gutter
+	return
+def filter_contenttype(raw_pages, ctype = None, limit = None, sort_by = None):
+	if not isinstance(raw_pages, (list, dict)):
+		return raw_pages
+	return saltsh

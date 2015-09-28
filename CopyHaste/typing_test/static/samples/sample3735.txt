@@ -1,0 +1,19 @@
+email_services = models.Registry.
+(job_models,) = models.Registry.
+MAX_MAPREDUCE_METADATA_RETENTION_MSECS = 2 * 24 * 60 * 60 * 1000
+def require_cron_or_superadmin(handler):
+	def _require_cron_or_superadmin(self, *args, **kwargs):
+		if (self.request.headers.get('X-AppEngine-Cron') is None
+				and not self.is_super_admin):
+			raise self.UnauthorizedUserException(
+				'You do not have the credentials to access this page.')
+		else:
+			return handler(self, *args, **kwargs)
+	return _require_cron_or_superadmin
+class JobStatusMailerHandler(base.BaseHandler):
+	@require_cron_or_superadmin
+	def get(self):
+		TWENTY_FIVE_HOURS_IN_MSECS = 25 * 60 * 60 * 1000
+		MAX_JOBS_TO_REPORT_ON = 50
+		failed_jobs = jobs.get_stuck_jobs(TWENTY_FIVE_HOURS_IN_MSECS)
+		if

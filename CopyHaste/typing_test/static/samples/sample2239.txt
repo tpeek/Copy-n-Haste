@@ -1,0 +1,22 @@
+
+class GraphModule(mp_module.MPModule):
+	def __init__(self, mpstate):
+		super(GraphModule, self).__init__(mpstate, "graph", "graph control")
+		self.timespan = 20
+		self.tickresolution = 0.2
+		self.graphs = []
+		self.add_command('graph', self.cmd_graph, "[expression...] add a live graph",
+						 ['(VARIABLE) (VARIABLE) (VARIABLE) (VARIABLE) (VARIABLE) (VARIABLE)'])
+	def cmd_graph(self, args):
+		if len(args) == 0:
+			for i in range(len(self.graphs)):
+				print("Graph %u: %s" % (i, self.graphs[i].fields))
+			return
+		elif args[0] == "help":
+			print("graph <timespan|tickresolution|expression>")
+		elif args[0] == "timespan":
+			if len(args) == 1:
+				print("timespan: %.1f" % self.timespan)
+				return
+			self.timespan = float(args[1])
+		elif arg

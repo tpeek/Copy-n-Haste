@@ -1,0 +1,49 @@
+courses = { 
+			"3505" : {
+						"id" : "341727",
+						"1" : "2476927",
+						"2" : "2497167",
+					 },
+			"3620" : {
+						"id" : "351559",
+						"9-1" : "2423057",
+						"obs1" : "2439191",
+						"9-8" : "2423066",
+					 },
+			"3100" : {
+						"id" : "351552",
+					 },
+		  }
+def post_data(filename):
+	token = ""
+	payload = {
+				"name" : os.path.basename(filename),
+				"parent_folder_path" : os.path.dirname(filename),
+				}
+	
+	headers = {
+				"Authorization" : "Bearer %s" % token,
+				}
+	return payload, headers
+def notify_canvas(course, assignment, payload, headers):
+	canvas_url = "https://canvas.instructure.com/api/v1/courses/{0}/assignments/{1}/submissions/self/files"
+	return json.loads(requests.post(canvas_url.format(courses[course]["id"], courses[course][assignment], data = payload, headers=headers)).text) 
+def upload_file(filename, notify_response):
+	notify_response["upload_params"]["file"] = "@{0}".format(filename)
+	return requests.post(notify_response["upload_url"], notify_response["upload_params"], allow_redirects = False)
+def main():
+	if not len(sys.argv) >= 4:
+		print("Usage: ./handin [class_name] [assignment] [file1] [file2] ...")
+		return 0
+	for i in range(3, len(sys.argv)):
+		print "Uploading ", sys.argv[i], "..."
+		payload, headers = post_data(sys.argv[i])
+		notify_response = notify_canvas(sys.argv[1], sys.argv[2], payload, headers) 
+		print notify_response
+		redirect = upload_file(sys.argv[i], notify_response)
+		print redirect
+		headers["Content-Length"] = 0
+		requests.post(redirect.url, headers = headers) 
+		print "success!\n"
+if __name__ == "__main__":
+	main()

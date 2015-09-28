@@ -1,0 +1,30 @@
+
+FILENAME = object()
+COVER_IMAGE_SIZES = (
+	(520, 293),
+	(382, 215),
+	(397, 224),
+	(786, 230),
+	(1026, 300),
+)
+IMG_BASE_DIR = join('content', 'images')
+EQUATION_BASE_DIR = join(IMG_BASE_DIR, 'equation')
+THUMB_BASE_DIR = join(IMG_BASE_DIR, 'thumb')
+MANIFEST_FILE = join(THUMB_BASE_DIR, '.manifest.json')
+OPTIMIZE_COMMANDS = {
+	'.jpg': ['jpegtran', '-copy', 'none', '-optimize', '-outfile', FILENAME, FILENAME],
+	'.png': ['optipng', FILENAME],
+}
+def load_manifest():
+	data = {}
+	if exists(MANIFEST_FILE):
+		with open(MANIFEST_FILE) as fp:
+			data = json.load(fp)
+	return data
+def write_manifest(data):
+	with open(MANIFEST_FILE, 'w') as fp:
+		json.dump(data, fp)
+def get_hash(filename):
+	with open(filename, 'rb') as fp:
+		data = fp.read()
+	m = hashlib.

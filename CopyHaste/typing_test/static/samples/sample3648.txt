@@ -1,0 +1,25 @@
+headers = {
+	'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; rv:14.0) Gecko/20100101 Firefox/14.0.1',
+	'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+	'Accept-Language': 'ru-ru,ru;q=0.8,en-us;q=0.5,en;q=0.3',
+	'Accept-Encoding': 'gzip, deflate',
+	'Connection': 'keep-alive',
+	'DNT': '1'
+}
+request_file = "request.txt"
+theard_count = 10
+pages = 20
+file = open('url_pars.txt', 'w')
+file.close()
+def pars(request):
+	for i in range(len(request_list)):
+		search = request_list[i].strip()
+		print('Use request: '+search)
+		count = 1
+		while (count < pages):
+			req = ('http://www.bing.com/search?q=' + search + '&first='+str(count))
+			try:	
+				response = requests.get(req)
+			except:
+				print('Error get bing.com')
+			req = ''	

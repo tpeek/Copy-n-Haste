@@ -1,0 +1,16 @@
+try:
+except:
+__addonname__ = "PPS影音(PPS.tv)"
+__addonid__   = "plugin.video.pps"
+__addon__ = xbmcaddon.Addon(id=__addonid__)
+__addonicon__ = os.path.join( __addon__.getAddonInfo('path'), 'icon.png' )
+__settings__  = xbmcaddon.Addon(id=__addonid__)
+__cwd__	   = xbmc.translatePath( __settings__.getAddonInfo('path') )
+RESOURCES_PATH = os.path.join(__cwd__ , "resources" )
+sys.path.append( os.path.join( RESOURCES_PATH, "lib" ) )
+UserAgent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
+COLOR_LIST = ['[COLOR FFFF0000]','[COLOR FF00FF00]','[COLOR FFFFFF00]','[COLOR FF00FFFF]','[COLOR FFFF00FF]']
+ListOmit ="爱频道 - 我的频道"
+def getHttpData(url):
+	print "getHttpData: " + url
+	req = urllib2.R

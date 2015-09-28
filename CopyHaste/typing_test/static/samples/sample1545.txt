@@ -1,0 +1,29 @@
+
+	IPAddress, AddressValueError,
+	IPNetwork,
+)
+log = logging.getLogger('network.forms')
+SW_NAME = get_sw_name()
+class InterfacesForm(ModelForm):
+	int_interface = forms.ChoiceField(label=_("NIC"))
+	class Meta:
+		fields = '__all__'
+		model = models.Interfaces
+		widgets = {
+			'int_vhid': forms.widgets.TextInput(),
+		}
+	def __init__(self, *args, **kwargs):
+		super(InterfacesForm, self).__init__(*args, **kwargs)
+		self._carp = False
+		_n = notifier()
+		if not _n.is_freenas() and _n.failover_licensed():
+			self._carp = True
+			node_label_field(
+				_n.failover_node(),
+				self.fields['int_ipv4address'],
+				self.fields['int_ipv4address_b'],
+			)
+		if not self._carp:
+			del self.fields['int_vip']
+			del self.fields['int_vhid']
+			del self.fields['

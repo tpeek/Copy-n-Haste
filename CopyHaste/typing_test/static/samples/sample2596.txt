@@ -1,0 +1,21 @@
+
+class TZmqServer(thrift.server.TServer.TServer):
+  def __init__(self, processor, ctx, endpoint, sock_type):
+	thrift.server.TServer.TServer.__init__(self, processor, None)
+	self.zmq_type = sock_type
+	self.socket = ctx.socket(sock_type)
+	self.socket.bind(endpoint)
+  def serveOne(self):
+	msg = self.socket.recv()
+	itrans = thrift.transport.TTransport.TMemoryBuffer(msg)
+	otrans = thrift.transport.TTransport.TMemoryBuffer()
+	iprot = self.inputProtocolFactory.getProtocol(itrans)
+	oprot = self.outputProtocolFactory.getProtocol(otrans)
+	try:
+	  self.processor.process(iprot, oprot)
+	except Exception:
+	  logging.exception("Exception while processing request")
+	if self.zmq_type == zmq.REP:
+	  msg = otrans.getvalue()
+	  self.socket.send(msg)
+  def serv

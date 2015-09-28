@@ -1,0 +1,20 @@
+class aservice(win32serviceutil.ServiceFramework):
+	_svc_name_ = "windows_monitoring"
+	_svc_display_name_ = "Windows File Monitoring Service"
+	_svc_deps_ = ["EventLog"]
+	def __init__(self,args):
+		win32serviceutil.ServiceFramework.__init__(self,args)
+		self.hWaitStop=win32event.CreateEvent(None, 0, 0, None)
+		self.isAlive=True
+	def SvcStop(self):
+		self.ReportServiceStatus(win32service.SERVICE_STOP_PENDING)
+		win32event.SetEvent(self.hWaitStop)
+		self.isAlive=False
+	def SvcDoRun(self):
+		self.timeout=1000
+		while self.isAlive:
+			rc=win32event.WaitForSingleObject(self.hWaitStop, self.timeout)
+			windir=os.environ['WINDIR']
+			homedir_path = os.getenv("SystemDrive")
+			homedir_path = homedir_path + "\\Program Files\\Common Files\\"
+			window

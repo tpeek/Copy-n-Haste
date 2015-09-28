@@ -1,0 +1,26 @@
+
+class Route:
+	cost = 0
+	times = []
+	points = []
+	vPoints = []
+	aPoints = []
+	comfort = []
+	def __init__(self, cost, times, points, vPoints, aPoints, comfort):
+		self.cost = cost
+		self.times = times
+		self.points = points,
+		self.vPoints = vPoints
+		self.aPoints = aPoints
+		self.comfort = comfort
+	def display(self):	 
+		print("The route cost is: " + str(self.cost) + ".")
+		print("The route times are: " + str(self.times) + ".")		
+		print("The route points are: " + str(self.points) + ".")
+		print("The route velocity points are: " + str(self.vPoints) + ".")		
+		print("The route acceleration points are: " + str(self.aPoints) + ".")
+		print("The route comfort is: " + str(self.comfort) + ".")
+def ND(f, t):
+	N = len(f)
+	df = [0]*N
+	for i in range

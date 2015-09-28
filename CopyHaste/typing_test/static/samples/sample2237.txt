@@ -1,0 +1,18 @@
+
+if mp_util.has_wxpython:
+class GimbalModule(mp_module.MPModule):
+	def __init__(self, mpstate):
+		super(GimbalModule, self).__init__(mpstate, "gimbal", "gimbal control module")
+		self.add_command('gimbal', self.cmd_gimbal, "gimbal link control",
+						 ['<rate|point|roi|mode|status>'])
+		if mp_util.has_wxpython:
+			self.menu = MPMenuSubMenu('Mount',
+									  items=[MPMenuItem('GPS targeting Mode', 'GPS Mode', '
+											 MPMenuItem('MAVLink targeting Mode', 'MAVLink Mode', '
+											 MPMenuItem('RC targeting Mode', 'RC Mode', '
+											 MPMenuItem('Point At', 'Point At', '
+			self.menu_added_map = False
+		else:
+			self.menu = None
+	def idle_task(self):
+		if self.menu is not None and self.module('map') is not None and not self.menu

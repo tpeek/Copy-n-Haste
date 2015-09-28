@@ -1,0 +1,21 @@
+class UniqueUsername(formencode.FancyValidator):
+	def _to_python(self, value, state):
+		user_q = model.meta.Session.query(model.User)
+		usernames = [user.username for user in user_q.all()]
+		if value in usernames:
+			raise formencode.Invalid(
+					'Sorry, that username already exists. Try something else.',
+					 value, state)
+			return value
+class UniqueEmail(formencode.FancyValidator):
+	def _to_python(self, value, state):
+		user_q = model.meta.Session.query(model.User)
+		emails = [user.email for user in user_q.all()]
+		if value in emails:
+			raise formencode.Invalid(
+					'Sorry, that email is already used by someone else. Try another.',
+					value, state)
+			return value
+class RegisterForm(formencode.Schema):
+	allow_extra_fields = True
+	f

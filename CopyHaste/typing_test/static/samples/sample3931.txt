@@ -1,0 +1,24 @@
+__version__ = '0.3.2'
+
+class lpoDB():
+
+	def __init__(self, **kwargs):	   
+
+		self.filename = kwargs.get('filename', 'lpo.db')
+		self.table = kwargs.get('table', 'Weather')
+		
+		self.db = sqlite3.connect(self.filename)
+		self.db.row_factory = sqlite3.Row		
+		self.db.execute(.format(self.table))
+				  
+	def __iter__(self):
+		cursor = self.db.execute('SELECT * FROM {} ORDER BY Date, Time'.format(self.table))
+		for row in cursor: yield dict(row)
+	   
+	def get_data_for_range(self, start, end):
+		
+		dates_to_update = []
+		for year in range(start.year, 2007):
+			if list(self._get_status_for_range(date(year,1,12), date(year,1,12))) == []:
+				dates_to_update.append(date(year,1,12))
+		if (end.year > 2006) and (start >= date(2007

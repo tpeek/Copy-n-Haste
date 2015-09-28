@@ -1,0 +1,32 @@
+
+module_log_enabled=False; http_debug_log_enabled=False; LIST="list"; THUMBNAIL="thumbnail"; MOVIES="movies"; TV_SHOWS="tvshows"; SEASONS="seasons"; EPISODES="episodes"; OTHER="other";
+ALL_VIEW_CODES={
+	'list': {
+		'skin.confluence': 50,
+		'skin.aeon.nox': 50,
+		'skin.droid': 50,
+		'skin.quartz': 50,
+		'skin.re-touched': 50,
+	},
+	'thumbnail': {
+		'skin.confluence': 500,
+		'skin.aeon.nox': 500,
+		'skin.droid': 51,
+		'skin.quartz': 51,
+		'skin.re-touched': 500,
+	},
+	'movies': {
+		'skin.confluence': 500,
+		'skin.aeon.nox': 500,
+		'skin.droid': 51,
+		'skin.quartz': 52,
+		'skin.re-touched': 500,
+	},
+	'tvshows': {
+		'skin.confluence': 500,
+		'skin.aeon.nox': 500,
+		'skin.droid': 51,
+		'skin.quartz': 52,
+		'skin.re-touched': 500,
+	},
+	'seasons': {

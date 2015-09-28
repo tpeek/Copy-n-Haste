@@ -1,0 +1,26 @@
+EPSILON = 1e-10
+def linear(middle, pos):
+	if pos <= middle:
+		if middle < EPSILON:
+			return 0.0
+		else:
+			return 0.5 * pos / middle
+	else:
+		pos = pos - middle
+		middle = 1.0 - middle
+		if middle < EPSILON:
+			return 1.0
+		else:
+			return 0.5 + 0.5 * pos / middle
+def curved(middle, pos):
+	return pos ** (log(0.5) / log(max(middle, EPSILON)))
+def sine(middle, pos):
+	return (sin((-pi / 2.0) + pi * linear(middle, pos)) + 1.0) / 2.0
+def sphere_increasing(middle, pos):
+	return sqrt(1.0 - (linear(middle, pos) - 1.0) ** 2)
+def sphere_decreasing(middle, pos):
+	return 1.0 - sqrt(1.0 - linear(middle, pos) ** 2)
+SEGMENTS = [linear, curved, sine, sphere_increasing, sphere_decreasing]
+class GradientFile(object):
+	gradient = None
+	def getpalette(self, e

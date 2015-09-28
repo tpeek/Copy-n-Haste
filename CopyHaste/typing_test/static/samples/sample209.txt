@@ -1,0 +1,18 @@
+
+def random_h(candidate_mask, n_candidates, **kwargs):
+	
+	candidate_index = np.where(candidate_mask)[0]
+	random_index = np.random.choice(candidate_index, n_candidates, replace=False)
+	return random_index
+def entropy_h(X, candidate_mask, classifier, n_candidates, **kwargs):
+	probs = classifier.predict_proba(X[candidate_mask])
+	candidate_shannon = -np.sum(probs * np.log(probs), axis=1)
+	shannon = np.empty(len(candidate_mask))
+	shannon[:] = -np.inf
+	shannon[candidate_mask] = candidate_shannon
+	best_candidates = np.argsort(-shannon)[:n_candidates]
+	return best_candidates
+def margin_h(X, candidate_mask, classifier, n_candidates, **kwargs):
+	probs = classifier.predict_proba(X[candidate_mask])
+	probs = np.sort(probs, axis=1)
+	candidate_margin = np

@@ -1,0 +1,20 @@
+redisqueue = RedisQueueClient()
+def merch(request):
+  return render_to_response('merch.xhtml', {}) 
+def about(request):
+  return render_to_response('about.xhtml', {})
+def contact(request):
+  return render_to_response('contact.xhtml', {})
+def faq(request):
+  return render_to_response('faq.xhtml', {})
+def galaxy(request):
+  return render_to_response('galaxy.xhtml', {})
+def roadmap(request):
+  return render_to_response('roadmap.xhtml', {})
+def testactivation(request):
+  account = User.objects.get(username="blah50")
+  return render_to_response('registration/activate.html', {'account':account})
+def scoreboard(request, detail=None):
+  scores = []
+  base = User.objects.exclude(id=1).values('id','username')
+  scores.append({'name':'Highest Society 

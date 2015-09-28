@@ -1,0 +1,25 @@
+
+C, D = 'C', 'D'
+class TestMetaMajority(TestPlayer):
+	name = "Meta Majority"
+	player = axelrod.MetaMajority
+	expected_classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': True,
+		'manipulates_source': False,
+		'inspects_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		P1 = axelrod.MetaMajority()
+		P2 = axelrod.Player()
+		P1.team = [axelrod.Cooperator(), axelrod.Cooperator(), axelrod.Defector()]
+		self.assertEqual(P1.strategy(P2), C)
+		P1.team = [axelrod.Cooperator(), axelrod.Defector(), axelrod.Defector()]
+		self.assertEqual(P1.strategy(P2), D)
+class TestMetaMinority(TestPlayer):
+	name = "Meta Minority"
+	player = axelrod.MetaMinority
+	expected_classifier = {
+		'memory_depth': float('inf'),
+		'stochastic'

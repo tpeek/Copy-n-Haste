@@ -1,0 +1,26 @@
+class FormatParagraph:
+	menudefs = [
+		('format', [
+			('Format Paragraph', '<<format-paragraph>>'),
+		 ])
+	]
+	def __init__(self, editwin):
+		self.editwin = editwin
+	def close(self):
+		self.editwin = None
+	def format_paragraph_event(self, event, limit=None):
+		if limit is None:
+			limit = idleConf.GetOption(
+				'extensions', 'FormatParagraph', 'max-width',
+				type='int', default=72)
+		text = self.editwin.text
+		first, last = self.editwin.get_selection_indices()
+		if first and last:
+			data = text.get(first, last)
+			comment_header = get_comment_header(data)
+		else:
+			first, last, comment_header, data = \
+					find_paragraph(text, text.index("insert"))
+		if comment_header:
+			newdata = reformat_comment(data, limit, comment_header)
+		else:

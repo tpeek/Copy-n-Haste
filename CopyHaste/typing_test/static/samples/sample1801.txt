@@ -1,0 +1,28 @@
+
+			   AlreadyLocked)
+class MkdirLockFile(LockBase):
+	def __init__(self, path, threaded=True):
+		LockBase.__init__(self, path, threaded)
+		self.unique_name  = os.path.join(self.lock_file,
+										 "%s.%s%s" % (self.hostname,
+													  self.tname,
+													  self.pid))
+	def acquire(self, timeout=None):
+		end_time = time.time()
+		if timeout is not None and timeout > 0:
+			end_time += timeout
+		if timeout is None:
+			wait = 0.1
+		else:
+			wait = max(0, timeout / 10)
+		while True:
+			try:
+				os.mkdir(self.lock_file)
+			except OSError:
+				err = sys.exc_info()[1]
+				if err.errno == errno.EEXIST:
+					if os.path.exists(self.unique_name):
+						return
+					if timeout is not None and time.time() > end_time:
+						if timeout > 0:
+						

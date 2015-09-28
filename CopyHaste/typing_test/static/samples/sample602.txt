@@ -1,0 +1,22 @@
+
+revision = '14692efd261b'
+down_revision = '2ac4e3c4e049'
+def upgrade():
+	engine = main_engine()
+	now = datetime.datetime.now()
+	Base = declarative_base()
+	Base.metadata.reflect(engine)
+	class GmailAccount(Base):
+		__table__ = Base.metadata.tables['gmailaccount']
+	class Secret(Base):
+		__table__ = Base.metadata.tables['secret']
+	class GmailAuthCredentials(Base):
+		__table__ = Base.metadata.tables['gmailauthcredentials']
+		secret = relationship(Secret)
+	with session_scope(versioned=False) as db_session:
+		for acc, sec in db_session.query(GmailAccount, Secret) \
+						.filter(GmailAccount.refresh_token_id == Secret.id,
+								GmailAccount.scope != None,
+								GmailAccount.g_id_token != None) \
+						.all():
+			if db_session.query(GmailAuth

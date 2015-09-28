@@ -1,0 +1,17 @@
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+class TestIE(InfoExtractor):
+	pass
+class TestInfoExtractor(unittest.TestCase):
+	def setUp(self):
+		self.ie = TestIE(FakeYDL())
+	def test_ie_key(self):
+		self.assertEqual(get_info_extractor(YoutubeIE.ie_key()), YoutubeIE)
+	def test_html_search_regex(self):
+		html = '<p id="foo">Watch this <a href="http://www.youtube.com/watch?v=BaW_jenozKc">video</a></p>'
+		search = lambda re, *args: self.ie._html_search_regex(re, html, *args)
+		self.assertEqual(search(r'<p id="foo">(.+?)</p>', 'foo'), 'Watch this video')
+	def test_opengraph(self):
+		ie = self.ie
+		html =
+		self.assertEqual(ie._og_search_title(html), 'Foo')
+		self.assertEqual(ie._og_search_description(html), 'Som

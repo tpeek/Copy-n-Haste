@@ -1,0 +1,24 @@
+
+if MAKELOG:
+	reset_log()
+def terminate_thread(thread):
+	if not thread.isAlive():
+		return
+	exc = ctypes.py_object(SystemExit)
+	res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+		ctypes.c_long(thread.ident), exc)
+	if res == 0:
+		raise ValueError("No Existe el id de este hilo")
+	elif res > 1:
+		ctypes.pythonapi.PyThreadState_SetAsyncExc(thread.ident, None)
+		raise SystemError("PyThreadState_SetAsyncExc failed")
+class GameWidget(Gtk.Paned):
+	__gsignals__ = {
+	"salir": (GObject.SIGNAL_RUN_LAST,
+		GObject.TYPE_NONE, [])}
+	def __init__(self):
+		Gtk.Paned.__init__(self, orientation=Gtk.Orientation.HORIZONTAL)
+		self.drawing = DrawingWidget()
+		self.derecha = Derecha()
+		self.pack1(self.drawing, resize=True, shrink=False)
+		self.pack2(self.derech

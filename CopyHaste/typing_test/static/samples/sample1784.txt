@@ -1,0 +1,24 @@
+
+	
+def load_experiment_csv(file_path):
+	return pd.read_csv(file_path, header=None, na_values="NaN")
+	
+def load_histogram_csv(filepath):
+	pass
+def save_processed_csv(trajectory_list, filepath):
+	dir = os.path.dirname(filepath)
+	filename, extension = os.path.splitext ( os.path.basename(filepath) )
+	for i, trajectory in enumerate(trajectory_list):
+		trajectory = trajectory.fillna("NaN")
+		file_path = os.path.join(dir, "Processed/", filename + "_SPLIT_" + str(i))
+		trajectory.to_csv(file_path, index=False)
+		
+		
+def load_csv2DF(data_fname, rel_dir = "data/processed_trajectories/"):
+	file_path = os.path.join(os.getcwd(), rel_dir, data_fname + ".csv")
+	col_labels = [
+		'position_x',
+		'position_y',
+		'position_z',
+		'velocity_x',
+		'velocity_y',

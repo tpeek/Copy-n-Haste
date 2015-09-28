@@ -1,0 +1,31 @@
+email =
+email2 =
+email3 =
+email4 = 
+try:
+  userid = int(sys.argv[1])
+  account = User.objects.get(id=userid)
+except:
+  error = sys.exc_info()[0]
+  email4 = email4 % (userid, error)
+  if settings.DEBUG == False:
+	send_mail("New Player Error!",
+			  email4,
+			  "dave@davesgalaxy.com",
+			  ["Dav3xor@gmail.com"])
+  else:
+	print email4
+  exit()
+try:
+  starttime = time.time()
+  player = Player(lastactivity=datetime.datetime.now(), user = account)
+  player.create()
+  player.save()
+  endtime = time.time()
+  elapsedtime = endtime-starttime
+  email = email % (account.username)
+  email2 = email2 % (account.username,userid,elapsedtime) 
+  if settings.DEBUG == False:
+	send_mail("Dave's Galaxy Registration Complete", 
+			  email,
+			  'dave@davesgalaxy

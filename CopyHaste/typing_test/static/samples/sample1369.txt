@@ -1,0 +1,22 @@
+
+logger = logging.getLogger(__name__)
+DEFAULT_PRIVACY_LEVEL = getattr(settings, 'DEFAULT_PRIVACY_LEVEL', 'public')
+class GithubProjectManager(models.Manager):
+	def create_
+						privacy=DEFAULT_PRIVACY_LEVEL):
+		logger.info('Trying GitHub: %s' % api_json['full_name'])
+		if (
+				(api_json['private'] is True and privacy == 'private') or
+				(api_json['private'] is False and privacy == 'public')):
+			project, created = self.get_or_create(
+				full_name=api_json['full_name'],
+				users__pk=user.pk,
+			)
+			if project.organization and project.organization != organization:
+				logger.debug('Not
+							 api_json['name'])
+				return None
+			else:
+				project.organization = organization
+			project.users.add(user)
+			project.name = api_json['name']

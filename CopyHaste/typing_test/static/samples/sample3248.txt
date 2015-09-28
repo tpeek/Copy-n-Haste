@@ -1,0 +1,1091 @@
+try:
+except ImportError:
+  fcntl = None
+try:
+except ImportError:
+  termios = None
+_RUNNING_PYCHECKER = 'pychecker.python' in sys.modules
+def _GetCallingModuleObjectAndName():
+  for depth in range(1, sys.getrecursionlimit()):
+	if not sys._getframe(depth).f_globals is globals():
+	  globals_for_frame = sys._getframe(depth).f_globals
+	  module, module_name = _GetModuleObjectAndName(globals_for_frame)
+	  if module_name is not None:
+		return module, module_name
+  raise AssertionError("No module was found")
+def _GetCallingModule():
+  return _GetCallingModuleObjectAndName()[1]
+def _GetThisModuleObjectAndName():
+  return _GetModuleObjectAndName(globals())
+class FlagsError(Exception):
+  pass
+class DuplicateFlag(FlagsError):
+  pass
+class CantOpenFlagFileError(FlagsError):
+  pass
+class DuplicateFlagCannotPropagateNoneToSwig(DuplicateFlag):
+  pass
+class DuplicateFlagError(DuplicateFlag):
+  def __init__(self, flagname, flag_values, other_flag_values=None):
+	self.flagname = flagname
+	first_module = flag_values.FindModuleDefiningFlag(
+		flagname, default='<unknown>')
+	if other_flag_values is None:
+	  second_module = _GetCallingModule()
+	else:
+	  second_module = other_flag_values.FindModuleDefiningFlag(
+		  flagname, default='<unknown>')
+	msg = "The flag '%s' is defined twice. First
+		self.flagname, first_module, second_module)
+	DuplicateFlag.__init__(self, msg)
+class IllegalFlagValue(FlagsError):
+  pass
+class UnrecognizedFlag(FlagsError):
+  pass
+class UnrecognizedFlagError(UnrecognizedFlag):
+  def __init__(self, flagname, flagvalue=''):
+	self.flagname = flagname
+	self.flagvalue = flagvalue
+	UnrecognizedFlag.__init__(
+		self, "Unknown command line flag '%s'" % flagname)
+_exported_flags = {}
+_help_width = 80
+def GetHelpWidth():
+  if (not sys.stdout.isatty()) or (termios is None) or (fcntl is None):
+	return _help_width
+  try:
+	data = fcntl.ioctl(sys.stdout, termios.TIOCGWINSZ, '1234')
+	columns = struct.unpack('hh', data)[1]
+	if columns >= 40:
+	  return columns
+	return int(os.getenv('COLUMNS', _help_width))
+  except (TypeError, IOError, struct.error):
+	return _help_width
+def CutCommonSpacePrefix(text):
+  text_lines = text.splitlines()
+  while text_lines and not text_lines[-1]:
+	text_lines = text_lines[:-1]
+  if text_lines:
+	if text_lines[0] and text_lines[0][0].isspace():
+	  text_first_line = []
+	else:
+	  text_first_line = [text_lines.pop(0)]
+	common_prefix = os.path.commonprefix([line for line in text_lines if line])
+	space_prefix_len = len(common_prefix) - len(common_prefix.lstrip())
+	if space_prefix_len:
+	  for index in xrange(len(text_lines)):
+		if text_lines[index]:
+		  text_lines[index] = text_lines[index][space_prefix_len:]
+	return '\n'.join(text_first_line + text_lines)
+  return ''
+def TextWrap(text, length=None, indent='', firstline_indent=None, tabs='	'):
+  if length is None:
+	length = GetHelpWidth()
+  if indent is None:
+	indent = ''
+  if len(indent) >= length:
+	raise FlagsError('Indent must be shorter than length')
+  if firstline_indent is None:
+	firstline_indent = ''
+	line = indent
+  else:
+	line = firstline_indent
+	if len(firstline_indent) >= length:
+	  raise FlagsError('First line indent must be shorter than length')
+  if not tabs or tabs == ' ':
+	text = text.replace('\t', ' ')
+  else:
+	tabs_are_whitespace = not tabs.strip()
+  line_regex = re.compile('([ ]*)(\t*)([^ \t]+)', re.MULTILINE)
+  result = []
+  for text_line in text.splitlines():
+	old_result_len = len(result)
+	for spaces, current_tabs, word in line_regex.findall(text_line.rstrip()):
+	  if current_tabs:
+		if (((result and line != indent) or
+			 (not result and line != firstline_indent)) and line[-1] == ' '):
+		  line = line[:-1]
+		if tabs_are_whitespace:
+		  line += tabs * len(current_tabs)
+		else:
+		  word = tabs * len(current_tabs) + word
+	  if len(line) + len(word) > length and len(indent) + len(word) <= length:
+		result.append(line.rstrip())
+		line = indent + word
+		word = ''
+		if len(line) + 1 >= length:
+		  result.append(line.rstrip())
+		  line = indent
+		else:
+		  line += ' '
+	  while len(line) + len(word) >= length:
+		line += word
+		result.append(line[:length])
+		word = line[length:]
+		line = indent
+	  if word:
+		line += word + ' '
+	if (result and line != indent) or (not result and line != firstline_indent):
+	  result.append(line.rstrip())
+	elif len(result) == old_result_len:
+	  result.append('')
+	line = indent
+  return '\n'.join(result)
+def DocToHelp(doc):
+  doc = doc.strip()
+  whitespace_only_line = re.compile('^[ \t]+$', re.M)
+  doc = whitespace_only_line.sub('', doc)
+  doc = CutCommonSpacePrefix(doc)
+  doc = re.sub('(?<=\S)\n(?=\S)', ' ', doc, re.M)
+  return doc
+def _GetModuleObjectAndName(globals_dict):
+  for name, module in sys.modules.items():
+	if getattr(module, '__dict__', None) is globals_dict:
+	  if name == '__main__':
+		name = sys.argv[0]
+	  return (module, name)
+  return (None, None)
+def _GetMainModule():
+  deepest_frame = sys._getframe(0)
+  while deepest_frame.f_back is not None:
+	deepest_frame = deepest_frame.f_back
+  globals_for_main_module = deepest_frame.f_globals
+  main_module_name = _GetModuleObjectAndName(globals_for_main_module)[1]
+  if main_module_name is None:
+	main_module_name = sys.argv[0]
+  return main_module_name
+class FlagValues:
+  def __init__(self):
+	self.__dict__['__flags'] = {}
+	self.__dict__['__flags_by_module'] = {}
+	self.__dict__['__flags_by_module_id'] = {}
+	self.__dict__['__key_flags_by_module'] = {}
+	self.UseGnuGetOpt(False)
+  def UseGnuGetOpt(self, use_gnu_getopt=True):
+	self.__dict__['__use_gnu_getopt'] = use_gnu_getopt
+  def IsGnuGetOpt(self):
+	return self.__dict__['__use_gnu_getopt']
+  def FlagDict(self):
+	return self.__dict__['__flags']
+  def FlagsByModuleDict(self):
+	return self.__dict__['__flags_by_module']
+  def FlagsByModuleIdDict(self):
+	return self.__dict__['__flags_by_module_id']
+  def KeyFlagsByModuleDict(self):
+	return self.__dict__['__key_flags_by_module']
+  def _RegisterFlagByModule(self, module_name, flag):
+	flags_by_module = self.FlagsByModuleDict()
+	flags_by_module.setdefault(module_name, []).append(flag)
+  def _RegisterFlagByModuleId(self, module_id, flag):
+	flags_by_module_id = self.FlagsByModuleIdDict()
+	flags_by_module_id.setdefault(module_id, []).append(flag)
+  def _RegisterKeyFlagForModule(self, module_name, flag):
+	key_flags_by_module = self.KeyFlagsByModuleDict()
+	key_flags = key_flags_by_module.setdefault(module_name, [])
+	if flag not in key_flags:
+	  key_flags.append(flag)
+  def _GetFlagsDefinedByModule(self, module):
+	if not isinstance(module, str):
+	  module = module.__name__
+	return list(self.FlagsByModuleDict().get(module, []))
+  def _GetKeyFlagsForModule(self, module):
+	if not isinstance(module, str):
+	  module = module.__name__
+	key_flags = self._GetFlagsDefinedByModule(module)
+	for flag in self.KeyFlagsByModuleDict().get(module, []):
+	  if flag not in key_flags:
+		key_flags.append(flag)
+	return key_flags
+  def FindModuleDefiningFlag(self, flagname, default=None):
+	for module, flags in self.FlagsByModuleDict().iteritems():
+	  for flag in flags:
+		if flag.name == flagname or flag.short_name == flagname:
+		  return module
+	return default
+  def FindModuleIdDefiningFlag(self, flagname, default=None):
+	for module_id, flags in self.FlagsByModuleIdDict().iteritems():
+	  for flag in flags:
+		if flag.name == flagname or flag.short_name == flagname:
+		  return module_id
+	return default
+  def AppendFlagValues(self, flag_values):
+	for flag_name, flag in flag_values.FlagDict().iteritems():
+	  if flag_name == flag.name:
+		try:
+		  self[flag_name] = flag
+		except DuplicateFlagError:
+		  raise DuplicateFlagError(flag_name, self,
+								   other_flag_values=flag_values)
+  def RemoveFlagValues(self, flag_values):
+	for flag_name in flag_values.FlagDict():
+	  self.__delattr__(flag_name)
+  def __setitem__(self, name, flag):
+	fl = self.FlagDict()
+	if not isinstance(flag, Flag):
+	  raise IllegalFlagValue(flag)
+	if not isinstance(name, type("")):
+	  raise FlagsError("Flag name must be a string")
+	if len(name) == 0:
+	  raise FlagsError("Flag name cannot be empty")
+	if (name in fl and not flag.allow_override and
+		not fl[name].allow_override and not _RUNNING_PYCHECKER):
+	  module, module_name = _GetCallingModuleObjectAndName()
+	  if (self.FindModuleDefiningFlag(name) == module_name and
+		  id(module) != self.FindModuleIdDefiningFlag(name)):
+		return
+	  raise DuplicateFlagError(name, self)
+	short_name = flag.short_name
+	if short_name is not None:
+	  if (short_name in fl and not flag.allow_override and
+		  not fl[short_name].allow_override and not _RUNNING_PYCHECKER):
+		raise DuplicateFlagError(short_name, self)
+	  fl[short_name] = flag
+	fl[name] = flag
+	global _exported_flags
+	_exported_flags[name] = flag
+  def __getitem__(self, name):
+	return self.FlagDict()[name]
+  def __getattr__(self, name):
+	fl = self.FlagDict()
+	if name not in fl:
+	  raise AttributeError(name)
+	return fl[name].value
+  def __setattr__(self, name, value):
+	fl = self.FlagDict()
+	fl[name].value = value
+	self._AssertValidators(fl[name].validators)
+	return value
+  def _AssertAllValidators(self):
+	all_validators = set()
+	for flag in self.FlagDict().itervalues():
+	  for validator in flag.validators:
+		all_validators.add(validator)
+	self._AssertValidators(all_validators)
+  def _AssertValidators(self, validators):
+	for validator in sorted(
+		validators, key=lambda validator: validator.insertion_index):
+	  try:
+		validator.Verify(self)
+	  except gflags_validators.Error, e:
+		message = validator.PrintFlagsWithValues(self)
+		raise IllegalFlagValue('%s: %s' % (message, str(e)))
+  def _FlagIsRegistered(self, flag_obj):
+	flag_dict = self.FlagDict()
+	name = flag_obj.name
+	if flag_dict.get(name, None) == flag_obj:
+	  return True
+	short_name = flag_obj.short_name
+	if (short_name is not None and
+		flag_dict.get(short_name, None) == flag_obj):
+	  return True
+	return False
+  def __delattr__(self, flag_name):
+	fl = self.FlagDict()
+	if flag_name not in fl:
+	  raise AttributeError(flag_name)
+	flag_obj = fl[flag_name]
+	del fl[flag_name]
+	if not self._FlagIsRegistered(flag_obj):
+	  self.__RemoveFlagFromDictByModule(self.FlagsByModuleDict(), flag_obj)
+	  self.__RemoveFlagFromDictByModule(self.FlagsByModuleIdDict(), flag_obj)
+	  self.__RemoveFlagFromDictByModule(self.KeyFlagsByModuleDict(), flag_obj)
+  def __RemoveFlagFromDictByModule(self, flags_by_module_dict, flag_obj):
+	for unused_module, flags_in_module in flags_by_module_dict.iteritems():
+	  while flag_obj in flags_in_module:
+		flags_in_module.remove(flag_obj)
+  def SetDefault(self, name, value):
+	fl = self.FlagDict()
+	if name not in fl:
+	  raise AttributeError(name)
+	fl[name].SetDefault(value)
+	self._AssertValidators(fl[name].validators)
+  def __contains__(self, name):
+	return name in self.FlagDict()
+  has_key = __contains__
+  def __iter__(self):
+	return iter(self.FlagDict())
+  def __call__(self, argv):
+	argv = list(argv)
+	shortopts = ""
+	longopts = []
+	fl = self.FlagDict()
+	argv = argv[:1] + self.ReadFlagsFromFiles(argv[1:], force_gnu=False)
+	original_argv = list(argv)
+	shortest_matches = None
+	for name, flag in fl.items():
+	  if not flag.boolean:
+		continue
+	  if shortest_matches is None:
+		shortest_matches = self.ShortestUniquePrefixes(fl)
+	  no_name = 'no' + name
+	  prefix = shortest_matches[name]
+	  no_prefix = shortest_matches[no_name]
+	  for arg_idx in range(1, len(argv)):
+		arg = argv[arg_idx]
+		if arg.find('=') >= 0: continue
+		if arg.startswith('--'+prefix) and ('--'+name).startswith(arg):
+		  argv[arg_idx] = ('--%s=true' % name)
+		elif arg.startswith('--'+no_prefix) and ('--'+no_name).startswith(arg):
+		  argv[arg_idx] = ('--%s=false' % name)
+	for name, flag in fl.items():
+	  longopts.append(name + "=")
+	  if len(name) == 1:
+		shortopts += name
+		if not flag.boolean:
+		  shortopts += ":"
+	longopts.append('undefok=')
+	undefok_flags = []
+	unrecognized_opts = []
+	args = argv[1:]
+	while True:
+	  try:
+		if self.__dict__['__use_gnu_getopt']:
+		  optlist, unparsed_args = getopt.gnu_getopt(args, shortopts, longopts)
+		else:
+		  optlist, unparsed_args = getopt.getopt(args, shortopts, longopts)
+		break
+	  except getopt.GetoptError, e:
+		if not e.opt or e.opt in fl:
+		  raise FlagsError(e)
+		for arg_index in range(len(args)):
+		  if ((args[arg_index] == '--' + e.opt) or
+			  (args[arg_index] == '-' + e.opt) or
+			  (args[arg_index].startswith('--' + e.opt + '='))):
+			unrecognized_opts.append((e.opt, args[arg_index]))
+			args = args[0:arg_index] + args[arg_index+1:]
+			break
+		else:
+		  raise FlagsError(e)
+	for name, arg in optlist:
+	  if name == '--undefok':
+		flag_names = arg.split(',')
+		undefok_flags.extend(flag_names)
+		undefok_flags.extend('no' + name for name in flag_names)
+		continue
+	  if name.startswith('--'):
+		name = name[2:]
+		short_option = 0
+	  else:
+		name = name[1:]
+		short_option = 1
+	  if name in fl:
+		flag = fl[name]
+		if flag.boolean and short_option: arg = 1
+		flag.Parse(arg)
+	for opt, value in unrecognized_opts:
+	  if opt not in undefok_flags:
+		raise UnrecognizedFlagError(opt, value)
+	if unparsed_args:
+	  if self.__dict__['__use_gnu_getopt']:
+		ret_val = argv[:1] + unparsed_args
+	  else:
+		ret_val = argv[:1] + original_argv[-len(unparsed_args):]
+	else:
+	  ret_val = argv[:1]
+	self._AssertAllValidators()
+	return ret_val
+  def Reset(self):
+	for f in self.FlagDict().values():
+	  f.Unparse()
+  def RegisteredFlags(self):
+	return list(self.FlagDict())
+  def FlagValuesDict(self):
+	flag_values = {}
+	for flag_name in self.RegisteredFlags():
+	  flag = self.FlagDict()[flag_name]
+	  flag_values[flag_name] = flag.value
+	return flag_values
+  def __str__(self):
+	return self.GetHelp()
+  def GetHelp(self, prefix=''):
+	helplist = []
+	flags_by_module = self.FlagsByModuleDict()
+	if flags_by_module:
+	  modules = sorted(flags_by_module)
+	  main_module = _GetMainModule()
+	  if main_module in modules:
+		modules.remove(main_module)
+		modules = [main_module] + modules
+	  for module in modules:
+		self.__RenderOurModuleFlags(module, helplist)
+	  self.__RenderModuleFlags('gflags',
+							   _SPECIAL_FLAGS.FlagDict().values(),
+							   helplist)
+	else:
+	  self.__RenderFlagList(
+		  self.FlagDict().values() + _SPECIAL_FLAGS.FlagDict().values(),
+		  helplist, prefix)
+	return '\n'.join(helplist)
+  def __RenderModuleFlags(self, module, flags, output_lines, prefix=""):
+	if not isinstance(module, str):
+	  module = module.__name__
+	output_lines.append('\n%s%s:' % (prefix, module))
+	self.__RenderFlagList(flags, output_lines, prefix + "  ")
+  def __RenderOurModuleFlags(self, module, output_lines, prefix=""):
+	flags = self._GetFlagsDefinedByModule(module)
+	if flags:
+	  self.__RenderModuleFlags(module, flags, output_lines, prefix)
+  def __RenderOurModuleKeyFlags(self, module, output_lines, prefix=""):
+	key_flags = self._GetKeyFlagsForModule(module)
+	if key_flags:
+	  self.__RenderModuleFlags(module, key_flags, output_lines, prefix)
+  def ModuleHelp(self, module):
+	helplist = []
+	self.__RenderOurModuleKeyFlags(module, helplist)
+	return '\n'.join(helplist)
+  def MainModuleHelp(self):
+	return self.ModuleHelp(_GetMainModule())
+  def __RenderFlagList(self, flaglist, output_lines, prefix="  "):
+	fl = self.FlagDict()
+	special_fl = _SPECIAL_FLAGS.FlagDict()
+	flaglist = [(flag.name, flag) for flag in flaglist]
+	flaglist.sort()
+	flagset = {}
+	for (name, flag) in flaglist:
+	  if fl.get(name, None) != flag and special_fl.get(name, None) != flag:
+		continue
+	  if flag in flagset: continue
+	  flagset[flag] = 1
+	  flaghelp = ""
+	  if flag.short_name: flaghelp += "-%s," % flag.short_name
+	  if flag.boolean:
+		flaghelp += "--[no]%s" % flag.name + ":"
+	  else:
+		flaghelp += "--%s" % flag.name + ":"
+	  flaghelp += "  "
+	  if flag.help:
+		flaghelp += flag.help
+	  flaghelp = TextWrap(flaghelp, indent=prefix+"  ",
+						  firstline_indent=prefix)
+	  if flag.default_as_str:
+		flaghelp += "\n"
+		flaghelp += TextWrap("(default: %s)" % flag.default_as_str,
+							 indent=prefix+"  ")
+	  if flag.parser.syntactic_help:
+		flaghelp += "\n"
+		flaghelp += TextWrap("(%s)" % flag.parser.syntactic_help,
+							 indent=prefix+"  ")
+	  output_lines.append(flaghelp)
+  def get(self, name, default):
+	value = self.__getattr__(name)
+	if value is not None:
+	  return value
+	else:
+	  return default
+  def ShortestUniquePrefixes(self, fl):
+	sorted_flags = []
+	for name, flag in fl.items():
+	  sorted_flags.append(name)
+	  if flag.boolean:
+		sorted_flags.append('no%s' % name)
+	sorted_flags.sort()
+	shortest_matches = {}
+	prev_idx = 0
+	for flag_idx in range(len(sorted_flags)):
+	  curr = sorted_flags[flag_idx]
+	  if flag_idx == (len(sorted_flags) - 1):
+		next = None
+	  else:
+		next = sorted_flags[flag_idx+1]
+		next_len = len(next)
+	  for curr_idx in range(len(curr)):
+		if (next is None
+			or curr_idx >= next_len
+			or curr[curr_idx] != next[curr_idx]):
+		  shortest_matches[curr] = curr[:max(prev_idx, curr_idx) + 1]
+		  prev_idx = curr_idx
+		  break
+	  else:
+		shortest_matches[curr] = curr
+		prev_idx = curr_idx + 1
+	return shortest_matches
+  def __IsFlagFileDirective(self, flag_string):
+	if isinstance(flag_string, type("")):
+	  if flag_string.startswith('--flagfile='):
+		return 1
+	  elif flag_string == '--flagfile':
+		return 1
+	  elif flag_string.startswith('-flagfile='):
+		return 1
+	  elif flag_string == '-flagfile':
+		return 1
+	  else:
+		return 0
+	return 0
+  def ExtractFilename(self, flagfile_str):
+	if flagfile_str.startswith('--flagfile='):
+	  return os.path.expanduser((flagfile_str[(len('--flagfile=')):]).strip())
+	elif flagfile_str.startswith('-flagfile='):
+	  return os.path.expanduser((flagfile_str[(len('-flagfile=')):]).strip())
+	else:
+	  raise FlagsError('Hit illegal --flagfile type: %s' % flagfile_str)
+  def __GetFlagFileLines(self, filename, parsed_file_list):
+	line_list = []
+	flag_line_list = []
+	try:
+	  file_obj = open(filename, 'r')
+	except IOError, e_msg:
+	  raise CantOpenFlagFileError('ERROR:: Unable to open flagfile: %s' % e_msg)
+	line_list = file_obj.readlines()
+	file_obj.close()
+	parsed_file_list.append(filename)
+	for line in line_list:
+	  if line.isspace():
+		pass
+	  elif line.startswith('
+		pass
+	  elif self.__IsFlagFileDirective(line):
+		sub_filename = self.ExtractFilename(line)
+		if not sub_filename in parsed_file_list:
+		  included_flags = self.__GetFlagFileLines(sub_filename,
+												   parsed_file_list)
+		  flag_line_list.extend(included_flags)
+		else:
+		  sys.stderr.write('Warning: Hit circular flagfile dependency: %s\n' %
+						   (sub_filename,))
+	  else:
+		flag_line_list.append(line.strip())
+	return flag_line_list
+  def ReadFlagsFromFiles(self, argv, force_gnu=True):
+	parsed_file_list = []
+	rest_of_args = argv
+	new_argv = []
+	while rest_of_args:
+	  current_arg = rest_of_args[0]
+	  rest_of_args = rest_of_args[1:]
+	  if self.__IsFlagFileDirective(current_arg):
+		if current_arg == '--flagfile' or current_arg == '-flagfile':
+		  if not rest_of_args:
+			raise IllegalFlagValue('--flagfile with no argument')
+		  flag_filename = os.path.expanduser(rest_of_args[0])
+		  rest_of_args = rest_of_args[1:]
+		else:
+		  flag_filename = self.ExtractFilename(current_arg)
+		new_argv.extend(
+			self.__GetFlagFileLines(flag_filename, parsed_file_list))
+	  else:
+		new_argv.append(current_arg)
+		if current_arg == '--':
+		  break
+		if not current_arg.startswith('-'):
+		  if not force_gnu and not self.__dict__['__use_gnu_getopt']:
+			break
+	if rest_of_args:
+	  new_argv.extend(rest_of_args)
+	return new_argv
+  def FlagsIntoString(self):
+	s = ''
+	for flag in self.FlagDict().values():
+	  if flag.value is not None:
+		s += flag.Serialize() + '\n'
+	return s
+  def AppendFlagsIntoFile(self, filename):
+	out_file = open(filename, 'a')
+	out_file.write(self.FlagsIntoString())
+	out_file.close()
+  def WriteHelpInXMLFormat(self, outfile=None):
+	outfile = outfile or sys.stdout
+	outfile.write('<?xml version=\"1.0\"?>\n')
+	outfile.write('<AllFlags>\n')
+	indent = '  '
+	_WriteSimpleXMLElement(outfile, 'program', os.path.basename(sys.argv[0]),
+						   indent)
+	usage_doc = sys.modules['__main__'].__doc__
+	if not usage_doc:
+	  usage_doc = '\nUSAGE: %s [flags]\n' % sys.argv[0]
+	else:
+	  usage_doc = usage_doc.replace('%s', sys.argv[0])
+	_WriteSimpleXMLElement(outfile, 'usage', usage_doc, indent)
+	key_flags = self._GetKeyFlagsForModule(_GetMainModule())
+	flags_by_module = self.FlagsByModuleDict()
+	all_module_names = list(flags_by_module.keys())
+	all_module_names.sort()
+	for module_name in all_module_names:
+	  flag_list = [(f.name, f) for f in flags_by_module[module_name]]
+	  flag_list.sort()
+	  for unused_flag_name, flag in flag_list:
+		is_key = flag in key_flags
+		flag.WriteInfoInXMLFormat(outfile, module_name,
+								  is_key=is_key, indent=indent)
+	outfile.write('</AllFlags>\n')
+	outfile.flush()
+  def AddValidator(self, validator):
+	for flag_name in validator.GetFlagsNames():
+	  flag = self.FlagDict()[flag_name]
+	  flag.validators.append(validator)
+FLAGS = FlagValues()
+def _StrOrUnicode(value):
+  try:
+	return str(value)
+  except UnicodeEncodeError:
+	return unicode(value)
+def _MakeXMLSafe(s):
+  s = cgi.escape(s)
+  s = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f]', '', s)
+  s = s.encode('ascii', 'xmlcharrefreplace')
+  return s
+def _WriteSimpleXMLElement(outfile, name, value, indent):
+  value_str = _StrOrUnicode(value)
+  if isinstance(value, bool):
+	value_str = value_str.lower()
+  safe_value_str = _MakeXMLSafe(value_str)
+  outfile.write('%s<%s>%s</%s>\n' % (indent, name, safe_value_str, name))
+class Flag:
+  def __init__(self, parser, serializer, name, default, help_string,
+			   short_name=None, boolean=0, allow_override=0):
+	self.name = name
+	if not help_string:
+	  help_string = '(no help available)'
+	self.help = help_string
+	self.short_name = short_name
+	self.boolean = boolean
+	self.present = 0
+	self.parser = parser
+	self.serializer = serializer
+	self.allow_override = allow_override
+	self.value = None
+	self.validators = []
+	self.SetDefault(default)
+  def __hash__(self):
+	return hash(id(self))
+  def __eq__(self, other):
+	return self is other
+  def __lt__(self, other):
+	if isinstance(other, Flag):
+	  return id(self) < id(other)
+	return NotImplemented
+  def __GetParsedValueAsString(self, value):
+	if value is None:
+	  return None
+	if self.serializer:
+	  return repr(self.serializer.Serialize(value))
+	if self.boolean:
+	  if value:
+		return repr('true')
+	  else:
+		return repr('false')
+	return repr(_StrOrUnicode(value))
+  def Parse(self, argument):
+	try:
+	  self.value = self.parser.Parse(argument)
+	except ValueError, e:
+	  raise IllegalFlagValue("flag --%s=%s: %s" % (self.name, argument, e))
+	self.present += 1
+  def Unparse(self):
+	if self.default is None:
+	  self.value = None
+	else:
+	  self.Parse(self.default)
+	self.present = 0
+  def Serialize(self):
+	if self.value is None:
+	  return ''
+	if self.boolean:
+	  if self.value:
+		return "--%s" % self.name
+	  else:
+		return "--no%s" % self.name
+	else:
+	  if not self.serializer:
+		raise FlagsError("Serializer not present for flag %s" % self.name)
+	  return "--%s=%s" % (self.name, self.serializer.Serialize(self.value))
+  def SetDefault(self, value):
+	if value is None and self.allow_override:
+	  raise DuplicateFlagCannotPropagateNoneToSwig(self.name)
+	self.default = value
+	self.Unparse()
+	self.default_as_str = self.__GetParsedValueAsString(self.value)
+  def Type(self):
+	return self.parser.Type()
+  def WriteInfoInXMLFormat(self, outfile, module_name, is_key=False, indent=''):
+	outfile.write(indent + '<flag>\n')
+	inner_indent = indent + '  '
+	if is_key:
+	  _WriteSimpleXMLElement(outfile, 'key', 'yes', inner_indent)
+	_WriteSimpleXMLElement(outfile, 'file', module_name, inner_indent)
+	_WriteSimpleXMLElement(outfile, 'name', self.name, inner_indent)
+	if self.short_name:
+	  _WriteSimpleXMLElement(outfile, 'short_name', self.short_name,
+							 inner_indent)
+	if self.help:
+	  _WriteSimpleXMLElement(outfile, 'meaning', self.help, inner_indent)
+	if self.serializer and not isinstance(self.default, str):
+	  default_serialized = self.serializer.Serialize(self.default)
+	else:
+	  default_serialized = self.default
+	_WriteSimpleXMLElement(outfile, 'default', default_serialized, inner_indent)
+	_WriteSimpleXMLElement(outfile, 'current', self.value, inner_indent)
+	_WriteSimpleXMLElement(outfile, 'type', self.Type(), inner_indent)
+	self._WriteCustomInfoInXMLFormat(outfile, inner_indent)
+	outfile.write(indent + '</flag>\n')
+  def _WriteCustomInfoInXMLFormat(self, outfile, indent):
+	self.parser.WriteCustomInfoInXMLFormat(outfile, indent)
+class _ArgumentParserCache(type):
+  _instances = {}
+  def __call__(mcs, *args, **kwargs):
+	if kwargs:
+	  return type.__call__(mcs, *args, **kwargs)
+	else:
+	  instances = mcs._instances
+	  key = (mcs,) + tuple(args)
+	  try:
+		return instances[key]
+	  except KeyError:
+		return instances.setdefault(key, type.__call__(mcs, *args))
+	  except TypeError:
+		return type.__call__(mcs, *args)
+class ArgumentParser(object):
+  __metaclass__ = _ArgumentParserCache
+  syntactic_help = ""
+  def Parse(self, argument):
+	return argument
+  def Type(self):
+	return 'string'
+  def WriteCustomInfoInXMLFormat(self, outfile, indent):
+	pass
+class ArgumentSerializer:
+  def Serialize(self, value):
+	return _StrOrUnicode(value)
+class ListSerializer(ArgumentSerializer):
+  def __init__(self, list_sep):
+	self.list_sep = list_sep
+  def Serialize(self, value):
+	return self.list_sep.join([_StrOrUnicode(x) for x in value])
+def RegisterValidator(flag_name,
+					  checker,
+					  message='Flag validation failed',
+					  flag_values=FLAGS):
+  flag_values.AddValidator(gflags_validators.SimpleValidator(flag_name,
+															checker,
+															message))
+def MarkFlagAsRequired(flag_name, flag_values=FLAGS):
+  RegisterValidator(flag_name,
+					lambda value: value is not None,
+					message='Flag --%s must be specified.' % flag_name,
+					flag_values=flag_values)
+def _RegisterBoundsValidatorIfNeeded(parser, name, flag_values):
+  if parser.lower_bound is not None or parser.upper_bound is not None:
+	def Checker(value):
+	  if value is not None and parser.IsOutsideBounds(value):
+		message = '%s is not %s' % (value, parser.syntactic_help)
+		raise gflags_validators.Error(message)
+	  return True
+	RegisterValidator(name,
+					  Checker,
+					  flag_values=flag_values)
+def DEFINE(parser, name, default, help, flag_values=FLAGS, serializer=None,
+		   **args):
+  DEFINE_flag(Flag(parser, serializer, name, default, help, **args),
+			  flag_values)
+def DEFINE_flag(flag, flag_values=FLAGS):
+  fv = flag_values
+  fv[flag.name] = flag
+  if isinstance(flag_values, FlagValues):
+	module, module_name = _GetCallingModuleObjectAndName()
+	flag_values._RegisterFlagByModule(module_name, flag)
+	flag_values._RegisterFlagByModuleId(id(module), flag)
+def _InternalDeclareKeyFlags(flag_names,
+							 flag_values=FLAGS, key_flag_values=None):
+  key_flag_values = key_flag_values or flag_values
+  module = _GetCallingModule()
+  for flag_name in flag_names:
+	if flag_name not in flag_values:
+	  raise UnrecognizedFlagError(flag_name)
+	flag = flag_values.FlagDict()[flag_name]
+	key_flag_values._RegisterKeyFlagForModule(module, flag)
+def DECLARE_key_flag(flag_name, flag_values=FLAGS):
+  if flag_name in _SPECIAL_FLAGS:
+	_InternalDeclareKeyFlags([flag_name],
+							 flag_values=_SPECIAL_FLAGS,
+							 key_flag_values=flag_values)
+	return
+  _InternalDeclareKeyFlags([flag_name], flag_values=flag_values)
+def ADOPT_module_key_flags(module, flag_values=FLAGS):
+  if isinstance(module, str):
+	raise FlagsError('Received module name %s; expected a module object.'
+					 % module)
+  _InternalDeclareKeyFlags(
+	  [f.name for f in flag_values._GetKeyFlagsForModule(module.__name__)],
+	  flag_values=flag_values)
+  if module == _GetThisModuleObjectAndName()[0]:
+	_InternalDeclareKeyFlags(
+		[f.name for f in _SPECIAL_FLAGS.FlagDict().values()],
+		flag_values=_SPECIAL_FLAGS,
+		key_flag_values=flag_values)
+def DEFINE_string(name, default, help, flag_values=FLAGS, **args):
+  parser = ArgumentParser()
+  serializer = ArgumentSerializer()
+  DEFINE(parser, name, default, help, flag_values, serializer, **args)
+class BooleanParser(ArgumentParser):
+  def Convert(self, argument):
+	if type(argument) == str:
+	  if argument.lower() in ['true', 't', '1']:
+		return True
+	  elif argument.lower() in ['false', 'f', '0']:
+		return False
+	bool_argument = bool(argument)
+	if argument == bool_argument:
+	  return bool_argument
+	raise ValueError('Non-boolean argument to boolean flag', argument)
+  def Parse(self, argument):
+	val = self.Convert(argument)
+	return val
+  def Type(self):
+	return 'bool'
+class BooleanFlag(Flag):
+  def __init__(self, name, default, help, short_name=None, **args):
+	p = BooleanParser()
+	Flag.__init__(self, p, None, name, default, help, short_name, 1, **args)
+	if not self.help: self.help = "a boolean value"
+def DEFINE_boolean(name, default, help, flag_values=FLAGS, **args):
+  DEFINE_flag(BooleanFlag(name, default, help, **args), flag_values)
+DEFINE_bool = DEFINE_boolean
+class HelpFlag(BooleanFlag):
+  def __init__(self):
+	BooleanFlag.__init__(self, "help", 0, "show this help",
+						 short_name="?", allow_override=1)
+  def Parse(self, arg):
+	if arg:
+	  doc = sys.modules["__main__"].__doc__
+	  flags = str(FLAGS)
+	  print doc or ("\nUSAGE: %s [flags]\n" % sys.argv[0])
+	  if flags:
+		print "flags:"
+		print flags
+	  sys.exit(1)
+class HelpXMLFlag(BooleanFlag):
+  def __init__(self):
+	BooleanFlag.__init__(self, 'helpxml', False,
+						 'like --help, but generates XML output',
+						 allow_override=1)
+  def Parse(self, arg):
+	if arg:
+	  FLAGS.WriteHelpInXMLFormat(sys.stdout)
+	  sys.exit(1)
+class HelpshortFlag(BooleanFlag):
+  def __init__(self):
+	BooleanFlag.__init__(self, "helpshort", 0,
+						 "show usage only for this module", allow_override=1)
+  def Parse(self, arg):
+	if arg:
+	  doc = sys.modules["__main__"].__doc__
+	  flags = FLAGS.MainModuleHelp()
+	  print doc or ("\nUSAGE: %s [flags]\n" % sys.argv[0])
+	  if flags:
+		print "flags:"
+		print flags
+	  sys.exit(1)
+class NumericParser(ArgumentParser):
+  def IsOutsideBounds(self, val):
+	return ((self.lower_bound is not None and val < self.lower_bound) or
+			(self.upper_bound is not None and val > self.upper_bound))
+  def Parse(self, argument):
+	val = self.Convert(argument)
+	if self.IsOutsideBounds(val):
+	  raise ValueError("%s is not %s" % (val, self.syntactic_help))
+	return val
+  def WriteCustomInfoInXMLFormat(self, outfile, indent):
+	if self.lower_bound is not None:
+	  _WriteSimpleXMLElement(outfile, 'lower_bound', self.lower_bound, indent)
+	if self.upper_bound is not None:
+	  _WriteSimpleXMLElement(outfile, 'upper_bound', self.upper_bound, indent)
+  def Convert(self, argument):
+	return argument
+class FloatParser(NumericParser):
+  number_article = "a"
+  number_name = "number"
+  syntactic_help = " ".join((number_article, number_name))
+  def __init__(self, lower_bound=None, upper_bound=None):
+	super(FloatParser, self).__init__()
+	self.lower_bound = lower_bound
+	self.upper_bound = upper_bound
+	sh = self.syntactic_help
+	if lower_bound is not None and upper_bound is not None:
+	  sh = ("%s in the range [%s, %s]" % (sh, lower_bound, upper_bound))
+	elif lower_bound == 0:
+	  sh = "a non-negative %s" % self.number_name
+	elif upper_bound == 0:
+	  sh = "a non-positive %s" % self.number_name
+	elif upper_bound is not None:
+	  sh = "%s <= %s" % (self.number_name, upper_bound)
+	elif lower_bound is not None:
+	  sh = "%s >= %s" % (self.number_name, lower_bound)
+	self.syntactic_help = sh
+  def Convert(self, argument):
+	return float(argument)
+  def Type(self):
+	return 'float'
+def DEFINE_float(name, default, help, lower_bound=None, upper_bound=None,
+				 flag_values=FLAGS, **args):
+  parser = FloatParser(lower_bound, upper_bound)
+  serializer = ArgumentSerializer()
+  DEFINE(parser, name, default, help, flag_values, serializer, **args)
+  _RegisterBoundsValidatorIfNeeded(parser, name, flag_values=flag_values)
+class IntegerParser(NumericParser):
+  number_article = "an"
+  number_name = "integer"
+  syntactic_help = " ".join((number_article, number_name))
+  def __init__(self, lower_bound=None, upper_bound=None):
+	super(IntegerParser, self).__init__()
+	self.lower_bound = lower_bound
+	self.upper_bound = upper_bound
+	sh = self.syntactic_help
+	if lower_bound is not None and upper_bound is not None:
+	  sh = ("%s in the range [%s, %s]" % (sh, lower_bound, upper_bound))
+	elif lower_bound == 1:
+	  sh = "a positive %s" % self.number_name
+	elif upper_bound == -1:
+	  sh = "a negative %s" % self.number_name
+	elif lower_bound == 0:
+	  sh = "a non-negative %s" % self.number_name
+	elif upper_bound == 0:
+	  sh = "a non-positive %s" % self.number_name
+	elif upper_bound is not None:
+	  sh = "%s <= %s" % (self.number_name, upper_bound)
+	elif lower_bound is not None:
+	  sh = "%s >= %s" % (self.number_name, lower_bound)
+	self.syntactic_help = sh
+  def Convert(self, argument):
+	__pychecker__ = 'no-returnvalues'
+	if type(argument) == str:
+	  base = 10
+	  if len(argument) > 2 and argument[0] == "0" and argument[1] == "x":
+		base = 16
+	  return int(argument, base)
+	else:
+	  return int(argument)
+  def Type(self):
+	return 'int'
+def DEFINE_integer(name, default, help, lower_bound=None, upper_bound=None,
+				   flag_values=FLAGS, **args):
+  parser = IntegerParser(lower_bound, upper_bound)
+  serializer = ArgumentSerializer()
+  DEFINE(parser, name, default, help, flag_values, serializer, **args)
+  _RegisterBoundsValidatorIfNeeded(parser, name, flag_values=flag_values)
+class EnumParser(ArgumentParser):
+  def __init__(self, enum_values=None):
+	super(EnumParser, self).__init__()
+	self.enum_values = enum_values
+  def Parse(self, argument):
+	if self.enum_values and argument not in self.enum_values:
+	  raise ValueError("value should be one of <%s>" %
+					   "|".join(self.enum_values))
+	return argument
+  def Type(self):
+	return 'string enum'
+class EnumFlag(Flag):
+  def __init__(self, name, default, help, enum_values=None,
+			   short_name=None, **args):
+	enum_values = enum_values or []
+	p = EnumParser(enum_values)
+	g = ArgumentSerializer()
+	Flag.__init__(self, p, g, name, default, help, short_name, **args)
+	if not self.help: self.help = "an enum string"
+	self.help = "<%s>: %s" % ("|".join(enum_values), self.help)
+  def _WriteCustomInfoInXMLFormat(self, outfile, indent):
+	for enum_value in self.parser.enum_values:
+	  _WriteSimpleXMLElement(outfile, 'enum_value', enum_value, indent)
+def DEFINE_enum(name, default, enum_values, help, flag_values=FLAGS,
+				**args):
+  DEFINE_flag(EnumFlag(name, default, help, enum_values, ** args),
+			  flag_values)
+class BaseListParser(ArgumentParser):
+  def __init__(self, token=None, name=None):
+	assert name
+	super(BaseListParser, self).__init__()
+	self._token = token
+	self._name = name
+	self.syntactic_help = "a %s separated list" % self._name
+  def Parse(self, argument):
+	if isinstance(argument, list):
+	  return argument
+	elif argument == '':
+	  return []
+	else:
+	  return [s.strip() for s in argument.split(self._token)]
+  def Type(self):
+	return '%s separated list of strings' % self._name
+class ListParser(BaseListParser):
+  def __init__(self):
+	BaseListParser.__init__(self, ',', 'comma')
+  def WriteCustomInfoInXMLFormat(self, outfile, indent):
+	BaseListParser.WriteCustomInfoInXMLFormat(self, outfile, indent)
+	_WriteSimpleXMLElement(outfile, 'list_separator', repr(','), indent)
+class WhitespaceSeparatedListParser(BaseListParser):
+  def __init__(self):
+	BaseListParser.__init__(self, None, 'whitespace')
+  def WriteCustomInfoInXMLFormat(self, outfile, indent):
+	BaseListParser.WriteCustomInfoInXMLFormat(self, outfile, indent)
+	separators = list(string.whitespace)
+	separators.sort()
+	for ws_char in string.whitespace:
+	  _WriteSimpleXMLElement(outfile, 'list_separator', repr(ws_char), indent)
+def DEFINE_list(name, default, help, flag_values=FLAGS, **args):
+  parser = ListParser()
+  serializer = ListSerializer(',')
+  DEFINE(parser, name, default, help, flag_values, serializer, **args)
+def DEFINE_spaceseplist(name, default, help, flag_values=FLAGS, **args):
+  parser = WhitespaceSeparatedListParser()
+  serializer = ListSerializer(' ')
+  DEFINE(parser, name, default, help, flag_values, serializer, **args)
+class MultiFlag(Flag):
+  def __init__(self, *args, **kwargs):
+	Flag.__init__(self, *args, **kwargs)
+	self.help += ';\n	repeat this option to specify a list of values'
+  def Parse(self, arguments):
+	if not isinstance(arguments, list):
+	  arguments = [arguments]
+	if self.present:
+	  values = self.value
+	else:
+	  values = []
+	for item in arguments:
+	  Flag.Parse(self, item)
+	  values.append(self.value)
+	self.value = values
+  def Serialize(self):
+	if not self.serializer:
+	  raise FlagsError("Serializer not present for flag %s" % self.name)
+	if self.value is None:
+	  return ''
+	s = ''
+	multi_value = self.value
+	for self.value in multi_value:
+	  if s: s += ' '
+	  s += Flag.Serialize(self)
+	self.value = multi_value
+	return s
+  def Type(self):
+	return 'multi ' + self.parser.Type()
+def DEFINE_multi(parser, serializer, name, default, help, flag_values=FLAGS,
+				 **args):
+  DEFINE_flag(MultiFlag(parser, serializer, name, default, help, **args),
+			  flag_values)
+def DEFINE_multistring(name, default, help, flag_values=FLAGS, **args):
+  parser = ArgumentParser()
+  serializer = ArgumentSerializer()
+  DEFINE_multi(parser, serializer, name, default, help, flag_values, **args)
+def DEFINE_multi_int(name, default, help, lower_bound=None, upper_bound=None,
+					 flag_values=FLAGS, **args):
+  parser = IntegerParser(lower_bound, upper_bound)
+  serializer = ArgumentSerializer()
+  DEFINE_multi(parser, serializer, name, default, help, flag_values, **args)
+def DEFINE_multi_float(name, default, help, lower_bound=None, upper_bound=None,
+					   flag_values=FLAGS, **args):
+  parser = FloatParser(lower_bound, upper_bound)
+  serializer = ArgumentSerializer()
+  DEFINE_multi(parser, serializer, name, default, help, flag_values, **args)
+DEFINE_flag(HelpFlag())
+DEFINE_flag(HelpshortFlag())
+DEFINE_flag(HelpXMLFlag())
+_SPECIAL_FLAGS = FlagValues()
+DEFINE_string(
+	'flagfile', "",
+	"Insert flag definitions
+	_SPECIAL_FLAGS)
+DEFINE_string(
+	'undefok', "",
+	"comma-separated list of flag names that it is okay to specify "
+	"on the command line even if the program does not define a flag "
+	"with that name.  IMPORTANT: flags in this list that have "
+	"arguments MUST use the --flag=value format.", _SPECIAL_FLAGS)

@@ -1,0 +1,36 @@
+@pytest.mark.django_db
+def test_delete_mark_obsolete_resurrect_sync(fr_tutorial_subdir_to_remove_po):
+	tp = fr_tutorial_subdir_to_remove_po.translation_project
+	dir_pootle_path = fr_tutorial_subdir_to_remove_po.parent.pootle_path
+	store_pootle_path = fr_tutorial_subdir_to_remove_po.pootle_path
+	for store in tp.stores.all():
+		store.update(overwrite=False, only_newer=False)
+	os.remove(fr_tutorial_subdir_to_remove_po.file.path)
+	af_tutorial_subdir_to_remove = \
+		os.path.dirname(fr_tutorial_subdir_to_remove_po.file.path)
+	os.rmdir(af_tutorial_subdir_to_remove)
+	tp.scan_files()
+	updated_directory = Directory.objects.get(pootle_path=dir_pootle_path)
+	assert updated_directory.obsolete
+	updated_store = Store.objects.get(pootle_path=store_pootle_path)
+	assert updated_store.obsolete
+	store_units = Unit.objects.filter(store=updated_store)
+	for unit in store_units:
+		assert unit.isobsolete()
+	updated_directory.obsolete = False
+	updated_directory.save()
+	updated_store.obsolete = False
+	updated_store.save()
+	for unit in store_units:
+		unit.resurrect()
+		unit.save()
+	updated_store.sync(only_newer=False)
+	assert os.path.exists(updated_store.file.path)
+@pytest.mark.django_db
+def test_scan_empty_project_obsolete_dirs(es_tutorial_subdir_remove_po):
+	spanish_tutorial = es_tutorial_subdir_remove_po.translation_project
+	os.remove(es_tutorial_subdir_remove_po.file.path)
+	spanish_tutorial.scan_files()
+	for item in spanish_tutorial.directory.child_dirs.all():
+		assert item.obsolete
+	assert spanish_tutorial.directory.obsolete

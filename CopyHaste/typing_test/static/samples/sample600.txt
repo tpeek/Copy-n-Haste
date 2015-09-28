@@ -1,0 +1,22 @@
+
+def test_adding_and_removing_message_on_thread_increments_version(
+		db, thread, default_namespace):
+	assert thread.version == 0
+	message = add_fake_message(db.session, default_namespace.id, thread)
+	assert thread.version == 1
+	thread.messages.remove(message)
+	db.session.commit()
+	assert thread.version == 2
+def test_updating_message_read_starred_increments_version(
+		db, thread, default_namespace):
+	assert thread.version == 0
+	message = add_fake_message(db.session, default_namespace.id, thread)
+	assert thread.version == 1
+	message.subject = 'Jen nova temo'
+	db.session.commit()
+	assert thread.version == 1
+	message.is_read = not message.is_read
+	db.session.commit()
+	assert thread.version == 2
+	message.is_starred = not message.is_starred
+	db.

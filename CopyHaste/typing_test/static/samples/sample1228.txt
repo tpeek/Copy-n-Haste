@@ -1,0 +1,30 @@
+
+C, D = 'C', 'D'
+class TestDefector(TestPlayer):
+	name = "Defector"
+	player = axelrod.Defector
+	expected_classifier = {
+		'memory_depth': 0,
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.first_play_test(D)
+	def test_effect_of_strategy(self):
+		self.markov_test([D, D, D, D])
+class TestTrickyDefector(TestPlayer):
+	name = "Tricky Defector"
+	player = axelrod.TrickyDefector
+	expected_classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.first_play_test(D)
+	def test_effect_of_strategy(self):
+		self.markov_test([D, D, D, D])
+		self.responses

@@ -1,0 +1,22 @@
+
+try:
+  parser = argparse.ArgumentParser()
+  parser.add_argument('ligand', \
+	default='../ligand/dock_in/DUD-E.active.AAA.mol2', \
+	help='Ligand mol2 file (SYBYL atom types)')
+  parser.add_argument('receptor', \
+	default='../receptor/dock_in/3cqwA.0.sph', \
+	help='Receptor site file (spheres). Grids should have the same prefix.')
+  parser.add_argument('output', \
+	help='mol2.gz file for anchor and grow output')
+  args = parser.parse_args()
+except:
+  class args:
+	ligand = sys.argv[1]
+	receptor = sys.argv[2]
+	output = sys.argv[3]
+args.ligand = os.path.abspath(args.ligand)
+args.receptor = os.path.abspath(args.receptor)
+args.output = os.path.abspath(args.output)
+for FN in [args.ligand, args.receptor, \
+	args.receptor[:-4]+'.bmp', args.receptor[

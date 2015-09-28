@@ -1,0 +1,27 @@
+
+cwdInFunction()
+data = n.Dataset('data/AWAP_1900-2013_annual_precip_v2_latlon.nc','a')
+start = -43.575
+newlist = []
+for i in range(0,670):
+	i = start
+	newlist.append(i)
+	start += 0.05
+print newlist	
+data.variables['latitude'][:] = newlist[:]
+start_lon = 112.925
+newlist_lon = []
+for i in range(0,813):
+	i = start_lon
+	newlist_lon.append(i)
+	start_lon += 0.05
+print newlist_lon	
+data.variables['longitude'][:] = newlist_lon[:]
+lat = data.variables['latitude']
+lat_units = data.variables['latitude'].units
+lon = data.variables['longitude']
+lon_units = data.variables['longitude'].units
+var_time = data.variables['AWAP_precipitation'][0,:,:]
+var_units = data.variables['AWAP_precipitation'].units
+m = Basemap(projection='cyl', resolution='c',\
+	llcrnrl

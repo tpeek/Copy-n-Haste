@@ -1,0 +1,20 @@
+
+T=Timer()
+class Pplacer:
+	def __init__(self, refpkg):
+		self.refpkg = refpkg
+		self.hk = HouseKeeping()
+	def pplacer(self, output_file, output_path, input_path, threads):
+		cmd = "pplacer -j %s --verbosity 0 --out-dir %s -c %s %s" % (str(threads), output_path, self.refpkg, input_path)
+		extern.run(cmd)
+		output_path = '.'.join(input_path.split('.')[:-1]) + '.jplace'
+		return output_path
+	def alignment_merger(self, alignment_files, output_alignment_path):
+		alias_hash = {}
+		file_number = 0
+		with open(output_alignment_path, 'w') as output:
+			for alignment_file in alignment_files:
+				alignments = list(SeqIO.parse(open(alignment_file, 'r'), 'fasta'))
+				for record in alignments:
+					record.id = record.id + '_' + str(file_number)
+				SeqI

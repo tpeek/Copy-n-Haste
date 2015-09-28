@@ -1,0 +1,32 @@
+LOG = logging.getLogger(__name__)
+def _consumer(consume, queue, is_published):
+	cache = {}
+	while True:
+		if not queue:
+			if is_published.isSet():
+				break
+			time.sleep(0.1)
+			continue
+		else:
+			try:
+				args = queue.popleft()
+			except IndexError:
+				continue
+		try:
+			consume(cache, args)
+		except Exception as e:
+			LOG.warning(_("Failed to consume a task
+			if logging.is_debug():
+				LOG.exception(e)
+def _publisher(publish, queue, is_published):
+	try:
+		publish(queue)
+	except Exception as e:
+		LOG.warning(_("Failed to publish a task to the queue: %s") % e)
+		if logging.is_debug():
+			LOG.exception(e)
+	finally:
+		is_published.set()
+def run(publish, consume, consumers_count=1):
+	queue = collections.deque()
+	is_published = threading.E

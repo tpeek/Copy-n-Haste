@@ -1,0 +1,15 @@
+class SpatialPoint(abstract.AbstractPoint):
+	def __init__(self, point_id, lattice_x_coord, lattice_y_coord,
+								  geospatial, is_in_right_of_way):
+		spatial_x_coord, spatial_y_coord = geospatial
+		abstract.AbstractPoint.__init__(self, point_id, lattice_x_coord,
+							 lattice_y_coord, spatial_x_coord, spatial_y_coord)
+		self.geospatial = geospatial
+		self.latlng = proj.geospatial_to_latlng(geospatial, config.PROJ)
+		self.is_in_right_of_way = is_in_right_of_way
+class SpatialSlice(abstract.AbstractSlice):
+	@staticmethod
+	def spatial_slice_points_builder(lattice_x_coord, spatial_slice_bounds,
+													 slice_start_id):
+		spatial_slice_y_spacing = spatial_slice_bounds["y_spacing"]
+		spline_geospatials = spatial_slice_bounds["spline_geo

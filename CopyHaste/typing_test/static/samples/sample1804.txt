@@ -1,0 +1,20 @@
+
+def _default_augmented(data):
+	return data
+class datasource(object):
+	def __init__(self, input_attrs, output_attrs, extra_attrs=None):
+		self._input_attrs  = input_attrs
+		self._output_attrs = output_attrs
+		self._extra_attrs  = extra_attrs
+		self._data_attrs   = input_attrs + output_attrs
+		self._all_attrs	= input_attrs + output_attrs
+		if extra_attrs:
+			self._all_attrs = self._all_attrs + extra_attrs
+		self.__dict__.update({ name : None for name in self._data_attrs })
+		if not hasattr(self,"targetnames"):
+			self.targetnames = ["Target"]
+		self.augmented = _default_augmented
+	def input_attrs(self):  return self._input_attrs
+	def output_attrs(self): return self._output_attrs
+	def data_attrs(self):   return self._data_attrs
+	def input_dat

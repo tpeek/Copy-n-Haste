@@ -1,0 +1,29 @@
+
+class TestJsonHandler:
+	def setup(self):
+		self.path = join(getcwd(), 'test_handlers', 'test_jsonHandler', 'jsonFiles')
+		assert self.path
+		self.json = js()
+		assert self.json
+		self.files = returnFiles(self.path)
+		assert self.files
+		assert len(self.files) > 0
+		self.load = self.json.read_json(self.files[0])
+	def test_readJsonFile(self):
+		assert self.load
+		cmpValue = getTestJsonExample()
+		assert cmpValue
+		if self.load == cmpValue:
+			assert True
+		else:
+			warn("Didn't pass the read_json. File format could have changed!!!!", UserWarning)
+	def test_writeJsonFile(self):
+		assert self.load
+		output = 'test'
+		assert output
+		result = self.json.write_json(self.load, output)
+		if result:
+			assert True
+			remove(output)
+		else:
+			assert

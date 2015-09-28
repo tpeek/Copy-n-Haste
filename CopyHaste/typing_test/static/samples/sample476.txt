@@ -1,0 +1,22 @@
+
+											ConvertCompletionDataToVimData )
+											EventNotification )
+try:
+  USE_ULTISNIPS_DATA = True
+except ImportError:
+  USE_ULTISNIPS_DATA = False
+def PatchNoProxy():
+  current_value = os.environ.get('no_proxy', '')
+  additions = '127.0.0.1,localhost'
+  os.environ['no_proxy'] = ( additions if not current_value
+							 else current_value + ',' + additions )
+PatchNoProxy()
+signal.signal( signal.SIGINT, signal.SIG_IGN )
+HMAC_SECRET_LENGTH = 16
+NUM_YCMD_STDERR_LINES_ON_CRASH = 30
+SERVER_CRASH_MESSAGE_STDERR_FILE_DELETED = (
+  'The ycmd server SHUT DOWN (restart with :YcmRestartServer). '
+  'Logfile was deleted; set g:ycm_server_keep_logfiles to see errors '
+  'in the future.' )
+SERVER_CRASH_MESSAGE_STDERR_FILE = (
+  'The ycmd server 

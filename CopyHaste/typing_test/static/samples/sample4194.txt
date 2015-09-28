@@ -1,0 +1,13 @@
+class Config(object):
+	current_path = os.path.dirname(os.path.abspath(__file__))
+	def load(self):
+		current_path = os.path.dirname(os.path.abspath(__file__))
+		ConfigParser.RawConfigParser.OPTCRE = re.compile(r'(?P<option>[^=\s][^=]*)\s*(?P<vi>[=])\s*(?P<value>.*)$')
+		self.CONFIG = ConfigParser.ConfigParser()
+		self.CONFIG_FILENAME = os.path.abspath( os.path.join(current_path, 'proxy.ini'))
+		self.DATA_PATH = os.path.abspath( os.path.join(current_path, os.pardir, os.pardir, 'data', 'gae_proxy'))
+		if not os.path.isdir(self.DATA_PATH):
+			self.DATA_PATH = current_path
+		self.CONFIG_USER_FILENAME = os.path.abspath( os.path.join(self.DATA_PATH, 'config.ini'))
+		self.CONFIG.read(self.CONFIG_FILENAME)
+		if os.path.isfile(self.CONFIG_USER_FILENA

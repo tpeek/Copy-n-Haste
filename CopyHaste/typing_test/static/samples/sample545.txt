@@ -1,0 +1,33 @@
+
+class TimeoutError(Exception):
+	pass
+class Future(Callback.Callbacks):
+	def __init__(self, data=None):
+		Callback.Callbacks.__init__(self)
+		self.evt = threading.Event()
+		self.res = None
+		self.data = data
+		self.enable_callback('resolved')
+	def get_data(self):
+		return self.data
+	
+	def freeze(self, method, *args, **kwdargs):
+		self.method = method
+		self.args = args
+		self.kwdargs = kwdargs
+	def thaw(self, suppress_exception=True):
+		self.evt.clear()
+		if not suppress_exception:
+			res = self.method(*self.args, **self.kwdargs)
+		else:
+			try:
+				res = self.method(*self.args, **self.kwdargs)
+			except Exception as e:
+				res = e
+		self.resolve(res)
+		return res
+		
+	def has_value(self):
+		return self.evt.isSet()
+	
+	def resolve(self, value

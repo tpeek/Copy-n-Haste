@@ -1,0 +1,23 @@
+
+class BindingTestCase(unittest.TestCase):
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		if 'worlddb' not in kwargs:
+			kwargs['worlddb'] = ':memory:'
+		if 'codedb' not in kwargs:
+			kwargs['codedb'] = ':memory:'
+		self.kwargs = kwargs
+	def setUp(self):
+		self.engine = Engine(**self.kwargs)
+	def tearDown(self):
+		self.engine.close()
+	def test_bind_string(self):
+		general = MagicMock()
+		specific = MagicMock()
+		inert = MagicMock()
+		self.engine.string.listener(general)
+		self.engine.string.listener(specific, 'spam')
+		self.engine.string.listener(string='ham')(inert)
+		self.engine.string['spam'] = 'eggs'
+		general.assert_called_once_with(self.engine.string, 'spam', 'eggs')
+		specific.assert_called_once_with(self

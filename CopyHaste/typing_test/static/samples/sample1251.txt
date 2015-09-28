@@ -1,0 +1,27 @@
+
+trim_hist_help =
+clear_hist_help =
+class HistoryTrim(BaseIPythonApplication):
+	description = trim_hist_help
+	
+	backup = Bool(False, config=True,
+		help="Keep the old history file as history.sqlite.<N>")
+	
+	keep = Int(1000, config=True,
+		help="Number of recent lines to keep in the database.")
+	
+	flags = Dict(dict(
+		backup = ({'HistoryTrim' : {'backup' : True}},
+			backup.get_metadata('help')
+		)
+	))
+	aliases=Dict(dict(
+		keep = 'HistoryTrim.keep'
+	))
+	
+	def start(self):
+		profile_dir = self.profile_dir.location
+		hist_file = os.path.join(profile_dir, 'history.sqlite')
+		con = sqlite3.connect(hist_file)
+		inputs = list(con.execute('SELECT session, line, source, source_raw FROM '
+								'history ORDER BY session DESC, line DESC LIMIT ?', (

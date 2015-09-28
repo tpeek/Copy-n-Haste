@@ -1,0 +1,35 @@
+
+target(
+  name = 'tasks',
+  dependencies = [
+	':benchmark_run',
+	':binary_create',
+	':bootstrap_jvm_tools',
+	':bundle_create',
+	':checkstyle',
+	':classpath_products',
+	':classpath_util',
+	':ivy_
+	':ivy_resolve',
+	':ivy_utils',
+	':jar_publish_unit_test',
+	':junit_run',
+	':jvm_dependency_usage',
+	':jvm_platform_analysis',
+	':jvm_run',
+	':resources_task',
+	':prepare_resources',
+	':prepare_services',
+	':scalastyle',
+	':unpack_jars',
+	'tests/python/pants_test/backend/jvm/tasks/jvm_compile',
+  ]
+)
+python_tests(
+  name = 'binary_create',
+  sources = ['test_binary_create.py'],
+  dependencies = [
+	':jvm_binary_task_test_base',
+	'src/python/pants/backend/jvm/targets:jvm',
+	'src/python/pants/backend/jvm/tasks:binary_create',
+	'src/python/pants/util:c

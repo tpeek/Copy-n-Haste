@@ -1,0 +1,24 @@
+__author__ = 'Deepa.Sivadas'
+class MapPageTest(BaseTestCase):
+	@attr(priority="high")
+	@SkipTest
+	def test_smoketest_map(self):
+		sleep(5)
+		mappage = MapPage(self.driver)
+		sleep(20)
+		self.assertEqual(mappage.get_map_app_name.text, "Map")
+	@attr(priority="high")
+	def test_map_01_to_verify_default(self):
+		sleep(5)
+		mappage = MapPage(self.driver)
+		sleep(5)
+		mouse_hover_field = mappage.get_map_mouse_hover_icon
+		sleep(10)
+		ActionChains(self.driver).move_to_element(mouse_hover_field)\
+			.move_to_element(mappage.get_map_base_map_accordian).click()\
+			.move_to_element(mappage.get_map_default_view_radio).click()\
+			.perform()
+		sleep(10)
+		mappage.get_bread_crumb_apps.click()
+	@attr(priority="high")
+	def test_map_02_to_verify_Night_View(

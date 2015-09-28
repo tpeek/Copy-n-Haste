@@ -1,0 +1,22 @@
+
+try:
+	def exithandler(signum, _frame):
+		signal.signal(signal.SIGTERM, signal.SIG_IGN)
+		sys.exit(128 + signum)
+	signal.signal(signal.SIGTERM, exithandler)
+	signal.signal(signal.SIGPIPE, signal.SIG_DFL)
+	def debug_signal(_signum, _frame):
+		pdb.set_trace()
+	if platform.python_implementation() == 'Jython':
+		debug_signum = signal.SIGUSR2
+	else:
+		debug_signum = signal.SIGUSR1
+	signal.signal(debug_signum, debug_signal)
+	if osp.isfile(osp.join(osp.dirname(osp.dirname(osp.realpath(__file__))), ".portage_not_installed")):
+		sys.path.insert(0, osp.join(osp.dirname(osp.dirname(osp.realpath(__file__))), "pym"))
+	portage._internal_caller = True
+	portage._disable_legacy_globals()
+	if __name__ == "__main__":
+				PermissionDenied
+		try:
+			retval = em

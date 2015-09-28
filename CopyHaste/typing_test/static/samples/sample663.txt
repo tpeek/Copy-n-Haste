@@ -1,0 +1,22 @@
+
+r
+try:
+except ImportError:
+def main():
+	p = optparse.OptionParser(__doc__.strip())
+	p.add_option("-p", "--phantom", action="store", type="string",
+				 dest="phantom", default=None,
+				 help="Phantom
+	p.add_option("-o", "--output-dir", action="store", type="string",
+				 dest="output_dir", default=None,
+				 help=("Write all output files to the given directory (instead "
+					   "of writing them as specified in the autosummary:: "
+					   "directives)"))
+	options, args = p.parse_args()
+	if len(args) == 0:
+		p.error("wrong number of arguments")
+	if options.phantom and os.path.isfile(options.phantom):
+	names = {}
+	for name, loc in get_documented(args).items():
+		for (filename, sec_title, keyword, toctree) in loc:
+			if toctree is not None:

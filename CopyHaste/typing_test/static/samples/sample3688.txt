@@ -1,0 +1,21 @@
+log = logging.getLogger('ui.authentication')
+auth = Blueprint('authentication', __name__)
+credentials = None
+class AuthCredentials(Base):
+	__tablename__ = 'authentication'
+	username = Column(Unicode, primary_key=True)
+	password = Column(Unicode)
+	def __init__(self, username, password):
+		self.username = username
+		self.password = password
+def check_auth(username, password):
+	return username == credentials.username and password == credentials.password
+def authenticate():
+	return Response(
+		'Could not verify your access level for that URL.\n'
+		'You have to login with proper credentials', 401,
+		{b'WWW-Authenticate': b'Basic realm="Login Required"'})
+@event('webui.start')
+def enable_authentication():
+	if manager.options.webui.no_auth:
+		retu

@@ -1,0 +1,22 @@
+
+BASE_PATH = os.path.realpath(os.path.dirname(__file__))
+class ClientModelGame(gobject.GObject):
+	__gsignals__ = {
+	"error": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
+	"players": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+		(gobject.TYPE_PYOBJECT, )),
+	"play-run": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, []),
+	"end-game": (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE,
+		(gobject.TYPE_PYOBJECT, ))}
+	def __init__(self, topwin, _host, _dict, _nick, _tank):
+		gobject.GObject.__init__(self)
+		self._topwin = topwin
+		self._host = _host
+		self._dict = _dict
+		self._nick = _nick
+		self._tank = _tank
+		self.client = False
+		self.juego = False
+		self.eventos = []
+		self.registro = False
+		self.default_retorno = {"aceptado": False, "game":

@@ -1,0 +1,21 @@
+
+ProgName = "Bible Organizational Systems tests"
+ProgVersion = '0.48'
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+sourceFolder = "."
+sys.path.append( sourceFolder )
+class BibleOrganizationalSystemsConverterTests(unittest.TestCase):
+	def setUp( self ):
+		self.bossc = BibleOrganizationalSystemsConverter.BibleOrganizationalSystemsConverter().loadAndValidate()
+	def test_1010_str( self ):
+		result = str( self.bossc )
+		self.assertTrue( isinstance( result, str ) )
+		self.assertTrue( len(result) > 20 )
+	def test_1020_len( self ):
+		self.assertTrue( 150 < len(self.bossc) < 250 )
+	def test_1030_
+		result = self.bossc.
+		self.assertTrue( isinstance( result, tuple ) )
+		self.assertEqual( len(result), 3 )
+	def test_1040_pickle( self ):
+	

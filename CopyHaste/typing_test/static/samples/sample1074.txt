@@ -1,0 +1,22 @@
+
+_ = i18n._
+store_type_opts = [
+	cfg.ListOpt("store_type_preference",
+				default=[],
+				help=_("The store names to use to get store preference order. "
+					   "The name must be registered by one of the stores "
+					   "defined by the 'stores' config option. "
+					   "This option will be applied when you using "
+					   "'store_type' option as image location strategy "
+					   "defined by the 'location_strategy' config option."))
+]
+CONF = cfg.CONF
+CONF.register_opts(store_type_opts, group='store_type_location_strategy')
+_STORE_TO_SCHEME_MAP = {}
+def get_strategy_name():
+	return 'store_type'
+def init():
+	mapping = {'filesystem': ['file', 'filesystem'],
+			   'http': ['http', 'https'],
+			   'rbd': ['rbd'],
+			   's3': ['s3', 's3+http', '

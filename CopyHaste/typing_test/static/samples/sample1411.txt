@@ -1,0 +1,33 @@
+
+class Node(object):
+	def __init__(self, pos,text='',children=None):
+		self.pos = pos
+		self.text = text
+		self.parent = None
+		if children:
+		  self.children = children
+		else:
+		  self.children =  []
+	def add_child(self, obj):
+		self.children.append(obj)
+	def getPOS(self):
+	  return self.pos
+	def getText(self):
+	  return self.text
+	def isLeaf(self):
+	  return self.children ==  []
+	def __repr__(self):
+	  return '<'+self.pos+','+self.text+'>'
+	def __str__(self):
+	  return '<'+self.pos+','+self.text+'>'
+	   
+class Sentences(object):
+  def __init__(self,t):
+	if not isinstance(t[0],Tree):
+	  self.root = Node(t.node,t[0])
+	else:
+	  self.root =Node(t.node)
+	  for c in t:
+		newC = self.makeTree(c)
+		self.root.add_child(newC)
+		newC.parent = self.

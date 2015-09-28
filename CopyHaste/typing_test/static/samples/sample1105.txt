@@ -1,0 +1,27 @@
+
+
+def pdf(array):
+	options = 3
+	probs = [0] * options
+	for value in array:
+		probs[int(value)] += 1
+	for index, value in enumerate(probs):
+		probs[index] = value/float(len(array))
+		if probs[index] == 0.0:
+			probs[index] = 0.000000000001
+	total = sum(probs)
+	for index, value in enumerate(probs):
+		probs[index] = value/total
+	return probs
+
+def relative_entropy1(action_sequence, other_action_sequence):
+	pdf1 = pdf(action_sequence)
+	other_pdf = pdf(other_action_sequence)
+	distance1 = stats.entropy(pdf1, qk=other_pdf)
+	distance1 = distance1/27.6310211158
+	distance2 = stats.entropy(other_pdf, qk=pdf1)
+	distance2 = distance2/27.6310211158
+	return (distance1 + distance2)/2.0
+
+if __name__ == "__main__":
+	folds = ['0', '0', '0

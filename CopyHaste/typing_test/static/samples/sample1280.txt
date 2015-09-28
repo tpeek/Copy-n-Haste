@@ -1,0 +1,30 @@
+
+matplotlib.use('Agg')
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def normalise_series(series):
+	ave = series.mean()
+	stdev = series.std()
+	
+	return (series - ave) / stdev
+	 
+def scatter_plot(x_data, y_data, 
+				 xlabel, ylabel,
+				 outfile, 
+				 c_data=None, cmap='Greys',
+				 zero_lines=False, thin=1, 
+				 plot_trend=False, trend_colour='r'):
+	plt.figure()
+	if zero_lines:
+		plt.axhline(y=0, linestyle='-', color='0.5')
+		plt.axvline(x=0, linestyle='-', color='0.5')
+	x = x_data[::

@@ -1,0 +1,33 @@
+
+suffix_map = {}
+prefix = ()
+def process_file(filename, order=2):
+	fp = open(filename)
+	skip_gutenberg_header(fp)
+	for line in fp:
+		for word in line.rstrip().split():
+			process_word(word, order)
+def skip_gutenberg_header(fp):
+	for line in fp:
+		if line.startswith('*END*THE SMALL PRINT!'):
+			break
+def process_word(word, order=2):
+	global prefix
+	if len(prefix) < order:
+		prefix += (word,)
+		return
+	try:
+		suffix_map[prefix].append(word)
+	except KeyError:
+		suffix_map[prefix] = [word]
+	prefix = shift(prefix, word)
+def random_text(n=100):
+	start = random.choice(suffix_map.keys())
+	
+	for i in range(n):
+		suffixes = suffix_map.get(start, None)
+		if suffixes == None:
+			random_text(n-i)
+			return
+		word = random.choice(suffixes)
+		print word,

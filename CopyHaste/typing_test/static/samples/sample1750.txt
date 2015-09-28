@@ -1,0 +1,30 @@
+
+	WindowsAzureData,
+	_Base64String,
+	_create_entry,
+	_dict_of,
+	_encode_base64,
+	_general_error_handler,
+	_get_children_
+	_get_first_child_node_value,
+	_list_of,
+	_scalar_list_of,
+	_str,
+	_xml_attribute,
+	)
+AZURE_MANAGEMENT_CERTFILE = 'AZURE_MANAGEMENT_CERTFILE'
+AZURE_MANAGEMENT_SUBSCRIPTIONID = 'AZURE_MANAGEMENT_SUBSCRIPTIONID'
+X_MS_VERSION = '2013-06-01'
+class StorageServices(WindowsAzureData):
+	def __init__(self):
+		self.storage_services = _list_of(StorageService)
+	def __iter__(self):
+		return iter(self.storage_services)
+	def __len__(self):
+		return len(self.storage_services)
+	def __getitem__(self, index):
+		return self.storage_services[index]
+class StorageService(WindowsAzureData):
+	def __init__(self):
+		self.url = ''
+		self.service_nam

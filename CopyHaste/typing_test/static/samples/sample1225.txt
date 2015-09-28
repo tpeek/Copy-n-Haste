@@ -1,0 +1,23 @@
+
+C, D = 'C', 'D'
+class TestBackStabber(TestPlayer):
+	name = "BackStabber"
+	player = axelrod.BackStabber
+	expected_classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.first_play_test(C)
+		self.responses_test([C], [D], [C], tournament_length=200)
+		self.responses_test([C, C], [D, D], [C], tournament_length=200)
+		self.responses_test([C, C, C], [D, D, D], [C], tournament_length=200)
+		self.responses_test([C, C, C, C], [D, D, D, D], [D],
+							tournament_length=200)
+		self.responses_test([C] * 198 , [C] * 198, [D, D, D],
+							tournament_length=200)
+class TestDoubleCrosser(TestPlayer):
+	name = "DoubleCr

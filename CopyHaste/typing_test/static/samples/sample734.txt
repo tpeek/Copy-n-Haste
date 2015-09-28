@@ -1,0 +1,33 @@
+
+BEEBEETO_STATEMENT = \
+	"This POC is created for security research. "\
+	"It cannot be used in illegal ways, the user should be responsible for the usage of it."\
+	"All Rights Reserved by BeeBeeTo.com."
+class BaseFrame(object):
+	poc_info = {
+		'poc': {
+			'id': None,
+			'name': None,
+			'author': 'Beebeeto',
+			'create_date': '2014-07-15',
+		},
+		'protocol': {
+			'name': None,
+			'port': None,
+			'layer4_protocol': ['tcp'],
+		},
+		'vul': {
+			'app_name': None,
+			'vul_version': None,
+			'type': None,
+			'tag': [],
+			'desc': None,
+			'references': [],
+		},
+	}
+	def __init__(self, run_in_shell=True):
+		if run_in_shell:
+			self._init_parser()
+		self.run_in_shell = run_in_shell
+	def _init_parser(self, do_parse=True):
+		usage = 'usage: %prog [op

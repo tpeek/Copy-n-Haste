@@ -1,0 +1,18 @@
+
+
+class Ui_Settings(object):
+	def setupUi(self, Settings):
+		Settings.setObjectName("Settings")
+		Settings.resize(573, 411)
+		self.horizontalLayout_5 = QtGui.QHBoxLayout(Settings)
+		self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+		self.verticalLayout_2 = QtGui.QVBoxLayout()
+		self.verticalLayout_2.setObjectName("verticalLayout_2")
+		self.tableView = QtGui.QTableView(Settings)
+		self.tableView.setObjectName("tableView")
+		self.verticalLayout_2.addWidget(self.tableView)
+		self.horizontalLayout_4 = QtGui.QHBoxLayout()
+		self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+		self.parentRemoveButton = QtGui.QPushButton(Settings)
+		self.parentRemoveButton.setObjectName("parentRemoveButton")
+		self.horizontalLay

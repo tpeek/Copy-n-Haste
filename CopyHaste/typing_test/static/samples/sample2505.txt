@@ -1,0 +1,30 @@
+
+class StateManager:
+	class WorkerThread(Thread):
+		def __init__(self, uplink, state, observerMap, sem):
+			Thread.__init__(self)
+			self.uplink = uplink
+			self.state = state
+			self.observerMap = observerMap
+			self.stateSem = sem
+		
+		def run(self):
+			while True:
+				data = self.uplink.get()
+				assert isinstance(data, dict)
+				with self.stateSem:
+					self.state.update(data)
+					for key in data:
+						self.notifyObservers(key)
+					if "quit" in data:
+						self.terminate()
+		
+		def notifyObservers(self, key):
+			if key in self.observerMap:
+				for downlink in self.observerMap[key]:
+					downlink.put({key:self.state[key]})
+	def __init__(self):
+		self.stateSem = BoundedSemaphore()
+		self.state = dict()
+		self.observerMap = dict()
+		sel

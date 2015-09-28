@@ -1,0 +1,20 @@
+def load_config(app, config_name="config.py"):
+	app.config.
+	app.config.setdefault("DEBUG", False)
+	app.config.setdefault("BASE_URL", "/")
+	app.config.setdefault("BASE_PATH", "")
+	app.config.setdefault("LIBS_URL", "http://libs.soopro.com")
+	app.config.setdefault("PLUGINS", [])
+	app.config.setdefault("IGNORE_FILES", [])
+	app.config.setdefault("INVISIBLE_PAGE_LIST",[])
+	app.config.setdefault("THEME_NAME", "default")
+	app.config.setdefault("HOST", "0.0.0.0")
+	app.config.setdefault("PORT", 5500)
+	app.config.setdefault("EDITOR_PORT", 5550)
+	app.config.setdefault("SITE",{})
+	app.config.setdefault("THEME_META",{})
+	app.config.setdefault("CHARSET","utf8")
+	app.config.setdefault("SYS_ICON_LIST",[])
+	
+	app.config.setdefault("MAX_MODE_TYPES",["ws"])
+	

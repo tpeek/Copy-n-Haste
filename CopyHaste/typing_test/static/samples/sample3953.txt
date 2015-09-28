@@ -1,0 +1,20 @@
+__author__ = "Nick Sweet"
+__copyright__ = "Copyright 2015, Cohrint"
+__credits__ = ["Nick Sweet", "Nisar Ahmed"]
+__license__ = "GPL"
+__version__ = "1.0.0"
+__maintainer__ = "Nick Sweet"
+__email__ = "nick.sweet@colorado.edu"
+__status__ = "Development"
+											binary_intrinsic_space_model,
+											range_model,
+											intrinsic_space_model)
+class MapElement(object):
+	def __init__(self, name, shape_pts, pose=[0, 0, 0], visible=True,
+				 show_name=False, has_relations=False, plot_relations=False,
+				 blocks_camera=True, centroid_at_origin=True, map_bounds=None,
+				 space_resolution=0.1, color_str='darkblue', alpha=0.5):
+		self.has_relations = has_relations
+		self.plot_relations = plot_relations
+		self.name = name
+		self.visible = visi

@@ -1,0 +1,17 @@
+BLOCKOPENERS = {"class", "def", "elif", "else", "except", "finally", "for",
+					"if", "try", "while", "with"}
+UPDATEINTERVAL = 100
+FONTUPDATEINTERVAL = 1000
+getspacesfirstword =\
+				   lambda s, c=re.compile(r"^(\s*)(\w*)"): c.match(s).groups()
+class CodeContext:
+	menudefs = [('options', [('!Code Conte_xt', '<<toggle-code-context>>')])]
+	context_depth = idleConf.GetOption("extensions", "CodeContext",
+									   "numlines", type="int", default=3)
+	bgcolor = idleConf.GetOption("extensions", "CodeContext",
+								 "bgcolor", type="str", default="LightGray")
+	fgcolor = idleConf.GetOption("extensions", "CodeContext",
+								 "fgcolor", type="str", default="Black")
+	def __init__(self, editwin):
+		self.editwin = editwin
+		self.text = editwin.

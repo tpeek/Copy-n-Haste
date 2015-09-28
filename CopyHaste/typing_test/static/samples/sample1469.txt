@@ -1,0 +1,38 @@
+
+VFS_AVAILABLE = True
+FILE_LOCK_MAX_FILE_TIMEOUT = 13
+FILE_LOCK_NAME = "FileLock.dat"
+class FileAccess:
+	@staticmethod
+	def log(msg, level = xbmc.LOGDEBUG):
+		Globals.log('FileAccess: ' + msg, level)
+	
+	
+	@staticmethod
+	def open(filename, mode, encoding = "utf-8"):
+		fle = 0
+		FileAccess.log("trying to open " + filename)
+		try:
+			return VFSFile(filename, mode)
+		except UnicodeDecodeError:
+			return FileAccess.open(ascii(filename), mode, encoding)
+		return fle
+	@staticmethod
+	def delete(fle):
+		FileAccess.log('deleting ' + fle)
+		try:
+			xbmcvfs.delete(fle)
+			return True
+		except:
+			FileAccess._delete(fle)
+			
+	def _delete(fle):
+		try:
+			os.delete(fle)
+			return True
+		except:
+			return False
+			
+			
+	@staticmethod
+	def copy(orgfilename,

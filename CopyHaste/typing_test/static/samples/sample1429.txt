@@ -1,0 +1,24 @@
+
+class SmartPointerTransformation(typehandlers.TypeTransformation):
+	def __init__(self):
+		super(SmartPointerTransformation, self).__init__()
+		self.rx = re.compile(r'(ns3::|::ns3::|)Ptr<([^>]+)>\s*$')
+		print("{0!r}".format(self), file=sys.stderr)
+	def _get_untransformed_type_traits(self, name):
+		m = self.rx.match(name)
+		is_const = False
+		if m is None:
+			print("{0!r} did not match".format(name), file=sys.stderr)
+			return None, False
+		else:
+			name1 = m.group(2).strip()
+			if name1.startswith('const '):
+				name1 = name1[len('const '):]
+				is_const = True
+			if name1.endswith(' const'):
+				name1 = name1[:-len(' const')]
+				is_const = True
+			new_name = name1+' *'
+			if new_name.startswith('::'):
+				new_name = new_name[2:]
+			retur

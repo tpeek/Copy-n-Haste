@@ -1,0 +1,32 @@
+
+class caselessDict(object):
+	def __init__(self, inDict=None):
+		self.dict = {}
+		if inDict is not None:
+			self.update(inDict)
+	def lower(self, key):
+		try:
+			return key.lower()
+		except AttributeError:
+			return key
+	def update(self, inDict):
+		for key in inDict.keys():
+			k = self.lower(key) 
+			self.dict[k] = (key, inDict[key])
+	def store(self, inDict):
+		return self.update(inDict)
+	def setvals(self, **kwdargs):
+		return self.update(kwdargs)
+	def fetchList(self, keySeq):
+		res = []
+		for key in keySeq:
+			res.append(self.dict[key])
+		return res
+	def fetchDict(self, keyDict):
+		res = {}
+		for key in keyDict.keys():
+			res[key] = self.dict[key]
+		return res
+	def fetch(self, keyDict):
+		for key in keyDict.keys():
+			keyDict[key] = self.di

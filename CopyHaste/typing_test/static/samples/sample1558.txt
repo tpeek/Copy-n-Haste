@@ -1,0 +1,29 @@
+
+class Startup(object):
+	def __init__(self, hostname, user, secret):
+		self._hostname = hostname
+		self._user = user
+		self._secret = secret
+		self._ep = 'http://%s/api/v1.0' % hostname
+	def request(self, resource, method='GET', data=None):
+		if data is None:
+			data = ''
+		r = requests.request(
+			method,
+			'%s/%s/' % (self._ep, resource),
+			data=json.dumps(data),
+			headers={'Content-Type': "application/json"},
+			auth=(self._user, self._secret),
+		)
+		if r.ok:
+			try:
+				return r.json()
+			except:
+				return r.text
+		raise ValueError(r)
+	def _get_disks(self):
+		disks = self.request('storage/disk')
+		return [disk['disk_name'] for disk in disks]
+	def create_pool(self):
+		disks = self._get_disks()
+		self.request('storage/volume', method=

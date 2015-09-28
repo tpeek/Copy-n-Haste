@@ -1,0 +1,31 @@
+
+	encode_rfc6979_signature
+)
+	load_fips_ecdsa_signing_vectors, load_vectors_
+)
+CRYPTOGRAPHY_HASH_TYPES = {
+	"SHA-1": hashes.SHA1,
+	"SHA-224": hashes.SHA224,
+	"SHA-256": hashes.SHA256,
+	"SHA-384": hashes.SHA384,
+	"SHA-512": hashes.SHA512,
+}
+def verify_one_vector(vector):
+	digest_algorithm = vector['digest_algorithm']
+	message = vector['message']
+	x = vector['x']
+	y = vector['y']
+	signature = encode_rfc6979_signature(vector['r'], vector['s'])
+	numbers = ec.EllipticCurvePublicNumbers(
+		x, y,
+		ec.SECP256K1()
+	)
+	key = numbers.public_key(default_backend())
+	verifier = key.verifier(
+		signature,
+		ec.ECDSA(CRYPTOGRAPHY_HASH_TYPES[digest_algorithm]())
+	)
+	verifier.update(message)
+	return verifier.verify()
+def verify_vectors(vectors):
+	for vector

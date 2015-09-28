@@ -1,0 +1,22 @@
+try:
+except ImportError:
+log = logging.getLogger("travis.leader")
+log.addHandler(logging.StreamHandler())
+log.setLevel(logging.INFO)
+TRAVIS_JOB_NUMBER = 'TRAVIS_JOB_NUMBER'
+TRAVIS_BUILD_ID = 'TRAVIS_BUILD_ID'
+POLLING_INTERVAL = 'LEADER_POLLING_INTERVAL'
+build_id = os.getenv(TRAVIS_BUILD_ID)
+polling_interval = int(os.getenv(POLLING_INTERVAL, '5'))
+is_leader = lambda job_number: job_number.endswith('.1')
+if not os.getenv(TRAVIS_JOB_NUMBER):
+	log.fatal("Don't use defining leader for build without matrix")
+	exit(1)
+elif is_leader(os.getenv(TRAVIS_JOB_NUMBER)):
+	log.info("This is a leader")
+else:
+	with open(".to_export_back", "w") as export_var:
+		export_var.write("BUILD_MINION=YES")
+	log.info("This is a minion")
+	exit(0)
+class MatrixElement(obj

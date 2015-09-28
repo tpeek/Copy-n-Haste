@@ -1,0 +1,30 @@
+def PRINT(s):
+	print(s)
+class EZO_EC(EZO):
+	
+	i2c = None
+	MAX_LEN = 32
+	
+	def __init__(self,address=0x64,lowpower=True):
+		self.i2c = Adafruit_I2C(address)
+		self.address = address
+		self.lowpower = lowpower
+		try:
+			parser = SafeConfigParser()
+			parser.read(join(dirname(__file__),'ezo.ini'))
+			self.k(float(parser.get('ec','k')))
+			self.t(round(float(parser.get('ec','t')),0))
+		except NoSectionError:
+			PRINT('EZO_EC: configuration file not found. Not syncing K value')
+	def read(self):
+		tmp = self._r('R').strip().split(',')
+		d = {'ec':float(tmp[0]),
+			 'tds':float(tmp[1]),
+			 'sal':float(tmp[2]),
+			 'sg':float(tmp[3])}
+		if self.lowpower:
+			self.sleep()
+		return d
+	def k(self,new=None):
+		tmp = self._r('K,?',0.3)
+		if tmp.startswi

@@ -1,0 +1,24 @@
+__author__ = 'moonshawdo@gamil.com'
+ip_str_list =
+def PRINT(strlog):
+	print (strlog)
+def merge_ip_range():
+	ip_range_list = []
+	ip_lines_list = re.split("\r|\n", ip_str_list)
+	for iplines in ip_lines_list:
+		if len(iplines) == 0 or iplines[0] == '
+			continue
+		ips = re.split(",|\|", iplines)
+		for line in ips:
+			if len(line) == 0 or line[0] == '
+				continue
+			begin, end = ip_utils.split_ip(line)
+			if ip_utils.check_ip_valid(begin) == 0 or ip_utils.check_ip_valid(end) == 0:
+				PRINT("ip format is error,line:%s, begin: %s,end: %s" % (line, begin, end))
+				continue
+			nbegin = ip_utils.ip_string_to_num(begin)
+			nend = ip_utils.ip_string_to_num(end)
+			ip_range_list.append([nbegin,nend])
+	ip_range_list.sort()
+	ip_range_list_2 = []
+	rang

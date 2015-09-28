@@ -1,0 +1,17 @@
+
+class ReinforcementPoint(DefaultPoint):
+	__metaclass__  = abc.ABCMeta
+	def __init__(self):
+		super(ReinforcementPoint, self).__init__()
+		self.seed_ = random.randint(0, Config.RESTRICTIONS['max_seed'])
+		self.label_ = 0
+class ReinforcementEnvironment(DefaultEnvironment):
+	__metaclass__  = abc.ABCMeta
+	@abc.abstractmethod
+	def _play_match(self, team, point, mode):
+	def __init__(self, total_actions, total_inputs, total_labels, coded_opponents_for_training, coded_opponents_for_validation, point_class):
+		self.total_actions_ = total_actions
+		self.total_inputs_ = total_inputs
+		self.total_labels_ = total_labels
+		self.coded_opponents_for_training_ = coded_opponents_for_training
+		self.coded_opponents_for_validation_ = coded_opponents_for_valid

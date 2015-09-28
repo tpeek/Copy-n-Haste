@@ -1,0 +1,25 @@
+
+try:
+except ImportError:
+HTML_AT_TOP =
+class cmd_extdeps(Command):
+	doc = _('Report details on GNOME external dependencies')
+	name = 'extdeps'
+	def __init__(self):
+		Command.__init__(self, [
+			make_option('-o', '--output', metavar='FILE',
+					action='store', dest='output', default=None),
+			make_option('--all-modules',
+						action='store_true', dest='list_all_modules', default=False),
+			])
+	def run(self, config, options, args, help=None):
+		if options.output:
+			output = StringIO()
+		else:
+			output = sys.stdout
+		config.partial_build = False
+		self.module_set = jhbuild.moduleset.load(config)
+		if options.list_all_modules:
+			module_list = self.module_set.modules.values()
+		else:
+			module_list = self.module_set.get_module_list(args or

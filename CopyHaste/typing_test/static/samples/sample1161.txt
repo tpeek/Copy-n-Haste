@@ -1,0 +1,33 @@
+
+
+def main(pmdata_ws, figure_show_flag=None, figure_save_flag=None,
+		 figure_size=(1000,300), start_date=None, end_date=None):
+	et_folder	= 'ET'
+	figure_folder  = 'plots'
+	crop_skip_list = [44, 45, 46]
+	crop_keep_list = []
+	year_field   = 'Year'
+	doy_field	= 'DoY'
+	month_field  = 'Mo'
+	day_field	= 'Dy'
+	pmeto_field  = 'PMETo'
+	precip_field = 'Prmm'
+	t30_field	= 'T30'
+
+	etact_field  = 'ETact'
+	etpot_field  = 'ETpot'
+	etbas_field  = 'ETbas'
+	irrig_field  = 'Irrn'
+	season_field = 'Seasn'
+	runoff_field = 'Runof'
+	dperc_field  = 'DPerc'
+	header_lines = 5
+	figure_dynamic_size = False
+	figure_ylabel_size = '12pt'
+	if et_folder == 'ETc':
+		sep = r'\s*'
+	else:
+		sep = ','
+
+	try:
+		logging.info('\nPlot mean daily data by crop')

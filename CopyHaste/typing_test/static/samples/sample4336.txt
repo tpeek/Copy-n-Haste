@@ -1,0 +1,27 @@
+reload(sys)  
+sys.setdefaultencoding('utf8')
+class DailyObserverExtractor(object):
+	def __init__(self, name=None, num=None, debug=True):
+		self.name = name
+		self.num = num
+		self.data_dir = "data/" + self.name + "/"
+		self.docs_dir = os.listdir(self.data_dir)
+		self.extractlist = []
+		self.hello = 'hello'
+	def whitespaceremover(self, field):
+		field = field.replace(u'\xa0', u'')
+		return field
+	def emailremover(self, field):
+		cleaned = u''
+		field = field.split()
+		for word in field:
+			if word.find('@') > 0:
+				pass
+			else:
+				cleaned += word + u' '
+		return cleaned
+	def contents_cleaner(self, soup):
+		try:
+			head = soup.find(name='head')
+			link = head.find(name='link', attrs={'rel':"canonical"})
+			true_url = 'http://liberianobserv

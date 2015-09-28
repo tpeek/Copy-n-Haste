@@ -1,0 +1,17 @@
+
+print '==============================================================='
+print '========	 navigate to where				================'
+print '=========	ElegantExampleProgram is located ============='
+os.chdir( os.path.dirname(__file__) + '/betaMatching' )
+simulationPackage = 'Elegant'
+configFile		= 'two.lte'
+runFile		   = 'two.ele'
+runSimulation	 = [ simulationPackage, runFile ]
+print '********************************************************'
+print '========================================================'
+print '======	Calling Elegant
+print '======	running file ' + runFile
+print '========================================================'
+print 'BELOW IS OUTPUT FROM RUNNING ELEGANT SIMULATION:' + '\n'
+subprocess.call( runSimulation )
+print '^^^^^^

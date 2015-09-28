@@ -1,0 +1,19 @@
+
+revision = '3548e1ad8a3c'
+down_revision = '157debc89661'
+
+
+def upgrade():
+	op.add_column('resource', sa.Column('has_sliding_scale', sa.Boolean(), nullable=True))
+	op.add_column('resource', sa.Column('hospital_affiliation', sa.UnicodeText(), nullable=True))
+	op.add_column('resource', sa.Column('is_accessible', sa.Boolean(), nullable=True))
+	op.add_column('resource', sa.Column('is_icath', sa.Boolean(), nullable=True))
+	op.add_column('resource', sa.Column('is_wpath', sa.Boolean(), nullable=True))
+
+
+def downgrade():
+	op.drop_column('resource', 'is_wpath')
+	op.drop_column('resource', 'is_icath')
+	op.drop_column('resource', 'is_accessible')
+	op.drop_column('resource', 'hospital_affiliation')
+	op.drop_column('resource', 'has_sli

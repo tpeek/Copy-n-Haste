@@ -1,0 +1,33 @@
+app = create_app()
+app_context = app.app_context()
+app_context.push()
+def get_repo(url):
+	repo = Repository.query.filter_by(url=url).first()
+	if not repo:
+		print("Repository not found")
+		sys.exit(1)
+	return repo
+repo_id = os.environ.get('CHANGES_SSH_REPO')
+if not repo_id:
+	raise ValueError("No 'CHANGES_SSH_REPO' in environment")
+repo = get_repo(repo_id)
+options = dict(
+	db.session.query(
+		ItemOption.name, ItemOption.value
+	).filter(
+		ItemOption.item_id == repo.id,
+		ItemOption.name.in_([
+			'auth.private-key',
+			'auth.private-key-file',
+		])
+	)
+)
+command = [
+	'ssh',
+	'-o LogLevel=ERROR',
+	'-o StrictHostKeyChecking=no',
+	'-o UserKnownHostsFile=/dev/null',
+]
+if options.get('auth.private-key'):
+	f = NamedTemporaryFile()
+	f.write(options['

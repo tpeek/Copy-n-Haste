@@ -1,0 +1,22 @@
+class State(MultiPolygon):
+	def __init__(self,path):
+		r = Reader(path)
+		self._precincts = tuple(Precinct(self,shapeRec) for shapeRec in r.iterShapeRecords())
+		MultiPolygon.__init__(self,self._precincts)
+	def position(self):
+		return self.centroid.coords[0]
+	def iterPrecincts(self):
+		return iter(self._precincts)
+	def precincts(self):
+		return self._precincts
+	def splitLine(self,ratio,angle):
+		return SplitLine(self._precincts,ratio,angle,self.buffer(0))
+	def buildGraph(self,capacity=16):
+		def points(bbox):
+			minX, minY, maxX, maxY = bbox
+			return [(minX,minY),(minX,maxY),(maxX,minY),(maxX,maxY)]
+		def contains(bbox,point):
+			minX, minY, maxX, maxY = bbox
+			x,y = point
+			return x >= minX and x <= maxX and y >= minY and y <= maxY
+		d

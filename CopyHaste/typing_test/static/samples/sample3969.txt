@@ -1,0 +1,27 @@
+class Menu():
+  def __init__(self):
+	self.menu = []
+	self.title = ""
+  def additem(self, id, title, url):
+	item = {'type': 'item', 'id': id, 'title': title, 'url': url}
+	self.menu.append(item)
+  def addfleets(self, fleets, player):
+	for fleetview in fleets:
+	  fleetview.fleet.setviewer(player.id,fleetview.seesubs)
+	  description = fleetview.fleet.shortdescription()
+	  color = 'white'
+	  bold = True
+	  if player.user_id != fleetview.fleet.owner_id:
+		relation = player.getpoliticalrelation(fleetview.fleet.owner)
+		if relation == 'friend':
+		  color = '
+		  bold = False
+		elif relation == 'neutral':
+		  color = '
+		  bold = False
+		else:
+		  color = '
+		  bold = False
+	  item = {'type': 'fleet', 
+			  'fleet': fleetview.fleet, 
+			  'shiplist'

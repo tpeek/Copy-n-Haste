@@ -1,0 +1,24 @@
+
+class Chkconfig(Bcfg2.Client.Tools.SvcTool):
+	name = 'Chkconfig'
+	__execs__ = ['/sbin/chkconfig']
+	__handles__ = [('Service', 'chkconfig')]
+	__req__ = {'Service': ['name', 'status']}
+	os.environ['LC_ALL'] = 'C'
+	def get_svc_command(self, service, action):
+		return "/sbin/service %s %s" % (service.get('name'), action)
+	def verify_bootstatus(self, entry, bootstatus):
+		rv = self.cmd.run("/sbin/chkconfig --list %s " % entry.get('name'))
+		if rv.success:
+			srvdata = rv.stdout.splitlines()[0].split()
+		else:
+			entry.set('current_bootstatus', 'service not installed')
+			return False
+		if len(srvdata) == 2:
+			if bootstatus == srvdata[1]:
+				return True
+			else:
+				entry.set('current_bootstatus', srvdata[1])
+				return False
+		try:
+			onlevel

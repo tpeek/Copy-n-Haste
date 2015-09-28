@@ -1,0 +1,18 @@
+def update_fts_columns(cursor):
+	cursor.execute("SELECT id, message_id FROM fts_update_log;")
+	ids = []
+	for (id, message_id) in cursor.fetchall():
+		cursor.execute("UPDATE zerver_message SET "
+					   "search_tsvector = to_tsvector('zulip.english_us_search', "
+					   "subject || rendered_content) "
+					   "WHERE id = %s", (message_id,))
+		ids.append(id)
+	cursor.execute("DELETE FROM fts_update_log WHERE id = ANY(%s)", (ids,))
+def am_master(cursor):
+	cursor.execute("SELECT pg_is_in_recovery()")
+	return not cursor.fetchall()[0][0]
+logging.basicConfig(format="%(asctime)s %(levelname)s: %(message)s")
+logger = logging.getLogger("process_fts_updates")
+logger.setLevel(logging.DEBUG)
+logger.info("process_fts_updates starting")
+conn = psycopg2.con

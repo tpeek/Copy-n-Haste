@@ -1,0 +1,183 @@
+permArrays = {}
+factArray = [0, 0]
+def log10fact(n):
+	if n < 0:
+		raise ValueError('cannot calculate factorial of n for n='+str(n)+'!')
+	n = int(n)
+	if len(factArray) <= n:
+		for i in range(len(factArray),n+1):
+			factArray.append(factArray[i-1] + math.log10(float(i)))
+	
+	return factArray[n]
+	
+def log10Perm(n,x):
+	if x > n:
+		raise ValueError('cannot calculate n perm x for n='+str(n)+', x='+str(x))
+	intn = int(n)
+	intnx = int(n-x)
+	intx = int(x)
+	if intx == 1:
+		return math.log10(float(n))
+	if intn not in permArrays:
+		permArrays[intn] = []
+		permArrays[intn].append(float(0))
+	if intx not in permArrays[intn]:
+		for i in range(len(permArrays[intn]),intx+1):
+			permArrays[intn].append(permArrays[intn][i-1] +	math.log10(float(n-i+1)))
+	return permArrays[intn][intx]
+def log10BinCoeff(n,x):
+	if x > n or x < 0:
+		raise ValueError('cannot calculate n choose x for n='+str(n)+', x='+str(x))
+	if x > n/2:
+		x = n-x;
+	result = log10Perm(n,x)-log10fact(x)
+	return result
+args = sys.argv
+if len(args) < 7:
+	sys.stderr.write("Usage: python " + args[0] + \
+	" <outputClusteringFile> <groundTruthClusteringFile> " + \
+	"<groundTruthSizesFile> <minSize> <noOfElements> " + \
+	"<maxSize> [<fscores>?] [<normalizer>] [<intersectAtLeast2>] " + \
+	"(output on stdout)\n")
+	sys.exit(-1)
+outClusters = converttoclusterlists(args[1])
+sys.stderr.write("Finished loading file " + args[1] + "\n")
+gtClusterSizes = {}
+gtMemberships = []
+minSize = int(args[4])
+maxSize = int(args[6])
+N = float(args[5])
+isFvalues = False 
+inputNormalizer = 0
+intersect2 = False
+if len(args) > 7:
+	if args[7].startswith("y") or args[7].startswith("Y") or args[7].startswith("1"):
+		isFvalues = True
+if len(args) > 8:
+	inputNormalizer = float(args[8])
+if len(args) > 9:
+	if args[9].startswith("y") or args[9].startswith("Y") or args[9].startswith("1"):
+		intersect2 = True
+rx=re.compile("\\s+")
+for line in file(args[3], "r"):
+	line = line.strip()
+	tokens = rx.split(line)
+	size = int(tokens[0])
+	if size >= minSize and size <= maxSize:
+		gtClusterSizes[int(tokens[1])] = size
+sys.stderr.write("Finished loading file " + args[3] + "\n")
+sys.stderr.write(str(len(gtClusterSizes)) + \
+" ground truth clusters with size >= " + str(minSize) + \
+" and <= " + str(maxSize) + "\n")
+for line in file(args[2], "r"):
+	line = line.strip()
+	tokens = rx.split(line)
+	nodeId = int(tokens[0])
+	while len(gtMemberships) < nodeId:
+		gtMemberships.append([])
+	clusterId = int(tokens[1])
+	if clusterId in gtClusterSizes:
+		gtMemberships[nodeId-1].append(clusterId)
+while len(gtMemberships) < int(N):
+	gtMemberships.append([])
+sys.stderr.write("Finished loading file " + args[2] + "\n")
+wgtdAvgF = float(0)
+wgtdAvgP = float(0)
+wgtdAvgR = float(0)
+sumPvalues = float(0)
+sumSquaresPvalues = float(0)
+bestPvalue = 0
+pvalueThreshold = 2
+NbinCoeffs = {}
+sumOfMs = 0
+actualNumOutClusters = 0
+print '
+print '
+for clusterId in outClusters:
+	cluster = outClusters[clusterId]
+	sumOfMs = sumOfMs + len(cluster)
+	if len(cluster) < minSize or len(cluster) > maxSize:
+		continue
+	else:
+		actualNumOutClusters = actualNumOutClusters + 1
+	intersects = {}
+	for i in cluster:
+			
+		for gtCluster in gtMemberships[i-1]:
+			if gtCluster not in intersects:
+				intersects[gtCluster] = 1
+			else:
+				intersects[gtCluster] = intersects[gtCluster] + 1
+	bestf = float(0)
+	bestp = float(0)
+	bestr = float(0)
+	bestf_gtClusterId = -1
+	bestpvalue = float(0)
+	bestpvalue_gtClusterId = -1
+	M = float(len(cluster))
+	for gtCluster in intersects:
+		n = float(gtClusterSizes[gtCluster])
+		m = float(intersects[gtCluster])
+		prec = m/M
+		rec = m/n
+		fmeasure = 2*prec*rec/(prec+rec)
+		if m > M or m < 0:
+			sys.stderr.write("Yikes! m (" + str(m) + ") > M"
+			+ "(" + str(M) + ")")
+			sys.exit(-1)
+		if isFvalues:
+			if fmeasure > bestf:
+				if intersect2 == False or \
+				(intersect2 == True and m > 1):
+					bestf = fmeasure
+					bestf_gtClusterId = gtCluster
+					bestp = prec
+					bestr = rec
+		else:
+			if M in NbinCoeffs:
+				pvalue = NbinCoeffs[M]
+			elif N-M in NbinCoeffs:
+				pvalue = NbinCoeffs[N-M]
+			else:
+				pvalue = log10BinCoeff(N,M)
+				NbinCoeffs[M] = pvalue
+			subtract = log10BinCoeff(n,m) +	log10BinCoeff(N-n,M-m)
+			pvalue = pvalue - subtract
+			if pvalue > bestpvalue:
+				bestpvalue = pvalue
+				bestpvalue_gtClusterId = gtCluster
+				bestf = fmeasure
+				bestp = prec
+				bestr = rec
+	sumPvalues = sumPvalues + bestpvalue
+	sumSquaresPvalues = sumSquaresPvalues +	bestpvalue*bestpvalue
+	wgtdAvgF = wgtdAvgF + M*bestf
+	wgtdAvgP = wgtdAvgP + M*bestp
+	wgtdAvgR = wgtdAvgR + M*bestr
+	if isFvalues and bestf > 0:
+		print '%d %d %d %.3f %.3f %.3f'%(clusterId,	bestf_gtClusterId, M, bestf, bestp, bestr)
+	elif bestpvalue > pvalueThreshold:
+		print '%d %d %.3f %.3f %.3f %.3f'%(clusterId,bestpvalue_gtClusterId, bestpvalue, bestf, bestp, bestr)
+print 'Num_Clusters: %d'%(len(outClusters))
+print 'Num_Clusters >= %d and <= %d: %d'%(minSize, maxSize,
+actualNumOutClusters)
+if inputNormalizer > 0:
+	norm = inputNormalizer
+else:
+	norm = sumOfMs
+for normalizer in [norm]:
+	wavgF = wgtdAvgF / normalizer
+	wavgP = wgtdAvgP / normalizer
+	wavgR = wgtdAvgR / normalizer
+	print 'Avg F-score: %.4f'%(wavgF)
+	print 'Avg Precision: %.4f'%(wavgP)
+	print 'Avg Recall: %.4f'%(wavgR)
+	print '(Note the Avg F-score is not necessarily the harmonic mean of the Avg Precision and Avg Recall)'
+if isFvalues == False:
+	l = float(len(outClusters))
+	meanp = sumPvalues/l
+	print 'Mean P-value:%.4f'%(meanp)	
+	stdDev = l*sumSquaresPvalues - sumPvalues*sumPvalues
+	stdDev = stdDev / (l*(l-1))
+	stdDev = math.sqrt(stdDev)
+	print 'Std. Devn. of P-values:%.4f'%(stdDev)

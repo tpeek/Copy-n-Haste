@@ -1,0 +1,28 @@
+
+class BayesNode:
+   def __init__(self, item, textItem, name, x, y):
+	  self.item = item
+	  self.textItem = textItem
+	  self.name = name
+	  self.x = x
+	  self.y = y
+	  self.parents = []
+	  self.children = []
+	  self.prob = dict()
+   def addChild(self, node, line):
+	  if node == self:
+		 return False
+	  for (n, l) in self.children:
+		 if n == node:
+			return False
+	  self.children += [(node, line)]
+	  return True
+   def addParent(self, node, line):
+	  for (n, l) in self.parents:
+		 if n == node:
+			print "failed to addParent"
+	  self.parents += [(node, line)]
+   def removeChild(self, node):
+	  self.children = [(c, l) for (c, l) in self.children if c != node]
+   def removeParent(self, node):
+	  self.parents = [(p, l) for (p, l) in self.parent

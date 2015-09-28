@@ -1,0 +1,20 @@
+
+class PrerequisiteChecker:
+	package_urls = {'taxit': 'https://github.com/fhcrc/taxtastic',
+			 'FastTree': 'http://www.microbesonline.org/fasttree/',
+			 'seqmagick': 'https://github.com/fhcrc/seqmagick',
+			 'orfm': 'https://github.com/wwood/OrfM',
+			'fxtract': 'https://github.com/ctSkennerton/fxtract',
+			'pplacer': 'http://matsen.fhcrc.org/pplacer/',
+			'krona': 'http://sourceforge.net/p/krona/home/krona/',
+			'mafft': 'http://mafft.cbrc.jp/alignment/software/',
+			'diamond': 'https://github.com/bbuchfink/diamond',
+			'hmmer': 'http://hmmer.janelia.org/'}
+	
+	programs_to_packages = {'hmmalign': 'hmmer',
+							'hmmsearch': 'hmmer',
+							'nhmmer': 'hmmer',
+							'ktImportText': 'krona',
+							'FastTreeMP': 'FastTree'}
+	
+	@staticmetho

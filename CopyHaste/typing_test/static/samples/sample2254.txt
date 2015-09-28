@@ -1,0 +1,29 @@
+
+def _in_ring(ancestors):
+  if isinstance(ancestors,MMTK.ChemicalObjects.Atom):
+	ancestors = [ancestors]
+  in_ring = []
+  for child in [a for a in ancestors[-1].bondedTo() if a not in ancestors[1:]]:
+	if child==ancestors[0]:
+	  if len(ancestors)>2:
+		return ancestors
+	  else:
+		return []
+	in_ring += _in_ring(ancestors+[child])
+	if len(in_ring)>0:
+	  return in_ring
+  return []
+def _join_sets(sets):
+  while not _sets_are_unique(sets):
+	output_sets = []
+	for new_set in sets:
+	  joined = False
+	  for old_set in output_sets:
+		if len(new_set.intersection(old_set))>0:
+		  output_sets.remove(old_set)
+		  joined_set = old_set.union(new_set)
+		  output_sets.append(joined_set)
+		  joined = True
+	  if not joined:
+		output_sets.append(new_set)
+	sets = 

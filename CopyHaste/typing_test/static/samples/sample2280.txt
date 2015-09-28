@@ -1,0 +1,21 @@
+
+@obj_base.VersionedObjectRegistry.register
+class QosPolicy(base.NeutronDbObject):
+	db_model = qos_db_model.QosPolicy
+	port_binding_model = qos_db_model.QosPortPolicyBinding
+	network_binding_model = qos_db_model.QosNetworkPolicyBinding
+	fields = {
+		'id': obj_fields.UUIDField(),
+		'tenant_id': obj_fields.UUIDField(),
+		'name': obj_fields.StringField(),
+		'description': obj_fields.StringField(),
+		'shared': obj_fields.BooleanField(default=False),
+		'rules': obj_fields.ListOfObjectsField('QosRule', subclasses=True),
+	}
+	fields_no_update = ['id', 'tenant_id']
+	synthetic_fields = ['rules']
+	def to_dict(self):
+		dict_ = super(QosPolicy, self).to_dict()
+		if 'rules' in dict_:
+			dict_['rules'] = [rule.to_dict() for rule in dict_['rules']]
+		retur

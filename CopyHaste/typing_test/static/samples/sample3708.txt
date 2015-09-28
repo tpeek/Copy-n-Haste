@@ -1,0 +1,16 @@
+_SUPPORTED_DEVICES = get_supported_devices()
+_SUPPORTED_METRICS = get_supported_metrics()
+class FileWriterSubscriber(object):
+  def __init__(self, device_name, device_id,  metric, subscriber_type="pika", rabbitmq_address=None, pipe_name=None):
+	if subscriber_type == "pika" and rabbitmq_address is None:
+	  raise ValueError("Pika subscriber needs to have a rabbitmq address!")
+	if subscriber_type == "pika":
+	  self.subscriber = PikaSubscriber(device_name=device_name,
+									   device_id=device_id,
+									   rabbitmq_address=rabbitmq_address,
+									   metric_name=metric)
+	elif subscriber_type == "pipe":
+	  self.subscriber = PipeSubscriber(device_name=device_name,
+									   device_id=device_id,
+									   metric_name=metric,
+									 

@@ -1,0 +1,81 @@
+if sys.version < '3':
+else:
+__all__ = ['Accumulator', 'AccumulatorParam']
+pickleSer = PickleSerializer()
+_accumulatorRegistry = {}
+def _deserialize_accumulator(aid, zero_value, accum_param):
+	accum = Accumulator(aid, zero_value, accum_param)
+	accum._deserialized = True
+	_accumulatorRegistry[aid] = accum
+	return accum
+class Accumulator(object):
+	def __init__(self, aid, value, accum_param):
+		self.aid = aid
+		self.accum_param = accum_param
+		self._value = value
+		self._deserialized = False
+		_accumulatorRegistry[aid] = self
+	def __reduce__(self):
+		param = self.accum_param
+		return (_deserialize_accumulator, (self.aid, param.zero(self._value), param))
+	@property
+	def value(self):
+		if self._deserialized:
+			raise Exception("Accumulator.value cannot be accessed inside tasks")
+		return self._value
+	@value.setter
+	def value(self, value):
+		if self._deserialized:
+			raise Exception("Accumulator.value cannot be accessed inside tasks")
+		self._value = value
+	def add(self, term):
+		self._value = self.accum_param.addInPlace(self._value, term)
+	def __iadd__(self, term):
+		self.add(term)
+		return self
+	def __str__(self):
+		return str(self._value)
+	def __repr__(self):
+		return "Accumulator<id=%i, value=%s>" % (self.aid, self._value)
+class AccumulatorParam(object):
+	def zero(self, value):
+		raise NotImplementedError
+	def addInPlace(self, value1, value2):
+		raise NotImplementedError
+class AddingAccumulatorParam(AccumulatorParam):
+	def __init__(self, zero_value):
+		self.zero_value = zero_value
+	def zero(self, value):
+		return self.zero_value
+	def addInPlace(self, value1, value2):
+		value1 += value2
+		return value1
+INT_ACCUMULATOR_PARAM = AddingAccumulatorParam(0)
+FLOAT_ACCUMULATOR_PARAM = AddingAccumulatorParam(0.0)
+COMPLEX_ACCUMULATOR_PARAM = AddingAccumulatorParam(0.0j)
+class _UpdateRequestHandler(SocketServer.StreamRequestHandler):
+	def handle(self):
+		while not self.server.server_shutdown:
+			r, _, _ = select.select([self.rfile], [], [], 1)
+			if self.rfile in r:
+				num_updates = read_int(self.rfile)
+				for _ in range(num_updates):
+					(aid, update) = pickleSer._read_with_length(self.rfile)
+					_accumulatorRegistry[aid] += update
+				self.wfile.write(struct.pack("!b", 1))
+class AccumulatorServer(SocketServer.TCPServer):
+	server_shutdown = False
+	def shutdown(self):
+		self.server_shutdown = True
+		SocketServer.TCPServer.shutdown(self)
+		self.server_close()
+def _start_update_server():
+	server = AccumulatorServer(("localhost", 0), _UpdateRequestHandler)
+	thread = threading.Thread(target=server.serve_forever)
+	thread.daemon = True
+	thread.start()
+	return server
+if __name__ == "__main__":
+	(failure_count, test_count) = doctest.testmod()
+	if failure_count:
+		exit(-1)

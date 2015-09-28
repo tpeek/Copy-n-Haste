@@ -1,0 +1,29 @@
+class Mode:
+	UPDATE = 0
+	VIEW = 1
+	PLAY = 2
+	QUEUE = 3
+	DOWNLOAD = 4
+	EXECUTE = 5
+	ADDTOFAVOURITES = 6
+	REMOVEFROMFAVOURITES = 7
+	EDITITEM = 8
+	ADDITEM = 9
+	DOWNLOADCUSTOMMODULE = 10
+	REMOVEFROMCUSTOMMODULES = 11
+	INSTALLADDON = 12
+	CHROME = 13
+	
+class Main:
+	MAIN_MENU_FILE = 'mainMenu.cfg'
+	def __init__(self):
+		
+		if not os.path.exists(common.Paths.pluginDataDir):
+			os.makedirs(common.Paths.pluginDataDir, 0777)
+		self.favouritesManager = FavouritesManager(common.Paths.favouritesFolder)
+		self.customModulesManager = CustomModulesManager(common.Paths.customModulesDir, common.Paths.customModulesRepo)
+		
+		if not os.path.exists(common.Paths.customModulesDir):
+			os.makedirs(common.Paths.customModulesDir, 0777)
+		self.parser = Parser()
+		self

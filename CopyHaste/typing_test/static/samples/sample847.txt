@@ -1,0 +1,27 @@
+
+DATA_DIR = "data"
+CHART_DIR = "charts"
+if not os.path.exists(DATA_DIR):
+	raise RuntimeError("Expecting directory 'data' in current path")
+if not os.path.exists(CHART_DIR):
+	os.mkdir(CHART_DIR)
+def tweak_labels(Y, pos_sent_list):
+	pos = Y == pos_sent_list[0]
+	for sent_label in pos_sent_list[1:]:
+		pos |= Y == sent_label
+	Y = np.zeros(Y.shape[0])
+	Y[pos] = 1
+	Y = Y.astype(int)
+	return Y
+def load_sanders_data(dirname=".", line_count=-1):
+	count = 0
+	topics = []
+	labels = []
+	tweets = []
+	with open(os.path.join(DATA_DIR, dirname, "corpus.csv"), "r") as csvfile:
+		metareader = csv.reader(csvfile, delimiter=',', quotechar='"')
+		for line in metareader:
+			count += 1
+			if line_count > 0 and count > line_count:
+				break
+			topic, label, tweet_id

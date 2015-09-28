@@ -1,0 +1,35 @@
+def PRINT(s):
+	print(s)
+class EZO(object):
+	NoData = 255
+	Pending = 254
+	Failed = 2
+	Success = 1
+	def __enter__(self):
+		return self
+	def __exit__(self,*ignored):
+		self.sleep()
+		return True
+	def device_information(self):
+		return self._r('I',0.3)
+	def status(self):
+		return self._r('STATUS',0.3)
+	def supply_v(self):
+		return float(self.status().strip().split(',')[-1])
+	def sleep(self):
+		cmd = 'SLEEP'
+		tmp = [ord(c) for c in cmd]
+		self.i2c.writeList(tmp[0],tmp[1:])
+	def t(self,new=None,
+		tmp = self._r('T,?',0.3)
+		if tmp.startswith('?T,'):
+			current = float(tmp[3:6])
+			if new is None:
+				if self.lowpower:
+					self.sleep()
+				return current
+			elif current != new:
+				if new >= 50 or new <= -10:
+					PRINT(
+				PRINT(
+				cmd = 'T,

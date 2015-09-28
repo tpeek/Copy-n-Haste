@@ -1,0 +1,24 @@
+
+	 blended_transform_factory
+class GingaAxes(Axes):
+	name = 'ginga'
+	def __init__(self, *args, **kwargs):
+		self.viewer = kwargs.pop('viewer', None)
+		Axes.__init__(self, *args, **kwargs)
+		self.cla()
+	def set_viewer(self, viewer):
+		self.viewer = viewer
+		self.transData.viewer = viewer
+	def _set_lim_and_transforms(self):
+		self.transAxes = BboxTransformTo(self.bbox)
+		self.transData = self.GingaTransform()
+		self.transData.viewer = self.viewer
+		self._xaxis_transform = self.transData
+		self._yaxis_transform = self.transData
+	def set_xscale(self, *args, **kwargs):
+		if args[0] != 'linear':
+			raise NotImplementedError
+		Axes.set_xscale(self, *args, **kwargs)
+	def set_yscale(self, *args, **kwargs):
+		if args[0] != 'linear':
+			raise NotImple

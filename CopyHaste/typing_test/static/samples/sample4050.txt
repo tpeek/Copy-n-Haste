@@ -1,0 +1,18 @@
+_ASCII_ID_CHARS = frozenset(string.ascii_letters + string.digits + "_")
+_ASCII_ID_FIRST_CHARS = frozenset(string.ascii_letters + "_")
+_IS_ASCII_ID_CHAR = [(chr(x) in _ASCII_ID_CHARS) for x in range(128)]
+_IS_ASCII_ID_FIRST_CHAR = \
+	[(chr(x) in _ASCII_ID_FIRST_CHARS) for x in range(128)]
+class HyperParser:
+	def __init__(self, editwin, index):
+		"To initialize, analyze the surroundings of the given index."
+		self.editwin = editwin
+		self.text = text = editwin.text
+		parser = PyParse.Parser(editwin.indentwidth, editwin.tabwidth)
+		def index2line(index):
+			return int(float(index))
+		lno = index2line(text.index(index))
+		if not editwin.context_use_ps1:
+			for context in editwin.num_context_lines:
+				startat = max(lno - context, 1)
+				startat

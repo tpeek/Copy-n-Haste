@@ -1,0 +1,23 @@
+def assignmentExprStream2Dict(data, assignmentSymbol="=", commentSymbol="
+	return_dict = {};
+	for aLine in data:
+		assignmentSymbolLocation = aLine.find(assignmentSymbol)
+		if assignmentSymbolLocation == -1: continue
+		commentSymbolLocation = aLine.find(commentSymbol)
+		if commentSymbolLocation != -1: aLine_noComment = aLine[:commentSymbolLocation]
+		LHS = aLine[:assignmentSymbolLocation].strip()
+		RHS = aLine[assignmentSymbolLocation+1:].strip()
+		if isFloat(RHS): RHS = float(RHS)
+		return_dict[LHS] = RHS
+	return return_dict
+def assignmentExprStream2IndexDict(data, assignmentSymbol="=", commentSymbol="
+	converted_dict = assignmentExprStream2Dict(data, assignmentSymbol, commentSymbol)
+	values = [int(converted_dict[key]) for key in converted_dict];
+	shift_in_index = 0
+	lowest_index = min(values)
+	if autoAdjustShift:
+		if lowest_index==1: shift_in_index = 1
+	return_dict = {key:int(converted_dict[key])-shift_in_index for key in converted_dict.keys()}
+	return return_dict
+def dict2AssignmentExprList(aDict, assignmentSymbol="="):
+	return [key+assignmentSymbol+str(aDict[key]) for key in aDict.keys()]

@@ -1,0 +1,12 @@
+
+__version_number__ = ("0.10" + " " + gBUILD_VERSION)
+__version__ = "%prog Version " + __version_number__
+__copyright__ = "Copyright (c) 2007-2010, Intel Corporation. All rights reserved."
+gLineControlDirective = re.compile('^\s*
+gTypedefPattern = re.compile("^\s*typedef\s+struct(\s+\w+)?\s*[{]*$", re.MULTILINE)
+gPragmaPattern = re.compile("^\s*
+gHexNumberPattern = re.compile("(?<=[^a-zA-Z0-9_])(0[xX])([0-9a-fA-F]+)(U(?=$|[^a-zA-Z0-9_]))?")
+gDecNumberPattern = re.compile("(?<=[^a-zA-Z0-9_])([0-9]+)U(?=$|[^a-zA-Z0-9_])")
+gLongNumberPattern = re.compile("(?<=[^a-zA-Z0-9_])(0[xX][0-9a-fA-F]+|[0-9]+)U?LL(?=$|[^a-zA-Z0-9_])")
+gAslIncludePattern = re.compile("^(\s*)[iI]nclude\s*\(\"?([^\"\(\)]+)\"\)", re.MULTILINE)
+gAslCIncludePattern = re.comp

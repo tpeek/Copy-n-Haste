@@ -1,0 +1,17 @@
+
+logger = logging.getLogger(__name__)
+__updated__ = '2015-09-04'
+WIDTH, HEIGHT = 1800, 1000
+GERALDO_WIDTH = 120 * mm
+GERALDO_HEIGHT = GERALDO_WIDTH * HEIGHT / WIDTH
+class AccessReport(UDSGeraldoReport):
+	class band_detail(ReportBand):
+		height = 400 * mm
+		elements = (
+			Label(text=_('Users access by date'), top=0.6 * cm, left=0, width=BAND_WIDTH,
+				  style={'fontName': 'Helvetica-Bold', 'fontSize': 10, 'alignment': TA_CENTER}),
+			UDSImage(left=4 * cm, top=1 * cm,
+					 width=GERALDO_WIDTH, height=GERALDO_HEIGHT,
+					 get_image=lambda x: x.instance['image']),
+			Label(text=_('Users access by day of week'), top=GERALDO_HEIGHT + 1.2 * cm, left=0, width=BAND_WIDTH,
+				  style={'fontName': 'Helvetica-Bold', 'fontSize': 10, 'alignment': TA

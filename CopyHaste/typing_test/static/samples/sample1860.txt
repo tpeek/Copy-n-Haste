@@ -1,0 +1,23 @@
+
+	AlreadyFinalized, InvalidSignature, UnsupportedAlgorithm, _Reasons
+)
+	AsymmetricSignatureContext, AsymmetricVerificationContext, rsa
+)
+	AsymmetricPadding, MGF1, OAEP, PKCS1v15, PSS
+)
+	RSAPrivateKeyWithSerialization, RSAPublicKeyWithSerialization
+)
+def _get_rsa_pss_salt_length(pss, key_size, digest_size):
+	salt = pss._salt_length
+	if salt is MGF1.MAX_LENGTH or salt is PSS.MAX_LENGTH:
+		emlen = int(math.ceil((key_size - 1) / 8.0))
+		salt_length = emlen - digest_size - 2
+		assert salt_length >= 0
+		return salt_length
+	else:
+		return salt
+def _enc_dec_rsa(backend, key, data, padding):
+	if not isinstance(padding, AsymmetricPadding):
+		raise TypeError("Padding must be an instance of AsymmetricPadding.")
+	if isinstance(padding, PKCS1v15):
+		padd

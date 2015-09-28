@@ -1,0 +1,26 @@
+
+post_wait = 3
+debug = False
+user_agent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8 GTB7.1 (.NET CLR 3.5.30729)"
+dump_file = "/tmp/160by2.debug.html"
+try:
+except ImportError:
+	print "Please install mechanize module for python"
+	print "Install python-mechanize, if you are on a Ubuntu/Debian machine"
+	
+try:
+except ImportError:
+	print "Error
+   
+ 
+class smsHandler():
+   def __init__(self,username,password):
+	  if debug:
+		 print ">>> Debug: ON"
+	  self.username	= username
+	  self.password	= password
+	  self.is_auth = False
+	  self.LOGIN_TEXT = 'logout'
+	  self.idreg1	  = re.compile('class="ip-l bc1 beta he pH" id="([A-z0-9]*)"')
+	  self.master	   = "http://www.160by2.com/Index"	  
+	  self.authurl

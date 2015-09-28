@@ -1,0 +1,44 @@
+__author__ = 'suchet'
+__date__ = '02/01/15'
+def build_conv():
+	input = T.tensor4(name='input')
+	filters = T.tensor4(name='filters')
+	output = conv.conv2d(input, filters)
+	return theano.function([input, filters], output)
+_conv = build_conv()
+def pad_input_data(images, filters, mode='valid'):
+	modes = ['full', 'same', 'valid']
+	I_r, I_c = images.shape[2], images.shape[3]
+	f_r, f_c = filters.shape[2], filters.shape[3]
+	if mode == 'full':
+		pad_c_l = f_c-1
+		pad_c_r = f_c-1
+		pad_r_t = f_r-1
+		pad_r_b = f_r-1
+	elif mode == 'valid':
+		pad_c_l = pad_c_r = pad_r_t = pad_r_b = 0
+	elif mode == 'same':
+		pad_c_l = f_c/2
+		pad_c_r = f_c/2 - (1-f_c%2)
+		pad_r_t = f_r/2
+		pad_r_b = f_r/2 - (1-f_r%2)
+	else:
+		raise ValueError, "CONV:: Unknown mode: %s, acceptable modes are:%s" % ( mode, modes)
+	padded_image = np.zeros((images.shape[0], images.shape[1], pad_r_t + I_r + pad_r_b, pad_c_l + I_c + pad_c_r ) , dtype=theano.config.floatX)
+	padded_image[:, :, pad_r_t: (pad_r_t + I_r), pad_c_l: (pad_c_l + I_c)] = images
+	padded_image = padded_image.astype(theano.config.floatX)
+	return padded_image
+def filter_conv(images, filters, mode='valid'):
+	images = images.astype(theano.config.floatX)
+	padded_image = pad_input_data(images, filters, mode)
+	filters = filters[:, :, ::-1, ::-1].astype(theano.config.floatX)
+	return _conv(padded_image, filters)
+def test_padding_functions():
+	image = get_image()
+	X = image.copy()
+	X = X[None, ...].transpose((0, 3, 1, 2)).astype(theano.config.floatX)
+	pi1 = pychet.preprocessing.LeCunLCN.pad_for_convolution(X)
+	pi2 = pad_input_data(X,np.ones((1, 1, 8, 8)), mode='same')
+	print 'Difference between tests: {}'.format(np.abs(pi1-pi2).sum())
+if __name__=='__main__':
+	test_padding_functions()

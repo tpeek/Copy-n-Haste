@@ -1,0 +1,21 @@
+env = Environment()
+env['ENV']['GDAL_CACHEMAX'] = "2000"
+env['SRS'] = 'EPSG:26914'
+tiles = {}
+tiles_by_trsid = {}
+for fn in glob('tile-entries/*.txt'):
+	tileid = os.path.splitext(os.path.basename(fn))[0]
+	for line in open(fn).readlines():
+		trsid = line.strip()
+		tiles[tileid] = tiles.get(tileid, []) + [trsid]
+		tiles_by_trsid[trsid] = tiles_by_trsid.get(trsid, []) + [tileid]
+for fn in glob('*.SID'):
+	trs = os.path.splitext(fn)[0]
+	vrt = "data/{trs}.vrt".format(trs=trs)
+	cutline = "cutlines/{trs}.geojson".format(trs=trs)
+	aux_xml = "{entry}.aux.xml".format(entry=fn)
+	points = "{entry}.points".format(entry=fn)
+	env.Command(aux_xml, [fn, points],
+		[Delete(aux_xml),
+		"python georef.py ${SOURCES[0]} $SRS ${SOURCES[1]}"])
+	env.Command(vrt, [fn

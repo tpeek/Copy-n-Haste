@@ -1,0 +1,23 @@
+try:
+	_trans = glocale.get_addon_translator(__file__)
+except ValueError:
+	_trans = glocale.translation
+_ = _trans.gettext
+ORDER_ATTR = _('Order')
+CENSUS_TAG = _('Census')
+definition_files = ['census.xml', 'test.xml', 'custom.xml']
+CONFIG = config.register_manager('census')
+CONFIG.register('interface.census-width', 600)
+CONFIG.register('interface.census-height', 400)
+CONFIG.init()
+class Census():
+	def __init__(self):
+		self.__dates = {}
+		self.__headings = {}
+		self.__columns = {}
+		for file_name in definition_files:
+			census_file = os.path.join(os.path.dirname(__file__), file_name)
+			if os.path.exists(census_file):
+				self.__load_definitions(census_file)
+	def __load_definitions(self, census_file):
+		dom = xml.dom.minidom.parse(census_fil

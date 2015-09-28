@@ -1,0 +1,14 @@
+
+__settings__ = xbmcaddon.Addon(id="plugin.video.Sinema")
+__language__ = __settings__.getLocalizedString
+downloadFolder = __settings__.getSetting('downloadFolder')
+home = __settings__.getAddonInfo('path')
+IMAGES_PATH = xbmc.translatePath(os.path.join(home, 'resources','images'))
+sys.path.append(IMAGES_PATH)
+SUBS_PATH = xbmc.translatePath(os.path.join(home, 'resources', 'subs'))
+sys.path.append(SUBS_PATH)
+folders = xbmc.translatePath(os.path.join(home, 'resources', 'lib'))
+sys.path.append(folders)
+def name_prepare(videoTitle):
+		print 'DUZELTME ONCESI:',videoTitle
+		videoTitle=videoTitle.replace('Ýzle',"").replace('Türkçe',"").replace('Turkce',"").replace('Dublaj',"|TR|").replace('Altyazýlý'," [ ALTYAZILI ] ").replace('izle',"").replace('Ful

@@ -1,0 +1,19 @@
+values = {"a": "nadupdate@yahoo.com", "b": "axc4b2c"}
+request = requests.post('https://api.frame.io/login', params=values)
+request = request.json()
+user_id = str(request["x"])
+token = str(request["y"])
+messages = request["messages"]
+values = {"mid": user_id, "t": token}
+request = requests.post('https://api.frame.io/users/' + user_id + '/data', params=values)
+request = request.json()
+projects = request["user"]["teams"][0]["projects"][0]
+project_id = str(projects["id"])
+root_folder_key = str(projects["root_folder_key"])
+file_path = "H:/01-NAD/testframe.mp4"
+file_size = os.path.getsize(file_path)
+file_mime = "application/octet-stream"
+max_bytes  = 50000000
+part_number = file_size / max_bytes
+if (file_size % max_bytes) > 0 :
+  part_number = par

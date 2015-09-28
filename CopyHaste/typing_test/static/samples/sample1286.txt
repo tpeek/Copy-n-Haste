@@ -1,0 +1,24 @@
+
+matplotlib.use('Agg')
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+anal_dir = os.path.join(repo_dir, 'data_processing')
+sys.path.append(anal_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def running_mean(darray, window):
+	dframe = darray.to_pandas()
+	dframe = pandas.rolling_mean(dframe, window, center=True)
+	dframe = dframe.dropna()
+	return xray.DataArray(dframe)
+def read_data(inargs, runmean_window):
+	dset_in = xray.open_dataset(inargs.infile)
+	gio.check_xrayDataset(dset_in, inargs.variable)
+	subset_dict = gio.get_subset_kwa

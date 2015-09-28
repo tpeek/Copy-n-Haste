@@ -1,0 +1,17 @@
+
+logger = logging.getLogger(__name__)
+class MetadataMissingError(DistlibException):
+class MetadataConflictError(DistlibException):
+class MetadataUnrecognizedVersionError(DistlibException):
+class MetadataInvalidError(DistlibException):
+__all__ = ['Metadata', 'PKG_INFO_ENCODING', 'PKG_INFO_PREFERRED_VERSION']
+PKG_INFO_ENCODING = 'utf-8'
+PKG_INFO_PREFERRED_VERSION = '1.1'
+_LINE_PREFIX = re.compile('\n	   \|')
+_241_FIELDS = ('Metadata-Version', 'Name', 'Version', 'Platform',
+			   'Summary', 'Description',
+			   'Keywords', 'Home-page', 'Author', 'Author-email',
+			   'License')
+_314_FIELDS = ('Metadata-Version', 'Name', 'Version', 'Platform',
+			   'Supported-Platform', 'Summary', 'Description',
+			   'Keywords', 'Home-page', 'Author', 'Author

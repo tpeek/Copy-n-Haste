@@ -1,0 +1,21 @@
+Session = model.Session
+class TestReviewController(TestController):
+	@attr(author='jj', controller='account')
+	def test_create_account(self):
+		response = self.app.get(
+			url(controller='account',
+				action='create_account'),
+			status=200)
+		assert response.request.url.endswith('/account/create_account')
+		form = response.form
+		form['first_name'] = u'tester'
+		form['last_name'] = u'bot'
+		form['experience'] = u'5'
+		form['email'] = u'tester_bot@brown.edu'
+		form['username'] = u'tester'
+		form['password'] = u'tester'
+		post_submit = form.submit(status=302)
+		post_submit = post_submit.follow(status=302)
+		post_login = post_submit.follow(status=302)
+		post_login = post_login.follow(status=200)
+		assert "hurray, you've no outstanding assign

@@ -1,0 +1,27 @@
+__version__ = '3.3.1'
+__password__ = ''
+__hostsdeny__ = ()
+URLFETCH_MAX = 2
+URLFETCH_MAXSIZE = 4*1024*1024
+URLFETCH_DEFLATE_MAXSIZE = 4*1024*1024
+URLFETCH_TIMEOUT = 30
+def message_html(title, banner, detail=''):
+	MESSAGE_TEMPLATE =
+	return string.Template(MESSAGE_TEMPLATE).substitute(title=title, banner=banner, detail=detail)
+try:
+except ImportError:
+	logging.warn('Load Crypto.Cipher.ARC4 Failed, Use Pure Python Instead.')
+	class RC4Cipher(object):
+		def __init__(self, key):
+			x = 0
+			box = range(256)
+			for i, y in enumerate(box):
+				x = (x + y + ord(key[i % len(key)])) & 0xff
+				box[i], box[x] = box[x], y
+			self.__box = box
+			self.__x = 0
+			self.__y = 0
+		def encrypt(self, data):
+			out = []
+			out_append = out.append
+			x = self._

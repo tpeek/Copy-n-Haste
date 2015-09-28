@@ -1,0 +1,21 @@
+
+__prog__ = "ligolw_cbc_cfar"
+__author__ = "Collin Capano <cdcapano@physics.syr.edu>"
+description = \
+"Calculates false alarm rates (FAR) in units of yr^(-1) and stores to " + \
+"specified output_column. Writes results out to a new database. "
+def get_ifo_multiplicity( ifos ):
+	return len( lsctables.instrument_set_
+def parse_command_line():
+	parser = OptionParser(
+		version = git_version.verbose_msg,
+		usage   = "%prog [options]",
+		description = description
+		)
+	parser.add_option( "-i", "--input", action = "store", type = "string", default = None,
+		help = 
+			"Input database to read. Can only input one at a time."
+			)
+	parser.add_option( "-o", "--output", action = "store", type = "string", default = None,
+		help = 
+			"Name of output dat

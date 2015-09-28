@@ -1,0 +1,23 @@
+geometry_types = dict([(getattr(ogr, attr), attr) for attr in dir(ogr)
+					   if attr.startswith('wkb')])
+def guess_geom_type(csv_path, geom_name):
+	with open(csv_path) as file:
+		for row in DictReader(file):
+			geom = ogr.CreateGeometryFromWkt(row.get(geom_name))
+			return geometry_types.get(geom.GetGeometryType(), False)
+	
+	return False
+def write_vrt_file(csv_path):
+	vrt_template =
+	
+	geom_name = GEOM_FIELDNAME
+	geom_type = guess_geom_type(csv_path, geom_name)
+	csv_dir = dirname(csv_path)
+	csv_base, _ = splitext(basename(csv_path))
+	vrt_path = join(csv_dir, csv_base + '.vrt')
+	with open(vrt_path, 'w') as file:
+		file.write(vrt_template.format(**locals()))
+	_L.debug('Wrote {vrt_path}'.format(**locals()))
+	
+	return vrt_path
+def esri2geojso

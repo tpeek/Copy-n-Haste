@@ -1,0 +1,15 @@
+
+parser = argparse.ArgumentParser(usage='',
+	description="Find multiple detector gravitational-wave triggers.")
+parser.add_argument("-V", "--verbose", action="store_true",
+				  help="print extra debugging information", default=False )
+parser.add_argument("--output", type=str)
+parser.add_argument("--instruments", nargs="+", type=str, required=True,
+					help="List of instruments to analyze.")
+parser.add_argument("--bank-file", type=str)
+parser.add_argument("--snr-threshold",
+				  help="SNR threshold for trigger generation", type=float)
+parser.add_argument("--newsnr-threshold", type=float, metavar='THRESHOLD',
+					help="Cut triggers with NewSNR less than THRESHOLD")
+parser.add_argument("--low-frequency-cutoff", type=float,
+				  help="The 

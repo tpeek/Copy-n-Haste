@@ -1,0 +1,28 @@
+
+logger = logging.getLogger(__name__)
+class Cache(object):
+	DEFAULT_VALIDITY = 60
+	CODEC = 'base64'
+	def __init__(self, owner):
+		self._owner = owner.encode('utf-8')
+	def __getKey(self, key):
+		h = hashlib.md5()
+		h.update(self._owner + key.encode('utf-8'))
+		return h.hexdigest()
+	def get(self, skey, defValue=None):
+		now = getSqlDatetime()
+		try:
+			key = self.__getKey(skey)
+			c = dbCache.objects.get(pk=key)
+			expired = now > c.created + timedelta(seconds=c.validity)
+			if expired:
+				return defValue
+			val = pickle.loads(c.value.decode(Cache.CODEC))
+			return val
+		except dbCache.DoesNotExist:
+			logger.debug('key not found: {}'.format(skey))
+			return defValue
+	def remove(self, skey):
+		try:
+			key = self.__getKey(skey)
+			dbCache.obj

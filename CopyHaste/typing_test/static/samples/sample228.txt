@@ -1,0 +1,29 @@
+
+HEADERSIZE = 8
+def nextheader(fobj):
+	return struct.unpack('>4sI', fobj.read(HEADERSIZE))
+def read_32t(fobj, (start, length), (width, height)):
+	fobj.seek(start)
+	sig = fobj.read(4)
+	if sig != '\x00\x00\x00\x00':
+		raise SyntaxError, 'Unknown signature, expecting 0x00000000'
+	return read_32(fobj, (start + 4, length - 4), (width, height))
+def read_32(fobj, (start, length), size):
+	fobj.seek(start)
+	sizesq = size[0] * size[1]
+	if length == sizesq * 3:
+		indata = fobj.read(length)
+		im = Image.
+	else:
+		im = Image.new("RGB", size, None)
+		for band_ix in range(3):
+			data = []
+			bytesleft = sizesq
+			while bytesleft > 0:
+				byte = fobj.read(1)
+				if not byte:
+					break
+				byte = ord(byte)
+				if byte & 0x80:
+					blocksize = byte - 125
+		

@@ -1,0 +1,16 @@
+
+class Ui_new_object(object):
+	def setupUi(self, new_object):
+		new_object.setObjectName("new_object")
+		new_object.resize(400, 232)
+		self.verticalLayoutWidget = QtGui.QWidget(new_object)
+		self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 381, 211))
+		self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+		self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+		self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+		self.verticalLayout.setObjectName("verticalLayout")
+		self.formLayout = QtGui.QFormLayout()
+		self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
+		self.formLayout.setObjectName("formLayout")
+		self.label_2 = QtGui.QLabel(self.verticalLayoutWidget)
+		self.label_2.setObject

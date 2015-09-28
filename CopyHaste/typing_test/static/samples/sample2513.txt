@@ -1,0 +1,23 @@
+
+class DoubanmovieSpider(CrawlSpider):
+	name = 'doubanmovie'
+	allow_doumains = ['movie.douban.com']
+	start_urls = [ 'http://movie.douban.com/top250' ]
+	download_delay = 2
+	rules = [
+		Rule(LxmlLinkExtractor(allow=(r'\?start=\d+&filter=&type=',), 
+							   deny=(r'http://movie\.douban\.com/subject/\d+/$',)),
+		 callback='parse_next_site',
+		 follow=True
+		),
+		Rule(LxmlLinkExtractor(allow=(r'http://movie\.douban\.com/subject/\d+/$',)),
+		 callback='parse_item1',
+		 follow=True
+		)
+	]
+	def parse_next_site(self, response):
+		print '\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+		print response.url
+		raw_input('press any key to continue')
+		print '+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++'
+	def 

@@ -1,0 +1,16 @@
+
+								reddening_correction_sf11,
+								reddening_correction_w14,
+								correct_magnitudes)
+class TestPhotometry:
+	@classmethod
+	def setup_class(cls):
+		cls.sdss = Dataset('sdss_tiny')
+	def test_dust_extinction(self):
+		sfd98_corrections = reddening_correction_sfd98(self.sdss.data['extinction_r'])
+		sf11_corrections = reddening_correction_sf11(self.sdss.data['extinction_r'])
+		w14_corrections = reddening_correction_w14(self.sdss.data['extinction_r'])
+		psf_magnitudes = ['psfMag_u', 'psfMag_g', 'psfMag_r', 'psfMag_i', 'psfMag_z']
+		petro_magnitudes = ['petroMag_u', 'petroMag_g', 'petroMag_r', 'petroMag_i', 'petroMag_z']
+		correct_magnitudes(self.sdss.data, psf_magnitudes, sfd98_corrections, '_sfd98')
+		correct_magnitudes(self.sdss.data

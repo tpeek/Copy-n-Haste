@@ -1,0 +1,19 @@
+
+u
+def simulate(params, msg_callback):
+	p = pkcollections.OrderedMapping()
+	for k in 'polarization', 'intensity', 'simulation_kind', 'wavefront':
+		v = params[k]
+		p[k] = v.value if hasattr(v, 'value') else v
+	pkcollections.mapping_merge(
+		p, srw_params.to_undulator_single_particle(params.undulator))
+	p.arPrecPar = srw_params.to_precision_single_particle(params.precision)
+	p.wfrE = srw_params.to_wavefront_single_particle(p.wavefront)
+	p.wfrE.partBeam = srw_params.to_beam(params.beam)
+	p.wfrXY = srw_params.to_wavefront_single_particle(p.wavefront)
+	p.wfrXY.partBeam = srw_params.to_beam(params.beam)
+	p.beam = srw_params.to_beam(params.beam)
+	p.plots = []
+	skv = p.simulation_kind
+	if params.simulation_kind == 'E':
+		msg_callback('Performing E

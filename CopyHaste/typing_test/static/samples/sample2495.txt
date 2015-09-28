@@ -1,0 +1,20 @@
+
+def delete(session, review):
+	existing_reviews = Review.query. \
+		filter(Review.id != review.id). \
+		filter(Review.resource_id == review.resource_id). \
+		filter(Review.user_id == review.user_id). \
+		order_by(Review.date_created.desc()). \
+		all()
+	newest_visible_review = next((rev for rev in existing_reviews if rev.visible == True), None)
+	if newest_visible_review is not None:
+		newest_visible_review.is_old_review = False
+		newest_visible_review.new_review_id = None
+	for existing_review in existing_reviews:
+		if newest_visible_review is not None:
+			if existing_review.id == newest_visible_review.id:
+				continue
+			existing_review.is_old_review = True
+			existing_review.new_review_id = newest_visible_review.id
+		else:
+			existing_revie

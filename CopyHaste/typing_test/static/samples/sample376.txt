@@ -1,0 +1,20 @@
+
+cwdInFunction()
+m = Basemap(projection='cyl', resolution='c',\
+	llcrnrlat=-43.75,urcrnrlat=-12.5,\
+	llcrnrlon=114.375,urcrnrlon=153.75)
+def mapBasic(states=False,grid=False,labels=True,title=True,save=False):
+				
+	m.drawcoastlines()
+	if states == True:
+		m.drawstates()
+		states_lon = [145.5,142,146.5,144,144,133,133,122]
+		states_lat = [-42.5,-37,-35,-32,-22,-30,-23,-25]
+		x,y = m(states_lon, states_lat)
+		m.plot(x, y, 'bo',markersize=0)
+		labels = ['Tas.','Vic.','A.C.T.','N.S.W.','Qld','S.A.','N.T.','W.A.']
+		for label, xpt, ypt in zip(labels,x,y):
+			plt.text(xpt,ypt,label)
+		if raw_input('Do you want to fill Australia with grey? y/n ')== 'y':
+			m.fillcontinents(color='0.75',lake_color='white')
+			m.drawmapboundary(fill_color='white')

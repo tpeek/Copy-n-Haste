@@ -1,0 +1,20 @@
+
+	BoxOAuthSettings, BoxUserSettings,
+	BoxNodeSettings, BoxFile
+)
+class BoxOAuthSettingsFactory(ModularOdmFactory):
+	FACTORY_FOR = BoxOAuthSettings
+	username = 'Den'
+	user_id = 'b4rn311'
+	expires_at = datetime(2045, 1, 1)
+	access_token = Sequence(lambda n: 'abcdef{0}'.format(n))
+	refresh_token = Sequence(lambda n: 'abcdef{0}'.format(n))
+class BoxUserSettingsFactory(ModularOdmFactory):
+	FACTORY_FOR = BoxUserSettings
+	owner = SubFactory(UserFactory)
+	oauth_settings = SubFactory(BoxOAuthSettingsFactory)
+class BoxNodeSettingsFactory(ModularOdmFactory):
+	FACTORY_FOR = BoxNodeSettings
+	owner = SubFactory(ProjectFactory)
+	user_settings = SubFactory(BoxUserSettingsFactory)
+	with mock.patch('website.addons.box.model.BoxNodeSettings.fetch_folder_name'

@@ -1,0 +1,18 @@
+
+parser = argparse.ArgumentParser(usage='pycbc_ligolw_find_playground \
+[--options]',
+								 description="Find single detector \
+								 gravitational-wave triggers during \
+								 playground segments.")
+parser.add_argument('-i', '--trigger-file', type=str,
+				  help='Input xml file with SnglInspiral triggers.')
+parser.add_argument('-o', '--output-file', type=str,
+				  help='Output xml file with playground segment triggers.')
+parser.add_argument('-v', '--verbose', action='store_true',
+				  help='Print extra debugging information.', default=False)
+opts = parser.parse_args()
+class DefaultContentHandler(lsctables.ligolw.LIGOLWContentHandler):
+	pass
+lsctables.use_in(DefaultContentHandler)
+if opts.verbose:
+	logging_level = logging.DEBUG

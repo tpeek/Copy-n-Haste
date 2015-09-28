@@ -1,0 +1,22 @@
+baseHtml = "http://bk2.radio.cn/mms4/videoPlay/"
+typeHtml = "getAreaAndType.jspa"
+channelHtml = "pcGetChannels.jspa"
+playinfoHtml = "getChannelPlayInfoJson.jspa"
+headers = { "User-Agent": "Mozilla/5.0 (X11; Linux i686; rv:35.0) Gecko/20100101 Firefox/35.0",
+			"Host": "bk2.radio.cn",
+			"Referer": "http://www.radio.cn/index.php?option=default,radio"}
+MODE_NONE = "none"
+MODE_MENU = "menu"
+MODE_CHANNELS = "channels"
+MODE_PLAY = "play"
+def request(url):
+	if not url.startswith('http'):
+		url = baseHtml + url
+	print('request', url)
+	req = urllib2.Request(url, headers = headers)
+	response = urllib2.urlopen(req)
+	cont = response.read()
+	response.close()
+	return json.loads(cont.strip("()"))
+def isFolder(mode):
+	return mode in (MODE_MENU, MODE_CHANN

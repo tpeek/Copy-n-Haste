@@ -1,0 +1,21 @@
+
+cwd = os.getcwd()
+repo_dir = '/'
+for directory in cwd.split('/')[1:]:
+	repo_dir = os.path.join(repo_dir, directory)
+	if directory == 'climate-analysis':
+		break
+modules_dir = os.path.join(repo_dir, 'modules')
+sys.path.append(modules_dir)
+try:
+except ImportError:
+	raise ImportError('Must run this script
+def rotate_vwind(dataU, dataV, new_np, pm_point, res=1.0, anomaly=None):
+	assert isinstance(dataU, cdms2.tvariable.TransientVariable)
+	assert isinstance(dataV, cdms2.tvariable.TransientVariable)
+	assert 'yx' in dataU.getOrder(), \
+	'Input data must have a latitude and longitude axis'
+	lat_axis = dataU.getLatitude()[:]
+	lon_axis = dataU.getLongitude()[:]
+	lats, lons = uconv.coordinate_pairs(lat_axis, lon_axis)
+	vwind_rot = calc_vwind(dataU, d

@@ -1,0 +1,20 @@
+
+
+(T_CHAR_SPACE, T_CHAR_NULL, T_CHAR_CR, T_CHAR_TAB, T_CHAR_LF, T_CHAR_SLASH, \
+T_CHAR_BACKSLASH, T_CHAR_DOUBLE_QUOTE, T_CHAR_SINGLE_QUOTE, T_CHAR_STAR, T_CHAR_HASH) = \
+(' ', '\0', '\r', '\t', '\n', '/', '\\', '\"', '\'', '*', '
+
+SEPERATOR_TUPLE = ('=', '|', ',', '{', '}') 
+
+IncludeFileList = []
+InputMacroDict = {}
+AllMacroList = []
+
+def GetRealFileLine (File, Line):
+	
+	InsertedLines = 0
+	for Profile in IncludeFileList:
+		if Line >= Profile.InsertStartLineNumber and Line < Profile.InsertStartLineNumber + Profile.InsertAdjust + len(Profile.FileLinesList):
+			return (Profile.FileName, Line - Profile.InsertStartLineNumber + 1)
+		if Line >= Profile.InsertStartLineNumber + Profile.InsertAdjust + len(Profile.FileLinesList):
+			Ins

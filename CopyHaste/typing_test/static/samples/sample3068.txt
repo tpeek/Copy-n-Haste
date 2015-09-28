@@ -1,0 +1,258 @@
+class AgendaWizardDialogImpl(AgendaWizardDialog):
+	def __init__(self, xmsf):
+		super(AgendaWizardDialogImpl, self).__init__(xmsf)
+		self.filenameChanged = False
+		self.pageDesign = -1
+	def enterStep(self, OldStep, NewStep):
+		pass
+	def leaveStep(self, OldStep, NewStep):
+		pass
+	def startWizard(self, xMSF):
+		self.running = True
+		try:
+			self.nMaxStep = 6
+			self.agenda = CGAgenda()
+			root = Configuration.getConfigurationRoot(
+				self.xMSF, "/org.openoffice.Office.Writer/Wizards/Agenda",
+				False)
+			self.agenda.readConfiguration(root, "cp_")
+			self.templateConsts = TemplateConsts
+			self.initializePaths()
+			self.terminateListener = TerminateListenerProcAdapter(self)
+			self.myAgendaDoc = AgendaDocument(
+				self.xMSF, self.agenda, self.resources,
+				self.templateConsts, self.terminateListener)
+			self.initializeTemplates()
+			self.myAgendaDoc.load(
+				self.agendaTemplates[1][self.agenda.cp_AgendaType])
+			self.drawConstants()
+			self.drawNaviBar()
+			self.buildStep1()
+			self.buildStep2()
+			self.buildStep3()
+			self.buildStep4()
+			self.buildStep5()
+			self.buildStep6()
+			self.topicsControl = TopicsControl(self, self.xMSF, self.agenda)
+			self.insertPathSelectionControl()
+			self.initConfiguration()
+			if self.myPathSelection.xSaveTextBox.Text.lower() == "":
+				self.myPathSelection.initializePath()
+			xContainerWindow = self.myAgendaDoc.xFrame.ContainerWindow
+			self.createWindowPeer(xContainerWindow)
+			self.insertRoadmap()
+			self.executeDialogFromComponent(self.myAgendaDoc.xFrame)
+			self.removeTerminateListener()
+			self.closeDocument()
+			self.running = False
+		except Exception:
+			self.removeTerminateListener()
+			traceback.print_exc()
+			self.running = False
+			return
+	def insertPathSelectionControl(self):
+		self.myPathSelection = PathSelection(
+			self.xMSF, self, PathSelection.TransferMode.SAVE,
+			PathSelection.DialogTypes.FILE)
+		self.myPathSelection.insert(6, 97, 70, 205, 45,
+			self.resources.reslblTemplatePath_value, True,
+			HelpIds.getHelpIdString(HID + 24),
+			HelpIds.getHelpIdString(HID + 25))
+		self.myPathSelection.sDefaultDirectory = self.sUserTemplatePath
+		self.myPathSelection.sDefaultName = "myAgendaTemplate.ott"
+		self.myPathSelection.sDefaultFilter = "writer8_template"
+		self.myPathSelection.addSelectionListener(self)
+	def initConfiguration(self):
+		self.xDialogModel.listPageDesign.StringItemList = \
+			tuple(self.agendaTemplates[0])
+		UnoDataAware.attachListBox(
+			self.agenda, "cp_AgendaType", self.listPageDesign, True).updateUI()
+		self.pageDesign = self.agenda.cp_AgendaType
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_IncludeMinutes", self.chkMinutes, True).updateUI()
+		UnoDataAware.attachEditControl(
+			self.agenda, "cp_Title", self.txtTitle, True).updateUI()
+		UnoDataAware.attachDateControl(
+			self.agenda, "cp_Date", self.txtDate, True).updateUI()
+		UnoDataAware.attachTimeControl(
+			self.agenda, "cp_Time", self.txtTime, True).updateUI()
+		UnoDataAware.attachEditControl(
+			self.agenda, "cp_Location", self.cbLocation, True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowMeetingType", self.chkMeetingTitle,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowRead", self.chkRead, True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowBring", self.chkBring, True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowNotes", self.chkNotes, True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowCalledBy", self.chkConvenedBy,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowFacilitator", self.chkPresiding,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowNotetaker", self.chkNoteTaker,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowTimekeeper", self.chkTimekeeper,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowAttendees", self.chkAttendees,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowObservers", self.chkObservers,
+			True).updateUI()
+		UnoDataAware.attachCheckBox(
+			self.agenda, "cp_ShowResourcePersons",self.chkResourcePersons,
+			True).updateUI()
+		UnoDataAware.attachEditControl(
+			self.agenda, "cp_TemplateName", self.txtTemplateName,
+			True).updateUI()
+		RadioDataAware.attachRadioButtons(
+			self.agenda, "cp_ProceedMethod",
+				(self.optCreateAgenda, self.optMakeChanges), True).updateUI()
+	def insertRoadmap(self):
+		self.addRoadmap()
+		self.insertRoadMapItems(
+			self.resources.RoadmapLabels, [True, True, True, True, True, True])
+		self.setRoadmapInteractive(True)
+		self.setRoadmapComplete(True)
+		self.setCurrentRoadmapItemID(1)
+	def initializeTemplates(self):
+		try:
+			sAgendaPath = self.sTemplatePath + "/wizard/agenda"
+			self.agendaTemplates = FileAccess.getFolderTitles(
+				self.xMSF, "aw", sAgendaPath, self.resources.dictPageDesign)
+			return True
+		except NoValidPathException:
+			traceback.print_exc()
+			return False
+	def pageDesignChanged(self):
+		try:
+			SelectedItemPos = self.listPageDesign.SelectedItemPos
+			if self.pageDesign is not SelectedItemPos:
+				self.pageDesign = SelectedItemPos
+				self.myAgendaDoc.load(
+					self.agendaTemplates[1][SelectedItemPos])
+				self.drawConstants()
+		except Exception:
+			traceback.print_exc()
+	def txtTitleTextChanged(self):
+		self.myAgendaDoc.redrawTitle("txtTitle")
+	def txtDateTextChanged(self):
+		self.myAgendaDoc.redrawTitle("txtDate")
+	def txtTimeTextChanged(self):
+		self.myAgendaDoc.redrawTitle("txtTime")
+	def txtLocationTextChanged(self):
+		self.myAgendaDoc.redrawTitle("cbLocation")
+	def chkUseMeetingTypeItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_MEETING_TYPE)
+	def chkUseReadItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_READ)
+	def chkUseBringItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_BRING)
+	def chkUseNotesItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_NOTES)
+	def chkUseCalledByItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_CALLED_BY)
+	def chkUseFacilitatorItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_FACILITATOR)
+	def chkUseNoteTakerItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_NOTETAKER)
+	def chkUseTimeKeeperItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_TIMEKEEPER)
+	def chkUseAttendeesItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_PARTICIPANTS)
+	def chkUseObserversItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_OBSERVERS)
+	def chkUseResourcePersonsItemChanged(self):
+		self.myAgendaDoc.redraw(self.templateConsts.FILLIN_RESOURCE_PERSONS)
+	def insertRow(self):
+		self.topicsControl.insertRow()
+	def removeRow(self):
+		self.topicsControl.removeRow()
+	def rowUp(self):
+		self.topicsControl.rowUp()
+	def rowDown(self):
+		self.topicsControl.rowDown()
+	def cancelWizard(self):
+		self.xUnoDialog.endExecute()
+		self.running = False
+	def finishWizard(self):
+		self.switchToStep(self.getCurrentStep(), self.nMaxStep)
+		bSaveSuccess = False
+		endWizard = True
+		try:
+			self.sPath = self.myPathSelection.getSelectedPath()
+			if not self.sPath or not os.path.exists(self.sPath):
+				self.myPathSelection.triggerPathPicker()
+				self.sPath = self.myPathSelection.getSelectedPath()
+			if not self.filenameChanged:
+				answer = SystemDialog.showMessageBox(
+					self.xMSF, "MessBox", YES_NO + DEF_NO,
+					self.resources.resOverwriteWarning,
+					self.xUnoDialog.Peer)
+				if answer == 3:
+					endWizard = False
+					return False
+			xDocProps = self.myAgendaDoc.xTextDocument.DocumentProperties
+			xDocProps.Title = self.txtTemplateName.Text
+			self.myAgendaDoc.setWizardTemplateDocInfo( \
+				self.resources.resAgendaWizardDialog_title,
+				self.resources.resTemplateDescription)
+			bSaveSuccess = OfficeDocument.store(
+				self.xMSF, self.myAgendaDoc.xTextDocument, self.sPath,
+				"writer8_template")
+			if bSaveSuccess:
+				self.topicsControl.saveTopics(self.agenda)
+				root = Configuration.getConfigurationRoot(
+					self.xMSF, "/org.openoffice.Office.Writer/Wizards/Agenda",
+					True)
+				self.agenda.writeConfiguration(root, "cp_")
+				root.commitChanges()
+				self.myAgendaDoc.finish(self.topicsControl.scrollfields)
+				loadValues = list(range(2))
+				loadValues[0] = uno.createUnoStruct( \
+					'com.sun.star.beans.PropertyValue')
+				loadValues[0].Name = "AsTemplate"
+				if self.agenda.cp_ProceedMethod == 1:
+					loadValues[0].Value = True
+				else:
+					loadValues[0].Value = False
+				loadValues[1] = uno.createUnoStruct( \
+					'com.sun.star.beans.PropertyValue')
+				loadValues[1].Name = "InteractionHandler"
+				xIH = self.xMSF.createInstance(
+					"com.sun.star.comp.uui.UUIInteractionHandler")
+				loadValues[1].Value = xIH
+				oDoc = OfficeDocument.load(
+					Desktop.getDesktop(self.xMSF),
+					self.sPath, "_default", loadValues)
+				oDoc.CurrentController.ViewSettings.ZoomType = OPTIMAL
+			else:
+				pass
+		except Exception:
+			traceback.print_exc()
+		finally:
+			if endWizard:
+				self.xUnoDialog.endExecute()
+				self.running = False
+		return True
+	def closeDocument(self):
+		try:
+			self.myAgendaDoc.xFrame.close(False)
+		except CloseVetoException:
+			traceback.print_exc()
+	def drawConstants(self):
+		constRangeList = self.myAgendaDoc.searchFillInItems(1)
+		for i in constRangeList:
+			text = i.String.lower()
+			aux = TextElement(i, self.resources.dictConstants[text])
+			aux.write()
+	def validatePath(self):
+		if self.myPathSelection.usedPathPicker:
+				self.filenameChanged = True
+		self.myPathSelection.usedPathPicker = False

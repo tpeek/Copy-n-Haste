@@ -1,0 +1,26 @@
+
+
+def main(project_ws, crop_str=''):
+	logging.info('\nCompare ET-Demands output to test files')
+	test_sep = ','
+	test_header = 0
+	test_comment = '
+	test_date_field = 'Date'
+	test_ext = '.csv'
+	base_sep = ','
+	base_header = 0
+	base_comment = '
+	base_date_field = 'Date'
+	base_ext = '.csv'
+	crop_list = list(parse_int_set(crop_str))
+	test_ws = os.path.join(project_ws, 'daily_stats')
+	base_ws = os.path.join(project_ws, 'daily_baseline')
+	logging.info('  Test Folder: {0}'.format(test_ws))
+	logging.info('  Base Folder: {0}'.format(base_ws))
+	if not os.path.isdir(test_ws):
+		logging.error(
+			'\nERROR: The test folder {0} could be found\n'.format(test_ws))
+		sys.exit()
+	elif not os.path.isdir(base_ws):
+		logging.error(
+			'\nERROR: 

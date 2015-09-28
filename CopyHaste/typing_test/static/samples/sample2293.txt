@@ -1,0 +1,20 @@
+
+LOG = log.getLogger(__name__)
+geneve_opts = [
+	cfg.ListOpt('vni_ranges',
+				default=[],
+				help=_("Comma-separated list of <vni_min>:<vni_max> tuples "
+					   "enumerating ranges of Geneve VNI IDs that are "
+					   "available for tenant network allocation")),
+	cfg.IntOpt('max_header_size',
+			   default=p_const.GENEVE_ENCAP_MIN_OVERHEAD,
+			   help=_("Geneve encapsulation header size is dynamic, this "
+					  "value is used to calculate the maximum MTU "
+					  "for the driver."
+					  "this is the sum of the sizes of the outer "
+					  "ETH + IP + UDP + GENEVE header sizes")),
+]
+cfg.CONF.register_opts(geneve_opts, "ml2_type_geneve")
+class GeneveAllocation(model_base.BASEV2):
+	__tablename__ = 'ml2_geneve_allocations'
+	geneve_vni = sa.C

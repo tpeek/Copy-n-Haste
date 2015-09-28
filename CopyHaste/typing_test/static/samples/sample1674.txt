@@ -1,0 +1,13 @@
+
+ProgName = "Bible Punctuation Systems handler"
+ProgVersion = "0.43"
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+@singleton
+class BiblePunctuationSystemsConverter:
+	def __init__( self ):
+		self.__filenameBase = "BiblePunctuationSystems"
+		self.treeTag = "BiblePunctuationSystem"
+		self.headerTag = "header"
+		self.mainElementTags = ( "sentenceCapitalisation", "properNounCapitalisation", "statementTerminator", "questionTerminator", "exclamationTerminator", "commaPauseCharacter",
+					"startQuoteLevel1", "endQuoteLevel1", "startQuoteLevel2", "endQuoteLevel2", "startQuoteLevel3", "endQuoteLevel3", "startQuoteLevel4", "endQuoteLevel4",
+					"booknameCase", "booknameLength", "punctuationAfterBookAbbreviation", "bookChapterSeparator"

@@ -1,0 +1,24 @@
+requests_ftp.monkeypatch_session()
+_http_timeout = 180
+def mkdirsp(path):
+	try:
+		os.makedirs(path)
+	except OSError as exc:
+		if exc.errno == errno.EEXIST and os.path.isdir(path):
+			pass
+		else:
+			raise
+def request(method, url, **kwargs):
+	try:
+		_L.debug("Requesting %s with args %s", url, kwargs.get('params') or kwargs.get('data'))
+		return requests.request(method, url, timeout=_http_timeout, **kwargs)
+	except requests.exceptions.SSLError as e:
+		_L.warning("Retrying %s without SSL verification", url)
+		return requests.request(method, url, timeout=_http_timeout, verify=False, **kwargs)
+class CacheResult:
+	cache = None
+	fingerprint = None
+	version = None
+	elapsed = None
+	def __init__(self, cache, fingerprint, version, elapsed):
+		self.cac

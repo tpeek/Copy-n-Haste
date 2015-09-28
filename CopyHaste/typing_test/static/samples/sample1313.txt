@@ -1,0 +1,35 @@
+
+try:
+except ImportError:
+
+
+def read_reaponse_line(fp):
+	line = fp.readline()
+	if not line.startswith(b'HTTP'):
+		raise IOError(0, 'bad response line: %r' % line)
+	version, _, status = line.strip().partition(b' ')
+	status, _, reason = status.partition(b' ')
+	status = int(status)
+	return line, version, status, reason
+
+
+def read_header_data(fp):
+	header_data = []
+	while True:
+		line = fp.readline()
+		header_data.append(line)
+		if line in (b'\r\n', b'\n', b'\r'):
+			break
+		if not line:
+			raise IOError(0, 'remote socket closed')
+	return b''.join(header_data)
+
+
+def read_headers(fp):
+	header_data = read_header_data(fp)
+	headers = parse_headers(header_data)
+	return header_data, headers
+
+
+def parse_headers(data):
+	if

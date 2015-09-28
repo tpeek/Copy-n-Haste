@@ -1,0 +1,15 @@
+class CommentWidget(object):
+	def __init__(self):
+		self.comment_text_edit_dic = {}
+		self.comments_gridLayout = QtGui.QGridLayout(self.scrollAreaWidgetContents)
+		self.commentLineEdit.returnPressed.connect(self.add_comment)
+	def load_comments(self):
+		current_tab_text = self.Tabs.tabText(self.Tabs.currentIndex())
+		if current_tab_text == "Images Manager":
+			comments = self.cursor.execute(, (self.selected_asset.id,)).fetchall()
+		elif current_tab_text in ["Task Manager", "Tasks"]:
+			comments = self.cursor.execute(, (self.selected_asset.id,)).fetchall()
+			self.commentsForAssetLbl.setText("Comments for task
+		elif current_tab_text == "Asset Loader":
+			comments = self.cursor.execute(, (self.selected_asset.id,)).fetchall()
+			self.commentsF

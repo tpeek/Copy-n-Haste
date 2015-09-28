@@ -1,0 +1,23 @@
+
+class ChainedDialog(wx.Dialog):
+	def __init__(self, data={}, *args, **kwargs):
+		super(ChainedDialog, self).__init__(*args, **kwargs)
+	   
+		
+		self.SetExtraStyle(wx.WS_EX_VALIDATE_RECURSIVELY)
+		self.mainSizer = wx.BoxSizer(wx.VERTICAL)
+		self.panelSizer = wx.BoxSizer(wx.VERTICAL)
+		buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+		self.panelList = []
+		self.currentPanel = 0
+		self.data = data
+		self.setPanels()
+		self.prevButton = wx.Button(self, label="< Back")
+		self.prevButton.Bind(wx.EVT_BUTTON, self.onPrev)
+		buttonSizer.Add(self.prevButton, 0,
+			wx.ALL| wx.EXPAND | wx.ALIGN_RIGHT, 5)
+		
+		self.nextButton = wx.Button(self, label="Next >")
+		self.nextButton.Bind(wx.EVT_BUTTON, self.onNext)
+		buttonSizer.Add(self.nextButton, 0,
+			wx.ALL| w

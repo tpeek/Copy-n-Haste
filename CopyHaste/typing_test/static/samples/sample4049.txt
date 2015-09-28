@@ -1,0 +1,24 @@
+def grep(text, io=None, flist=None):
+	root = text._root()
+	engine = SearchEngine.get(root)
+	if not hasattr(engine, "_grepdialog"):
+		engine._grepdialog = GrepDialog(root, engine, flist)
+	dialog = engine._grepdialog
+	searchphrase = text.get("sel.first", "sel.last")
+	dialog.open(text, searchphrase, io)
+class GrepDialog(SearchDialogBase):
+	title = "Find in Files Dialog"
+	icon = "Grep"
+	needwrapbutton = 0
+	def __init__(self, root, engine, flist):
+		SearchDialogBase.__init__(self, root, engine)
+		self.flist = flist
+		self.globvar = StringVar(root)
+		self.recvar = BooleanVar(root)
+	def open(self, text, searchphrase, io=None):
+		SearchDialogBase.open(self, text, searchphrase)
+		if io:
+			path = io.filename or ""
+		else:
+			path = ""
+		dir, base = 

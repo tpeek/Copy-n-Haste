@@ -1,0 +1,16 @@
+
+extension_library_files = glob.glob(os.path.join(os.path.dirname(Scientific.__file__), sys.platform, '*'))
+extension_library_files += glob.glob(os.path.join(os.path.dirname(MMTK.__file__), sys.platform, '*'))
+extension_library_files += glob.glob(os.path.join(os.path.dirname(AlGDock.__file__), sys.platform, '*')) 
+lib_paths = []
+for path in sys.path:
+  lib_ind = path.find('lib')
+  if lib_ind>0:
+	lib_path = path[:lib_ind]+'lib'
+	if not lib_path in lib_paths:
+	  lib_paths.append(lib_path)
+for path in lib_paths:
+  extension_library_files += glob.glob(os.path.join(path,'*netcdf*'))
+  extension_library_files += glob.glob(os.path.join(path,'*hdf5*'))
+  extension_library_files += glob.glob(os.path.join(path,'*libmkl*'))
+  extension_library_files +

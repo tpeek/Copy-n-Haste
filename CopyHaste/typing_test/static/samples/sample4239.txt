@@ -1,0 +1,19 @@
+class ReferenceTab(object):
+	def __init__(self):
+		self.compression_level = 60
+		self.keep_size = False
+		self.last_asset_name = ""
+		eye_icon = QtGui.QPixmap(self.cur_path + "\\media\\eye_icon.png")
+		eye_icon = QtGui.QIcon(eye_icon)
+		self.showUrlImageBtn.setIcon(eye_icon)
+		self.ref_selected_sequence_name = "xxx"
+		self.ref_selected_shot_number = "xxxx"
+		self.ref_selected_filter_tags = [""]
+		self.all_references_ListWidgetItems = []
+		self.images_with_no_tags_state = 0
+		self.images_with_comments_state = 0
+		self.nbrOfRefLoadedLbl.setText("Showing 0 out of 0")
+		self.nbr_of_visible_images = 0
+		self.ref_assets_instances = []
+		self.allTagsTreeWidget.sortItems(0, QtCore.Qt.AscendingOrder)
+		self.seqReferenceList.itemClicked.connect(self.

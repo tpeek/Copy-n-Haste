@@ -1,0 +1,29 @@
+
+try:
+except ImportError:
+	sphinx_rtd_theme = None
+try:
+except ImportError:
+	spelling = None
+sys.path.insert(0, os.path.abspath('.'))
+extensions = [
+	'sphinx.ext.autodoc',
+	'sphinx.ext.doctest',
+	'sphinx.ext.intersphinx',
+	'sphinx.ext.viewcode',
+	'cryptography-docs',
+]
+if spelling is not None:
+	extensions.append('sphinxcontrib.spelling')
+templates_path = ['_templates']
+nitpicky = True
+source_suffix = '.rst'
+master_doc = 'index'
+project = 'Cryptography'
+copyright = '2013-2015, Individual Contributors'
+base_dir = os.path.join(os.path.dirname(__file__), os.pardir)
+about = {}
+with open(os.path.join(base_dir, "src", "cryptography", "__about__.py")) as f:
+	exec(f.read(), about)
+version = release = about["__version__"]
+exclude_patterns = ['_build'

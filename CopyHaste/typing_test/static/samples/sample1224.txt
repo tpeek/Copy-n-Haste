@@ -1,0 +1,24 @@
+
+C, D = 'C', 'D'
+class TestAverageCopier(TestPlayer):
+	name = "Average Copier"
+	player = axelrod.AverageCopier
+	expected_classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': True,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.responses_test([], [], [C], random_seed=1)
+		self.responses_test([], [], [D], random_seed=2)
+	def test_when_oppenent_all_Cs(self):
+		self.responses_test([C, C, C, C], [C, C, C, C], [C, C, C],
+							random_seed=5)
+	def test_when_opponent_all_Ds(self):
+		self.responses_test([C, C, C, C], [D, D, D, D], [D, D, D], random_seed=5)
+class TestNiceAverageCopier(TestPlayer):
+	name = "Nice Average Copier"
+	player = axelrod.NiceAverageCopier
+	

@@ -1,0 +1,17 @@
+
+curl_log = logging.getLogger('tornado.curl_httpclient')
+class CurlAsyncHTTPClient(AsyncHTTPClient):
+	def initialize(self, io_loop, max_clients=10, defaults=None):
+		super(CurlAsyncHTTPClient, self).initialize(io_loop, defaults=defaults)
+		self._multi = pycurl.CurlMulti()
+		self._multi.setopt(pycurl.M_TIMERFUNCTION, self._set_timeout)
+		self._multi.setopt(pycurl.M_SOCKETFUNCTION, self._handle_socket)
+		self._curls = [self._curl_create() for i in range(max_clients)]
+		self._free_list = self._curls[:]
+		self._requests = collections.deque()
+		self._fds = {}
+		self._timeout = None
+		self._force_timeout_callback = ioloop.PeriodicCallback(
+			self._handle_force_timeout, 1000, io_loop=io_loop)
+		self._force_timeout_callback.start()
+		dummy_curl_ha

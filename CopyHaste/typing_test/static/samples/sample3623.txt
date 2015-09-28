@@ -1,0 +1,37 @@
+bdf_slant = {
+	"R": "Roman",
+	"I": "Italic",
+	"O": "Oblique",
+	"RI": "Reverse Italic",
+	"RO": "Reverse Oblique",
+	"OT": "Other"
+}
+bdf_spacing = {
+	"P": "Proportional",
+	"M": "Monospaced",
+	"C": "Cell"
+}
+def bdf_char(f):
+	while True:
+		s = f.readline()
+		if not s:
+			return None
+		if s[:9] == b"STARTCHAR":
+			break
+	id = s[9:].strip().decode('ascii')
+	props = {}
+	while True:
+		s = f.readline()
+		if not s or s[:6] == b"BITMAP":
+			break
+		i = s.find(b" ")
+		props[s[:i].decode('ascii')] = s[i+1:-1].decode('ascii')
+	bitmap = []
+	while True:
+		s = f.readline()
+		if not s or s[:7] == b"ENDCHAR":
+			break
+		bitmap.append(s[:-1])
+	bitmap = b"".join(bitmap)
+	[x, y, l, d] = [int(p) for p in props["BBX"].split()]
+	[dx, dy] = [int(p) for p in props["DW

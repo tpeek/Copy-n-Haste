@@ -1,0 +1,19 @@
+
+class SpatiotemporalPath4d(object):
+		
+	def compute_comfort(self, velocity_profile, tube_coords):
+		self.comfort_profile = []
+		self.comfort_rating = 0
+	def get_tube_elevations(self, tube_coords):
+		self.tube_elevations = [tube_coord[2] for tube_coord in tube_coords]		
+	def __init__(self, velocity_profile, spatial_path_3d):
+		self.trip_time = velocity_profile.trip_time
+		print self.trip_time / 60.0
+		self.speed_profile = velocity_profile.speed_profile
+		self.scalar_acceleration_profile = \
+			velocity_profile.scalar_acceleration_profile
+		self.land_cost = spatial_path_3d.land_cost	  
+		self.latlngs = spatial_path_3d.latlngs
+		self.geospatials = spatial_path_3d.geospatials
+		self.pylons = spatial_path_3d.pylons
+		self.pylon_cost = spatial_p

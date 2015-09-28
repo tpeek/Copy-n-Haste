@@ -1,0 +1,37 @@
+
+u
+def str2num(s):
+	return ("." in s and [float(s)] or [int(s)])[0]
+def maxelements(seq):
+	max_indices = []
+	if seq:
+		max_val = seq[0]
+		for i,val in ((i,val) for i,val in enumerate(seq) if val >= max_val):
+			if val == max_val:
+				max_indices.append(i)
+			else:
+				max_val = val
+				max_indices = [i]
+	return max_indices
+def FindingArrayMaxima(seq, deltI):
+	pkdc('size:',np.shape(seq)[0])
+	if seq:
+		j=0
+		maxV=[]
+		maxI=[]
+		maxIj=0
+		for i in xrange(0, np.shape(seq)[0]-deltI-1):
+			pkdc(i, seq[i])
+			if seq[i+1]>seq[i]:
+				maxVj=seq[i+1]
+				maxIj=i+1
+				pkdc(maxIj)
+			if (maxIj>0) & (i>maxIj+deltI):
+				j=j+1
+				maxV.append(maxVj)
+				maxI.append(maxIj)				
+				maxIj=1000000
+	else:
+		print('Input array is empty')
+	pkdc('Maximum
+	retur

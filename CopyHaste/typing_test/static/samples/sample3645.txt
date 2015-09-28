@@ -1,0 +1,18 @@
+caffe.set_mode_gpu()
+legal_schemes = {'caffe': frozenset(['softmax', 'crf', 'sigmoid', 'sigmoid_crf', 'sigmoid_pncrf']),
+				 'svm': frozenset(['dist', 'dist_crf', 'prob', 'prob_crf', 'prob_pncrf'])}
+data_dir = '../pascal12/'
+with open('hex.pickle', mode='rb') as h:
+	hex_data = pickle.load(h)
+class TrainTestTask:
+	def __init__(self, train_data, test_scheme):
+		assert isinstance(test_scheme, dict)
+		for k, vs in test_scheme.items():
+			assert k in legal_schemes
+			assert len(vs) > 0
+			assert all(v in legal_schemes[k] for v in vs)
+		self.test_scheme = test_scheme
+		self.path_back = join(data_dir, train_data + '.h5')
+		self.path_temp = join(data_dir, 'train.h5')
+		self.X_val, self.Y_val = read_hdf5(join(data_dir, 'val.h5'))
+		self.X_test, sel

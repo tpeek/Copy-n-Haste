@@ -1,0 +1,22 @@
+teams = json.load(open("reddit.current.json"))
+allplayers = json.load(open("players.current.json"))
+startercount = Counter()
+benchcount = Counter()
+captains = Counter()
+positions = {
+	"Goalkeeper": Counter(),
+	"Defender": Counter(),
+	"Midfielder": Counter(),
+	"Forward": Counter(),
+}
+def get(playerid):
+	return allplayers[str(playerid)]
+def fullname(player):
+	return "{} {}".format(player["first_name"].encode("utf8"), player["second_name"].encode("utf8"))
+def tableheader(position):
+	sys.stdout.write("{} | Points | Owned | Started | Captained\n".format(position))
+	sys.stdout.write("-- | -- | -- | -- | --\n")
+for teamid, players in teams.iteritems():
+	for player in players:
+		position = get(player["id"])["type_name"]
+		positions[position][player

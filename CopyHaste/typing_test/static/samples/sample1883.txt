@@ -1,0 +1,26 @@
+
+logger = logging.getLogger(__name__)
+class ServiceOne(Service):
+	typeName = _('Sample Service One')
+	typeType = 'SampleService1'
+	typeDescription = _('Sample (and dummy) service ONE')
+	iconFile = 'service.png'
+	maxDeployed = -1
+	usesCache = False
+	cacheTooltip = _('None')
+	usesCache_L2 = False
+	cacheTooltip_L2 = _('None')
+	needsManager = False
+	mustAssignManually = False
+	publicationType = None
+	deployedType = SampleUserDeploymentOne
+	colour = gui.ChoiceField(order=1,
+				 label=_('Colour'),
+				 tooltip=_('Colour of the field'),
+				 required=True,
+				 values=[ gui.choiceItem('red', 'Red'),
+					 gui.choiceItem('green', 'Green'),
+					 gui.choiceItem('blue', 'Blue'),
+					 gui.choiceItem('nonsense', 'Blagenta')
+				 ],
+				 defvalue='1'

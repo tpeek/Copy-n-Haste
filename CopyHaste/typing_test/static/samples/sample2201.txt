@@ -1,0 +1,27 @@
+
+if __name__ == '__main__':
+	parser = argparse.ArgumentParser(
+		description="Import XML courses
+	parser.add_argument("-c", "--courses-csv", required=True,
+		help="A CSV of xml courses to
+	args = parser.parse_args()
+	courses = open(args.courses_csv, 'r')
+	all_course_data = []
+	all_xml_mappings = {}
+	for line in courses:
+		cols = line.strip().split(',')
+		slug = cols[0]
+		author_format = cols[1]
+		disposition = cols[2]
+		repo_url = cols[4]
+		version = cols[5]
+		if author_format.lower() != 'xml' \
+		  or disposition.lower() == "don't
+			continue
+		org, course, run = slug.split("/")
+		repo_name = "{}~{}".format(basename(repo_url).rstrip('.git'), run)
+		course_info = {
+			"repo_url": repo_url,
+			"repo_name": repo_name,
+			"org": org,
+			"cours

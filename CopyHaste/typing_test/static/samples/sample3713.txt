@@ -1,0 +1,32 @@
+DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
+SENSOR_DATA_KEYSPACE = "sensor_data"
+ANALYTICS_KEYSPACE = "analytics"
+USERS_KEYSPACE = "users"
+USERS_CONSENT_TABLE = "users_consent"
+TAGS_TABLE_NAME = "tags"
+AGGREGATES_TABLE_NAME = "aggregates"
+CASSANDRA_ADDRESS = 'cassandra.cloudbrain.rocks'
+RABBITMQ_ADDRESS = 'rabbitmq.cloudbrain.rocks'
+WEBSERVER_ADDRESS = 'webserver.cloudbrain.rocks'
+WEBSERVER_PORT = 8080
+MOCK_DEVICE_ID = "mock"
+DEVICE_METADATA = [
+  {'device_name': 'openbci',
+   'device_type': 'eeg_headset',
+   'metrics':
+	 [
+	   {
+		 'metric_name': 'eeg',
+		 'num_channels': 8,
+		 'metric_description': 'Raw eeg data coming
+	   }
+	 ]
+  },
+  {
+	'device_name': 'muse',
+	'device_type': 'eeg_headset',
+	'metrics':
+	  [
+		{
+		  'metric_name': 'eeg',
+		  'num_c

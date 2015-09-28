@@ -1,0 +1,17 @@
+
+class AccountsView(LandingPageView):
+	TEMPLATE = '../templates/accounts/accounts.pt'
+	def __init__(self, request):
+		super(AccountsView, self).__init__(request)
+		self.conn = self.get_connection(conn_type="iam")
+		self.initial_sort_key = 'account_name'
+		self.prefix = '/accounts'
+		self.delete_form = DeleteAccountForm(self.request, formdata=self.request.params or None)
+	@view_config(route_name='accounts', renderer=TEMPLATE)
+	def accounts_landing(self):
+		json_items_endpoint = self.request.route_path('accounts_json')
+		if self.request.GET:
+			json_items_endpoint += u'?{params}'.format(params=urlencode(self.request.GET))
+		self.filter_keys = ['account_name', 'account_id']
+		self.sort_keys = [
+			dict(key='account_name', name=_(u'Account name

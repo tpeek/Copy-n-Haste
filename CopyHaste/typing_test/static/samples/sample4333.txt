@@ -1,0 +1,24 @@
+class Rules(object):
+	def __init__(name=name, url=urlresponse):
+		self.name = name
+		self.url = urlresponse
+		self.status_code = self.url.status_code
+		self.site_rules = 	{
+								"theobserver": 	{	"header_len": None,
+														"link": None,
+																			},
+								"theinquirer": 	{	"header_len": None,
+														"link": None,
+																			},
+								"theanalyst": 	{	"header_len": None,
+														"link": None,
+																			},
+								"frontpageafricaonline": 	{	"header_len": None,
+														"link": None,
+																			},
+								"thenewdawn": 	{	"header_len": None,
+														"link": None,
+																			},
+								"post1847": 	{	"header_len": None,
+														"link": None,
+																		

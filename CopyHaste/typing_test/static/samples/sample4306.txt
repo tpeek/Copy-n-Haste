@@ -1,0 +1,22 @@
+__license__   = 'Creative Commons Attribution 4.0 International License'
+__author__	= 'John McDole'
+__copyright__ = ''
+__version__   = '0.1'
+__date__	  = '2015/01/10'
+__docformat__ = 'restructuredtext en'
+class AdvancedUserRecipe1282101454(BasicNewsRecipe):
+	now = datetime.datetime.now()
+	title = 'The AJC'
+	timefmt = ' [%a,%d %B %Y %I:%M %p]'
+	__author__ = 'John McDole'
+	language = 'en'
+	description = 'The Atlanta Journal-Constitution; Metro Atlanta & Georgia'
+	publisher = 'The Atlanta Journal-Constitution'
+	publication_type = 'newspaper'
+	category = 'news, politics, USA'
+	oldest_article = 1
+	max_articles_per_feed = 100
+	no_stylesheets = True
+	ignore_duplicate_articles = {'title', 'url'}
+	remove_empty_feeds = True
+	use_embedded_content = Fa

@@ -1,0 +1,29 @@
+def list_all_html_files():
+	html_files = list()
+	for root, dirs, files in os.walk("../"):
+		html_files.extend( [os.path.join(root, f) for f in files if f.endswith(".html")] )
+	return html_files
+def process_one_file(html_filename):
+	def lowercase_id_name(t):
+		if t.has_attr("id"):
+			t["id"] = t["id"].lower()
+		if t.has_attr("name"):
+			t["name"] = t["name"].lower()
+		if t.has_attr("href"):
+			href = t["href"]
+			if (not href.startswith("http://")) and ("
+				href_position = href.find("
+				t["href"] = href[:href_position + 1] + href[href_position + 1:].lower()
+	def delete_w3c_validation_stickers(t):
+		if t.has_attr("href") and t["href"] == "http://validator.w3.org/check?uri=referer":
+			t.extract()
+	with open(html_filename, "r") as fh:
+		soup = bs4.BeautifulSoup(fh)
+		for tag in soup.find_all(True):
+			lowercase_id_name(tag)
+			delete_w3c_validation_stickers(tag)
+	with codecs.open(html_filename, encoding="utf-8", mode="w") as fh:
+		output_html = soup.prettify()
+		fh.write(output_html)
+for f in list_all_html_files():
+	process_one_file(f)

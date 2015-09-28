@@ -1,0 +1,22 @@
+
+												  DockerBuildCommand,
+												  LocalEnvironment,
+												  BuildCommand)
+class TestLocalEnvironment(TestCase):
+	fixtures = ['test_data']
+	def setUp(self):
+		self.project = Project.objects.get(slug='pip')
+		self.version = Version(slug='foo', verbose_name='foobar')
+		self.project.versions.add(self.version)
+		self.mocks = EnvironmentMockGroup()
+		self.mocks.start()
+	def tearDown(self):
+		self.mocks.stop()
+	def test_normal_execution(self):
+		self.mocks.configure_mock('process', {
+			'communicate.return_value': ('This is okay', '')})
+		type(self.mocks.process).returncode = PropertyMock(return_value=0)
+		build_env = LocalEnvironment(version=self.version, project=self.project,
+									 build={})
+		with build_env:
+			build_en

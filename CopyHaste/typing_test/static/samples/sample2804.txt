@@ -1,0 +1,193 @@
+class RecursionError( OverflowError, ValueError ):
+	
+def sort(nodes, routes, noRecursion=1):
+	children, parents = _buildChildrenLists(routes)
+	stage = []
+	stages = [stage]
+	taken = []
+	for node in nodes:
+		if (not parents.get(node)):
+			stage.append (node)
+	if nodes and not stage:
+		stage.append( nodes[0])
+	taken.extend( stage )
+	nodes = filter ( lambda x, l=stage: x not in l, nodes )
+	while nodes:
+		previousStageChildren = []
+		nodelen = len(nodes)
+		for node in stage:
+			for child in children.get (node, []):
+				if child not in previousStageChildren and child not in taken:
+					previousStageChildren.append(child)
+				elif child in taken and noRecursion:
+					raise RecursionError( (child, node) )
+		stage = previousStageChildren
+		removes = []
+		for current in stage:
+			currentParents = parents.get( current, [] )
+			for parent in currentParents:
+				if parent in stage and parent != current:
+					if not current in parents.get(parent, []):
+						removes.append( current )
+		for remove in removes:
+			while remove in stage:
+				stage.remove( remove )
+		stages.append( stage)
+		taken.extend( stage )
+		nodes = filter ( lambda x, l=stage: x not in l, nodes )
+		if nodelen == len(nodes):
+			if noRecursion:
+				raise RecursionError( nodes )
+			else:
+				stages.append( nodes[:] )
+				nodes = []
+	return stages
+def _buildChildrenLists (routes):
+	childrenTable = {}
+	parentTable = {}
+	for sourceID,destinationID in routes:
+		currentChildren = childrenTable.get( sourceID, [])
+		currentParents = parentTable.get( destinationID, [])
+		if not destinationID in currentChildren:
+			currentChildren.append ( destinationID)
+		if not sourceID in currentParents:
+			currentParents.append ( sourceID)
+		childrenTable[sourceID] = currentChildren
+		parentTable[destinationID] = currentParents
+	return childrenTable, parentTable
+def toposort (nodes, routes, noRecursion=1):
+	
+	dependencies = {}
+	inversedependencies = {}
+	if not nodes:
+		return []
+	if not routes:
+		return [nodes]
+	for node in nodes:
+		dependencies[ node ] = (0, node)
+		inversedependencies[ node ] = []
+	
+	
+	for depended, depends in routes:
+		try:
+			newdependencylevel, object = dependencies.get ( depends, (0, depends))
+		except TypeError:
+			print depends
+			raise
+		dependencies[ depends ] = (newdependencylevel + 1,  depends)
+		newdependencylevel,object = dependencies.get ( depended, (0, depended) )
+		dependencies[ depended ] = (newdependencylevel, depended)
+		dependencieslist = inversedependencies.get ( depended, [])
+		dependencieslist.append (depends)
+		inversedependencies[depended] = dependencieslist
+	sortinglist = dependencies.values()
+	sortinglist.sort ()
+	output = []
+	while sortinglist:
+		deletelist = []
+		generation = []
+		output.append( generation)
+		while sortinglist and sortinglist[0][0] == 0:
+			number, object = sortinglist[0]
+			generation.append ( object )
+			deletelist.append( object )
+			for inverse in inversedependencies.get(object, () ):
+				try:
+					oldcount, inverse = dependencies [ inverse]
+					if oldcount > 0:
+						dependencies [ inverse] = (oldcount-1, inverse)
+					else:
+						deletelist.append( inverse )
+					inversedependencies[object] = []
+				except KeyError:
+					pass
+			del sortinglist [0]
+		if not deletelist:
+			if noRecursion:
+				raise RecursionError( sortinglist )
+			else:
+				dependencies[sortinglist[0][1]] = (0,sortinglist[0][1])
+		for item in deletelist:
+			try:
+				del dependencies [ item ]
+			except KeyError:
+				pass
+		sortinglist = dependencies.values()
+		if not generation:
+			output.remove( generation )
+		sortinglist.sort ()
+	return output
+if __name__ == "__main__":
+	nodes = ['a', 'b', 'c', 'd', 'e', 'f']
+	route = [('a', 'b'), ('b', 'c'), ('b', 'd'), ('e','f')]
+	for x in  toposort( nodes, route):
+		for a in x:
+			print a
+	raise SystemExit
+	nodes= [ 0,1,2,3,4,5 ]
+	testingValues = [
+		[ (0,1),(1,2),(2,3),(3,4),(4,5)],
+		[ (0,1),(0,2),(1,2),(3,4),(4,5)],
+		[
+		(0,1),
+		(0,2),
+		(0,2),
+					(2,4),
+					(2,5),
+				(3,2),
+		(0,3)],
+		[
+		(0,1),
+		(1,2),
+		(2,0),
+					(2,4),
+					(2,5),
+				(3,2),
+		(0,3)],
+		[
+		(0,1),
+		(1,1),
+		(1,1),
+				(1,4),
+				(1,5),
+				(1,2),
+		(3,1),
+		(2,1),
+		(2,0)],
+		[
+			(0,1),
+			(1,0),
+			(0,2),
+			(0,3),
+		],
+		[
+			(0,1),
+			(1,0),
+			(0,2),
+			(3,1),
+		],
+	]
+	print 'sort, no recursion allowed'
+	for index in range(len(testingValues)):
+		try:
+			print '		', sort( nodes, testingValues[index] )
+		except:
+			print 'exception raised'
+	print 'toposort, no recursion allowed'
+	for index in range(len(testingValues)):
+		try:
+			print '		', toposort( nodes, testingValues[index] )
+		except:
+			print 'exception raised'
+	print 'sort, recursion allowed'
+	for index in range(len(testingValues)):
+		try:
+			print '		', sort( nodes, testingValues[index],0 )
+		except:
+			print 'exception raised'
+	print 'toposort, recursion allowed'
+	for index in range(len(testingValues)):
+		try:
+			print '		', toposort( nodes, testingValues[index],0 )
+		except:
+			print 'exception raised'

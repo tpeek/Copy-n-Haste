@@ -1,0 +1,20 @@
+
+_default_message_template =
+_lite_message_template =
+class CrashHandler(object):
+	message_template = _default_message_template
+	section_sep = '\n\n'+'*'*75+'\n\n'
+	def __init__(self, app, contact_name=None, contact_email=None,
+				 bug_tracker=None, show_crash_traceback=True, call_pdb=False):
+		self.crash_report_fname = "Crash_report_%s.txt" % app.name
+		self.app = app
+		self.call_pdb = call_pdb
+		self.show_crash_traceback = show_crash_traceback
+		self.info = dict(app_name = app.name,
+					contact_name = contact_name,
+					contact_email = contact_email,
+					bug_tracker = bug_tracker,
+					crash_report_fname = self.crash_report_fname)
+	def __call__(self, etype, evalue, etb):
+		sys.excepthook = sys.__excepthook__
+		color_scheme = 'NoColor'

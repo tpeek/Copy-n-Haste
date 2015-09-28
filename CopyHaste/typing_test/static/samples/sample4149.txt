@@ -1,0 +1,29 @@
+HASH_FILE = 'cythonize.dat'
+DEFAULT_ROOT = 'pytraj'
+try:
+	WindowsError
+except NameError:
+	WindowsError = None
+	try:
+		if LooseVersion(cython_version) < LooseVersion('0.19'):
+			raise Exception('Building pytraj requires Cython >= 0.19')
+	except ImportError:
+		pass
+	flags = ['--fast-fail']
+	if tofile.endswith('.cxx'):
+		flags += ['--cplus']
+	try:
+		try:
+			r = subprocess.call(['cython'] + flags + ["-o", tofile,
+			if r != 0:
+				raise Exception('Cython failed')
+		except OSError:
+			r = subprocess.call([sys.executable, '-c',
+								 '
+								 'setuptools_main as main; sys.exit(main())'] + flags +
+								 ["-o", tofile,
+			if r != 0:
+				raise Exception('Cython failed')
+	except OSError:
+		raise OSError('Cython needs to be installed')
+def pro

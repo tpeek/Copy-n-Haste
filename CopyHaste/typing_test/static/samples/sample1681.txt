@@ -1,0 +1,22 @@
+
+ProgName = "Greek language handler"
+ProgVersion = "0.02"
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+debuggingThisModule = False
+alpha = 'α'
+beta = 'β'
+gamma = ''
+normalConsonants = ( alpha, beta, gamma, )
+assert( len(normalConsonants) == 3 )
+if 0 and BibleOrgSysGlobals.debugFlag:
+	for j,letter in enumerate( normalConsonants ):
+		assert( normalConsonants.count(letter)==1 )
+		assert( letter not in vowelPoints )
+		assert( letter not in otherMarks )
+		assert( letter not in cantillationMarks )
+	for j,mark in enumerate( vowelPoints ):
+		assert( vowelPoints.count(mark)==1 )
+		assert( mark not in normalConsonants )
+		assert( mark not in otherMarks )
+		assert( mark not in cantillationMarks )
+	for j,mark in enumerate( otherMarks ):

@@ -1,0 +1,22 @@
+
+
+
+class sssocket(basesocket):
+	bufsize = 65519
+
+	def __init__(self, ssServer=None, ctimeout=1, parentproxy=None):
+		basesocket.__init__(self)
+		if ssServer and not isinstance(ssServer, ParentProxy):
+			ssServer = ParentProxy(ssServer, ssServer)
+		self.ssServer = ssServer
+		self.timeout = ctimeout
+		if parentproxy and not isinstance(parentproxy, ParentProxy):
+			parentproxy = ParentProxy(parentproxy, parentproxy)
+		self.parentproxy = parentproxy
+		self.crypto = None
+		self.connected = False
+
+	def connect(self, address):
+		self.__address = address
+		sshost, ssport, ssmethod, sspassword = (self.ssServer.hostname, self.ssServer.port, self.ssServer.username.lower(), self.ssServer.password)
+		self._sock = create_connection((ss

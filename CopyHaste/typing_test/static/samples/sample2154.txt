@@ -1,0 +1,23 @@
+
+winterm = None
+if windll is not None:
+	winterm = WinTerm()
+def is_a_tty(stream):
+	return hasattr(stream, 'isatty') and stream.isatty()
+class StreamWrapper(object):
+	def __init__(self, wrapped, converter):
+		self.__wrapped = wrapped
+		self.__convertor = converter
+	def __getattr__(self, name):
+		return getattr(self.__wrapped, name)
+	def write(self, text):
+		self.__convertor.write(text)
+class AnsiToWin32(object):
+	ANSI_CSI_RE = re.compile('\033\[((?:\d|;)*)([a-zA-Z])')
+	ANSI_OSC_RE = re.compile('\033\]((?:.|;)*?)(\x07)')
+	def __init__(self, wrapped, convert=None, strip=None, autoreset=False):
+		self.wrapped = wrapped
+		self.autoreset = autoreset
+		self.stream = StreamWrapper(wrapped, self)
+		on_windows = os.name == 'nt'
+		on_emulated_windows 

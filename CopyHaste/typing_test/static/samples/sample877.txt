@@ -1,0 +1,23 @@
+
+class Curry(object):
+	def __init__(self, callable, *args, **kwargs):
+		self.callable = callable
+		self.args = args
+		self.kwargs = kwargs
+		self.__doc__ = getattr(self.callable, "__doc__", None)
+	def __call__(self, *args, **kwargs):
+		return self.callable(*(self.args + args),
+							 **dict(self.kwargs.items() + kwargs.items()))
+	def __repr__(self):
+		return "<curry %s %r %r>" % (self.callable, self.args, self.kwargs)
+	def __eq__(self, other):
+		return (
+			isinstance(other, Curry) and
+			self.callable == other.callable and
+			self.args == other.args and
+			self.kwargs == other.kwargs)
+	def __hash__(self):
+		return hash(self.callable) ^ hash(self.args) ^ hash(self.kwargs)
+def curry(fn):
+	rv = Curry(Curry, fn)
+	rv.__doc__ = getattr(fn, "__d

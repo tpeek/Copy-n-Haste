@@ -1,0 +1,23 @@
+greek = ['Alpha', 'Nu',
+		 'Beta', 'Xi',
+		 'Gamma', 'Omicron',
+		 'Delta', 'Pi',
+		 'Epsilon', 'Rho',
+		 'Zeta', 'Sigma',
+		 'Eta', 'Tau',
+		 'Theta', 'Upsilon',
+		 'Iota', 'Phi',
+		 'Kappa', 'Chi',
+		 'Lambda', 'Psi',
+		 'Mu', 'Omega']
+firstsyl = ['Arse','Andro','Aqua','Auri','Boo',
+			'Cae', 'Canis ', 'Cancer ', 'Cari', 'Cassio',
+			'Cecilae ', 'Ceti ', 'Cepheus ', 'Ceph','Circ',
+			'Delph','Draco', 'Draconis ','Eridani ','Eri',
+			'Forn','Indi','Mono','Octans','Ophiuchi', 
+			'Phoense','Picto','Pictoris ','Pixis ']
+lastsyl = ['tooine', 'meda','rius','gae','norg',
+		   'tes','lum','nae','peia','eus','inus','bae','ini',
+		   'inus','ax','ceros','nus','nis','ris']
+secondword = ['Major', 'Minor', 'Majoris', 'Minoris', 
+			  'Australis', 'Bo

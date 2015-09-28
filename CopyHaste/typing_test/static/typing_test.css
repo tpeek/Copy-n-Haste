@@ -1,28 +1,47 @@
 textarea {
-    position: absolute;
-    font-size: 14px;
-    width: 500px;
-    padding: -500px;
+  position: absolute;
+  font-size: 14px;
+  width: 550px;
+}
+
+.score_label {
+  border-left: 1px solid #344270;
+  border-right: 2px solid #344270;
+  border-top: 1px solid #344270;
+  border-bottom: 2px solid #344270;
+  padding: 5px;
+  background-color: #CED3E8;
+  text-align: center;
+  color: #000;
+}
+
+.score_value {
+  border-left: 1px dotted #8794C7;
+  border-right: 1px dotted #8794C7;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  text-align: center;
+  color: #FFF;
 }
 
 #type, #type2 {
-    color: gray;
-    background-color: black;
-    opacity: .9;
+  color: gray;
+  background-color: black;
+  opacity: .9;
 }
 
 #typed, #typed2 {
-    background: none;
-    z-index: 10;
-    color: #00FF00;
+  background: none;
+  z-index: 10;
+  color: #00FF00;
 }
 
 #test {
   float: left;
-  margin-left: -160px;
+  margin-left: -221px;
 }
 
 #test2 {
   float: right;
-  margin-right: 350px;
+  margin-right: 370px;
 }

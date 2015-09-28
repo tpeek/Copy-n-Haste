@@ -1,0 +1,26 @@
+NetWorkIOError = (socket.error, ssl.SSLError, OpenSSL.SSL.Error, OSError)
+def generate_message_html(title, banner, detail=''):
+	MESSAGE_TEMPLATE =
+	return string.Template(MESSAGE_TEMPLATE).substitute(title=title, banner=banner, detail=detail)
+def spawn_later(seconds, target, *args, **kwargs):
+	def wrap(*args, **kwargs):
+		__
+		try:
+			result = target(*args, **kwargs)
+		except:
+			result = None
+		return result
+	return __
+skip_headers = frozenset(['Vary',
+						  'Via',
+						  'X-Google-Cache-Control',
+						  'X-Forwarded-For',
+						  'Proxy-Authorization',
+						  'Proxy-Connection',
+						  'Upgrade',
+						  'X-Chrome-Variations',
+						  'Connection',
+						  'Cache-Control'
+						  ])
+def send_header(wfile, keyword, value):
+	keyword =

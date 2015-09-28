@@ -1,0 +1,16 @@
+
+num_nodes_mismatch = "self.server has {0} nodes but cluster has {1} nodes"
+not_enough_nodes = "there are not enough nodes to failover.cluster has{0} nodes and test wants to failover {1} nodes"
+start_cluster = "rpc:call('{0}', ns_server_cluster_sup, start_cluster, [], infinity)."
+stop_cluster = "rpc:call('{0}', ns_server_cluster_sup, stop_cluster, [], infinity)."
+class FailoverHelper(object):
+	def __init__(self, servers, test):
+		self.log = logger.Logger.get_logger()
+		self.servers = servers
+		self.test = test
+	def failover(self, howmany):
+		rest = RestConnection(self.servers[0])
+		nodes = rest.node_statuses()
+		if len(nodes) != len(self.servers):
+			self.test.fail(num_nodes_mismatch.format(len(self.servers), len(nodes)))
+		if len(nodes) - 

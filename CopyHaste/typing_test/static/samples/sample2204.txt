@@ -1,0 +1,24 @@
+
+LOG_FORMAT = "%(asctime)s %(levelname)s - %(filename)s:%(lineno)s - %(message)s"
+TIMEOUT = 300
+log_level = logging.INFO
+def tags_for_hostname(hostname, mapping):
+	logging.debug("Hostname is {}".format(hostname))
+	if not hostname.startswith('ip-'):
+		return {}
+	octets = hostname.lstrip('ip-').split('-')
+	tags = {}
+	tags.update(mapping['CIDR_SECOND_OCTET'][octets[1]])
+	ip_addr = netaddr.IPAddress(".".join(octets))
+	for key, value in mapping['CIDR_REST'].items():
+		cidr = ".".join([
+			mapping['CIDR_FIRST_OCTET'],
+			octets[1],
+			key])
+		cidrset = netaddr.IPSet([cidr])
+		if ip_addr in cidrset:
+			tags.update(value)
+	return tags
+def potential_devices(root_device):
+	device_dir = dirname(root_device)
+	relevant_devices = lambda x: x.startswith(b

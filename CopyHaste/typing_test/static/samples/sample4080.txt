@@ -1,0 +1,23 @@
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+os.environ['DJANGO_SETTINGS_MODULE'] = 'zproject.settings'
+os.chdir(settings.DEPLOY_ROOT)
+STATIC_PATH = 'static/'
+def get_templates():
+	return glob.glob(os.path.join(STATIC_PATH, 'templates/*.handlebars'))
+def run():
+	subprocess.check_call(['tools/node', 'node_modules/.bin/handlebars']
+		+ get_templates()
+		+ ['--output', os.path.join(STATIC_PATH, 'templates/compiled.js'),
+		   '--known', 'if,unless,each,with'])
+def run_forever():
+	mtimes = {}
+	while True:
+		changed = False
+		for fn in get_templates():
+			new_mtime = os.stat(fn).st_mtime
+			if new_mtime != mtimes.get(fn, None):
+				changed = True
+			mtimes[fn] = new_mtime
+		if changed:
+			print 'Recompiling templates'
+			try:

@@ -1,0 +1,32 @@
+
+flip_dict = {'C': 'D', 'D': 'C'}
+class TitForTat(Player):
+	name = 'Tit For Tat'
+	classifier = {
+		'memory_depth': 1,
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	@staticmethod
+	def strategy(opponent):
+		return 'D' if opponent.history[-1:] == ['D'] else 'C'
+class TitFor2Tats(Player):
+	name = "Tit For 2 Tats"
+	classifier = {
+		'memory_depth': 2,
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	@staticmethod
+	def strategy(opponent):
+		return 'D' if opponent.history[-2:] == ['D', 'D'] else 'C'
+class TwoTitsForTat(Player):
+	name = "Two Tits For Tat"
+	classifier = {
+		'memory_depth': 2,
+		'stochastic': False,
+		

@@ -1,0 +1,19 @@
+print("yeah")
+main_hda_path = sys.argv[-5].replace("\\", "/")
+shading_hda_path = sys.argv[-4].replace("\\", "/")
+obj_path = sys.argv[-3].replace("\\", "/")
+asset_name = sys.argv[-2]
+modeling_hda_path = sys.argv[-1].replace("\\", "/")
+main_hda = sys.argv[-6].replace("\\", "/") + "/_NEF/main_hda.hdanc"
+print(main_hda)
+print(modeling_hda_path)
+print(obj_path)
+print(shading_hda_path)
+print(main_hda_path)
+definition = hou.hda.definitionsInFile(main_hda)
+definition[0].copyToHDAFile(main_hda_path, asset_name.replace("-", "_"), asset_name.replace("-", "_"))
+hou.hda.installFile(main_hda_path)
+asset_node = hou.node("/obj").createNode(asset_name.replace("-", "_"), asset_name.replace("-", "_"))
+print("11")
+asset_node.allowEditingOfContents()
+print("22"

@@ -1,0 +1,12 @@
+try:
+except ImportError:
+class TileException(Exception):
+	def __init__(self, msg):
+		Exception.__init__(self, msg)
+TILE_SERVICES = {
+	"GoogleSat"	  : "https://khm${GOOG_DIGIT}.google.com/kh/v=157&hl=pt-PT&x=${X}&y=${Y}&z=${ZOOM}&s=${GALILEO}",
+	"GoogleMap"	  : "https://mt${GOOG_DIGIT}.google.com/vt/lyrs=m@132&hl=pt-PT&x=${X}&y=${Y}&z=${ZOOM}&s=${GALILEO}",
+	"GoogleTer"	  : "https://mt${GOOG_DIGIT}.google.com/vt/v=t@132,r@249&hl=pt-PT&x=${X}&y=${Y}&z=${ZOOM}&s=${GALILEO}",
+	"GoogleChina"	: "http://mt${GOOG_DIGIT}.google.cn/vt/lyrs=m@121&hl=en&gl=cn&x=${X}&y=${Y}&z=${ZOOM}&s=${GALILEO}",
+	"MicrosoftBrMap" : "http://imakm${MS_DIGITBR}.maplink3.com.br/maps.ashx?v=${QUAD}|t&call=2.2.4",
+	"MicrosoftHyb"   : "http://ecn.t${MS_DIGIT}.tiles.virtuale

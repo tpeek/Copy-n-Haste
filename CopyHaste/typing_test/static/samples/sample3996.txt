@@ -1,0 +1,33 @@
+class EventName(Converter, object):
+	NAME = 0
+	SHORT_DESCRIPTION = 1
+	EXTENDED_DESCRIPTION = 2
+	FULL_DESCRIPTION = 3
+	ID = 4
+	NAME_NOW = 5
+	NAME_NEXT = 6
+	NAME_NEXT2 = 7
+	GENRE = 8
+	RATING = 9
+	SRATING = 10
+	SRATING = 11
+	PDC = 12
+	PDCTIME = 13
+	PDCTIMESHORT = 14
+	ISRUNNINGSTATUS = 15
+	NEXT_DESCRIPTION = 21
+	THIRD_NAME = 22
+	THIRD_NAME2 = 23
+	THIRD_DESCRIPTION = 24
+	def __init__(self, type):
+		Converter.__init__(self, type)
+		self.epgcache = eEPGCache.getInstance()
+		if type == "Description":
+			self.type = self.SHORT_DESCRIPTION
+		elif type == "ExtendedDescription":
+			self.type = self.EXTENDED_DESCRIPTION
+		elif type == "FullDescription":
+			self.type = self.FULL_DESCRIPTION
+		elif type == "ID":
+			self.type = self.ID
+		elif type == "Name

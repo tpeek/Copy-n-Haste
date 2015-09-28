@@ -1,0 +1,25 @@
+
+NOTSET = object()
+@six.add_metaclass(abc.ABCMeta)
+class BaseCache(object):
+	def __init__(self, parsed_url, options=None):
+		self._parsed_url = parsed_url
+		self._options = options or {}
+		self._default_ttl = int(self._options.get('default_ttl', 0))
+	@abc.abstractmethod
+	def _set(self, key, value, ttl, not_exists=False):
+	def set(self, key, value, ttl, not_exists=False):
+		if ttl is None:
+			ttl = self._default_ttl
+		return self._set(key, value, ttl, not_exists)
+	def __setitem__(self, key, value):
+		self.set(key, value, self._default_ttl)
+	def setdefault(self, key, value):
+		try:
+			return self[key]
+		except KeyError:
+			self[key] = value
+			return value
+	@abc.abstractmethod
+	def _get(self, key, default):
+	def get(self, key, default=None):

@@ -1,0 +1,16 @@
+__author__ = 'Xinyu Wu'
+(exp_models, recommendations_models,) = models.Registry.
+	models.NAMES.exploration, models.NAMES.recommendations])
+DEFAULT_TOPIC_SIMILARITIES_STRING = ()
+def get_topic_similarities_dict():
+	topic_similarities_entity = (
+		recommendations_models.TopicSimilaritiesModel.get(
+			recommendations_models.TOPIC_SIMILARITIES_ID, strict=False))
+	if topic_similarities_entity is None:
+		topic_similarities_entity = _create_default_topic_similarities()
+	return json.loads(topic_similarities_entity.content)
+def save_topic_similarities(topic_similarities):
+	topic_similarities_entity = (
+		recommendations_models.TopicSimilaritiesModel.get(
+			recommendations_models.TOPIC_SIMILARITIES_ID, strict=False))
+	if topic_similarities_entity is

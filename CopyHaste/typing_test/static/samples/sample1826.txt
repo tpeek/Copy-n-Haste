@@ -1,0 +1,18 @@
+
+class TestNetflix(TestCase):
+	def test_solve_1(self):
+		inputStream = StringIO("9628:\n798285\n2140114\n")
+		outputStream = StringIO()
+		netflix_solve(inputStream, outputStream)
+		self.assertEqual(outputStream.getvalue(), "9628:\n4.3\n3.9\nRMSE: 3.11\n")
+		
+	def test_solve_2(self):
+		inputStream = StringIO("209:\n20295\n845976\n3668:\n2444023\n1994654\n")
+		outputStream = StringIO()
+		netflix_solve(inputStream, outputStream)
+		self.assertEqual(outputStream.getvalue(), "209:\n4.5\n3.9\n3668:\n4.6\n4.2\nRMSE: 3.31\n")
+	def test_solve_3(self):
+		inputStream = StringIO("1418:\n133242\n4353:\n1492345\n8580:\n1967011\n")
+		outputStream = StringIO()
+		netflix_solve(inputStream, outputStream)
+		self.assertEqual(outputStream.getvalue(), "1418:\n4.2

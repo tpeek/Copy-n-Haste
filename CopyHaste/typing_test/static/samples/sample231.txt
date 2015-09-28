@@ -1,0 +1,32 @@
+
+VERSION = "1.1.6"
+try:
+except ImportError:
+	warnings = None
+class _imaging_not_installed:
+	def __getattr__(self, id):
+		raise ImportError("The _imaging C module is not installed")
+try:
+	__
+except ImportError:
+	pass
+try:
+	core = _imaging
+	del _imaging
+except ImportError, v:
+	core = _imaging_not_installed()
+	if str(v)[:20] == "Module use of python" and warnings:
+		warnings.warn(
+			"The _imaging extension was built for another version "
+			"of Python; most PIL functions will be disabled",
+			RuntimeWarning
+			)
+try:
+	UnicodeStringType = type(unicode(""))
+	def isStringType(t):
+		return isinstance(t, StringType) or isinstance(t, UnicodeStringType)
+except NameError:
+	def isStringType(t):
+		return isinstance(t, StringType)
+def isTupleType(t):
+	r

@@ -1,0 +1,20 @@
+
+def simulate(params, msg_callback=lambda _: _):
+	p = pkcollections.OrderedMapping()
+	for k in 'simulation_kind', 'wavefront':
+		v = params[k]
+		p[k] = v.value if hasattr(v, 'value') else v
+	pkcollections.mapping_merge(
+		p, srw_params.to_undulator_multi_particle(params.undulator))
+	p.beam = srw_params.to_beam(params.beam)
+	p.stkF = srw_params.to_wavefront_multi_particle(p.wavefront)
+	p.stkP = srw_params.to_wavefront_multi_particle(p.wavefront)
+	p.ar_prec_f = srw_params.to_flux_precision(params.precision)
+	p.ar_prec_p = srw_params.to_power_precision(params.precision)
+	p.arPrecPar = [1]
+	p.fieldInterpMeth = 4
+	p.plots = []
+	msg_callback('Performing trajectory calculation')
+	_trajectory(p)
+	if params.simulation_kind == 'E':
+		msg_callback('Pe

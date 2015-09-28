@@ -1,0 +1,30 @@
+
+try:
+except ImportError as e:
+	try:
+	except ImportError:
+		singledispatch = None
+class KeyReuseError(Exception):
+	pass
+class UnknownKeyError(Exception):
+	pass
+class LeakedCallbackError(Exception):
+	pass
+class BadYieldError(Exception):
+	pass
+class ReturnValueIgnoredError(Exception):
+	pass
+class TimeoutError(Exception):
+def engine(func):
+	func = _make_coroutine_wrapper(func, replace_callback=False)
+	@functools.wraps(func)
+	def wrapper(*args, **kwargs):
+		future = func(*args, **kwargs)
+		def final_callback(future):
+			if future.result() is not None:
+				raise ReturnValueIgnoredError(
+					"@gen.engine functions cannot return values: %r" %
+					(future.result(),))
+		future.add_done_callback(stack_context.wrap(final_callback))
+	return wrapper
+d

@@ -1,0 +1,22 @@
+
+def copytree(src,dst):
+	names = os.listdir(src)
+	if(os.path.isdir(dst) != True):
+		os.makedirs(dst)
+	for name in names:
+		srcname = os.path.join(src, name)
+		dstname = os.path.join(dst, name)
+		if os.path.isdir(srcname):
+				copytree(srcname, dstname)
+		else:
+			shutil.copy2(srcname, dstname)
+target_zip_file_location = './dist/'
+target_folder_name = CommonVariables.extension_name + '-' + str(CommonVariables.extension_version)
+target_zip_file_path = target_zip_file_location + target_folder_name + '.zip'
+final_folder_path = target_zip_file_location + target_folder_name
+copytree(final_folder_path, '/var/lib/waagent/' + target_folder_name)
+manifest_obj = [{
+  "name": CommonVariables.extension_name,
+  "seqNo": "1", 
+  "version": 1.0,
+	"handlerE

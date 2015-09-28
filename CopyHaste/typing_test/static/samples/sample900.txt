@@ -1,0 +1,22 @@
+
+						unicode_literals, with_statement)
+class UnpackLibrariesTest(TestAndroidBase):
+  @classmethod
+  def task_type(cls):
+	return UnpackLibraries
+  def unpacked_aar_library(self, location, manifest=True, classes_jar=True, resources=True,
+						   filenames=None):
+	if manifest:
+	  manifest_file = os.path.join(location, 'AndroidManifest.xml')
+	  touch(manifest_file)
+	  with safe_open(manifest_file, 'w') as fp:
+		fp.write(self.android_manifest())
+		fp.close()
+	if classes_jar:
+	  self.create_jarfile(location, filenames=filenames)
+	if resources:
+	  safe_mkdir(os.path.join(location, 'res'))
+	return location
+  def create_aarfile(self, location, name, filenames=None):
+	with temporary_dir() as temp:
+	  aar_contents = self.unpacked_aar_library(temp, 

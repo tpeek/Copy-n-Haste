@@ -1,0 +1,30 @@
+
+sys.path.append("libs/smat/py")
+activation_func = "relu"
+picked_device = None
+if picked_device is not None:
+	set_backend_options(device=picked_device)
+dt = float32
+set_default_dtype(dt)
+data_root = '../data/deepfind/'
+print "Started DeepFind: scoring SNVs in promoters using DeepBind predictions"
+print "Training DeepFind using", get_backend_info().device
+def nnet_eval(X, Y=None, mode="sigmoid"):
+	global W1,W2,b1,b2
+	A1 = dot(X, W1) + b1	
+	Z1 = f(A1)
+	if Y is not None:
+		if dropoutrate > 0:
+			mask = bernoulli(Z1.shape, 1 - dropoutrate, dtype=dt)
+			Z1 *= mask
+	else:
+		Z1 *= 1 - dropoutrate
+	A2 = dot(Z1, W2) + b2	 
+	Z2 = logistic(A2)
+	if Y is None:
+		if mode == "sigmoid":
+			return Z2
+		else:
+			return A2
+	D2 = (Z2-Y)/X.shape[0]
+	D1 = df(Z1)

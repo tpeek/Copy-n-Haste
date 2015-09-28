@@ -1,0 +1,34 @@
+
+try:
+	_suffixes = all_suffixes()
+except ImportError:
+	_suffixes = [ s[0] for s in get_suffixes() ]
+TIMEOUT_STORAGE = 2
+TIMEOUT_GIVEUP = 20
+					   r'(?P<package>[/\\]__init__)?'
+					   r'(?P<suffix>%s)$' %
+					   r'|'.join(re.escape(s) for s in _suffixes))
+magic_run_re = re.compile(r'.*(\.ipy|\.ipynb|\.py[w]?)$')
+def module_list(path):
+	if path == '':
+		path = '.'
+	pjoin = os.path.join
+	if os.path.isdir(path):
+		files = []
+		for root, dirs, nondirs in os.walk(path, followlinks=True):
+			subdir = root[len(path)+1:]
+			if subdir:
+				files.extend(pjoin(subdir, f) for f in nondirs)
+				dirs[:] = []
+			else:
+				files.extend(nondirs)
+	else:
+		try:
+			files = list(zip
+		except:
+			files = []
+	modules = []
+	for f in files:
+		m =
+		if m:
+			mod

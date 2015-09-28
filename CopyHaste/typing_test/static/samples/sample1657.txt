@@ -1,0 +1,21 @@
+
+class FreeBSDInit(Bcfg2.Client.Tools.SvcTool):
+	name = 'FreeBSDInit'
+	__execs__ = ['/usr/sbin/service', '/usr/sbin/sysrc']
+	__handles__ = [('Service', 'freebsd')]
+	__req__ = {'Service': ['name', 'status']}
+	rcvar_re = re.compile(r'^(?P<var>[a-z_]+_enable)="[A-Z]+"$')
+	def get_svc_command(self, service, action):
+		return '/usr/sbin/service %s %s' % (service.get('name'), action)
+	def verify_bootstatus(self, entry, bootstatus):
+		cmd = self.get_svc_command(entry, 'enabled')
+		current_bootstatus = bool(self.cmd.run(cmd))
+		if bootstatus == 'off':
+			if current_bootstatus:
+				entry.set('current_bootstatus', 'on')
+				return False
+			return True
+		elif not current_bootstatus:
+			entry.set('current_bootstatus', 'off')
+			return False
+		return Tr

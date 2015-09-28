@@ -1,0 +1,27 @@
+
+def get_conf(conf_type):
+	result = 'Error : Config'
+	try:
+		rf = open('conf/ctra.conf','r')
+		while 1:
+			rline = rf.readline()
+			if not rline: break
+			if rline.strip()[0]=="
+			rcol = rline.split("=",1)
+			if len(rcol)!=2: continue
+			if rcol[0]==conf_type:
+				returnstr = rcol[1]
+	except:
+		print "ERROR"
+	return result
+def identify(target):
+	if not target: return 'None'
+	typestr = 'None'
+	if target[:4]=='http':
+		typestr = "url"
+	elif re.match("(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)",target):
+		typestr = "ip"
+	elif re.match("([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})",target):
+		typestr = "email"
+	elif re.match("([0-9a-fA-F][0-9a-fA-F]:){5}([0-9a-fA-F][0-9a-fA-F])",target):
+		typest

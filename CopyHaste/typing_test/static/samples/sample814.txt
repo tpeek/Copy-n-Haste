@@ -1,0 +1,20 @@
+
+class TestNodeLogger(DropboxAddonTestCase):
+	def test_log_file_added(self):
+		df = DropboxFileFactory()
+		logger = utils.DropboxNodeLogger(
+			node=self.project,
+			auth=Auth(self.user),
+			file_obj=df
+		)
+		logger.log(NodeLog.FILE_ADDED, save=True)
+		last_log = self.project.logs[-1]
+		assert_equal(last_log.action, "dropbox_{0}".format(NodeLog.FILE_ADDED))
+	def test_log_deauthorized_when_node_settings_are_deleted(self):
+		project = ProjectFactory()
+		project.add_addon('dropbox', auth=Auth(project.creator))
+		dbox_settings = project.get_addon('dropbox')
+		dbox_settings.delete(save=True)
+		assert_true(dbox_settings.deleted)
+		logger = utils.DropboxNodeLogger(node=project, auth=Auth(self.user))
+		logger.log(action='node_deauthorized', save=Tr

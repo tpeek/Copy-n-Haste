@@ -1,0 +1,21 @@
+__UserAgent = 'Mozilla/5.0 (X11; Linux x86_64; rv:6.0.2) Gecko/20100101 Firefox/6.0.2'
+__ChannelUrl = 'http://www.douban.com/j/app/radio/channels'
+PlayListUrlPre = 'http://douban.fm/j/mine/playlist?type=n&
+def GetInfo(url, key):
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', __UserAgent)
+	response = urllib2.urlopen(req)
+	info = json.load(response)
+	return info[key]
+def GetSongs(channel_id):
+	url = "%s%s" % (PlayListUrlPre, channel_id)
+	SongJson = GetInfo(url, 'song')
+	ListSongInfo = []
+	for song in SongJson:
+		if 'rda' in song['url']:
+			continue
+		SongInfo = {'pic':song['picture'].replace('\\',''), 
+					'album':song['albumtitle'], 
+					'artist':song['artist'], 
+					'url':song['url'].replace('\\',''), 
+					'duration': song['l

@@ -1,0 +1,35 @@
+clusterDir = "/home/NDSSL/study/ChatterGrabber/libraries/"
+parent = clusterDir
+if parent not in path:
+	path.insert(0, parent)
+prefix = ''
+files = ['GunTrackerNLTK.csv']
+cores = 8
+iterations = 8
+sweepRange = [0.9]
+degrees =  []
+SVMMode = 'number'
+SVMNumber = 1000
+NLPFreqLimit = []
+stops = 0
+fileName = "/home/NDSSL/study/ChatterGrabber/libraries/ShakesGunC/ShakesGunC797Score.txt"
+index = 797
+gen = 0
+degrees.append(1)
+mode = ["svm"]
+degrees.append(2)
+SVMMode = 'ratio'
+SVMMode = 'all'
+degrees.append(7)
+degrees.append(6)
+SVMMode = 'all'
+NLPFreqLimit.append(5)
+degrees.append(2)
+degrees.append(5)
+mode = ["naive bayes"]
+degrees.append(6)
+SVMMode = 'number'
+NLPFreqLimit.append(2)
+degrees.append(5)
+SVMNumber = int(3000*1*0.7*0.7)
+SVMNumber = int(3000

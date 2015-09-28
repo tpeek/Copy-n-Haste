@@ -1,0 +1,23 @@
+class LostfilmSpider(Spider):
+	name = "lostfilm"
+	allowed_domains = ["lostfilm.tv"]
+	start_urls = ()
+	def __init__(self, *args, **kwargs):
+		super(LostfilmSpider, self).__init__(*args, **kwargs)
+		with open('serials.txt') as f:
+			self.start_urls = [u.strip() for u in f.readlines()]
+	def parse(self, response):
+		sel = Selector(response)
+		id = response.url.split('=')[1].strip()
+		title = sel.css('.mid h1::text')[0].extract().strip()
+		series = []
+		mid = sel.css('.mid')[0].xpath('div')[1]
+		for div in mid.css('div'):
+			try:
+				cls = div.xpath('@class')[0].extract()
+			except:
+				continue
+			if cls.startswith('t_row'):
+				trs = div.css('tr')
+				date = trs[0].css('td')[1].css('span::text')[0].extract().strip()
+				number = trs[0].css('td

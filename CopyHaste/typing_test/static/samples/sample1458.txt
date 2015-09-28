@@ -1,0 +1,29 @@
+
+class giSeeker():
+	def __init__(self, conditions, qualifiers, exclusions, api, cfg, name, testSpace, geoCache, NLPClassifier):
+		self.delay = 30
+		self.qualifiers = qualifiers
+		self.conditions = conditions
+		self.api = api
+		self.name = name
+		self.exclusions = exclusions
+		self.cfg = cfg
+		self.searchDelay = 600
+		self.rateLimit = 180
+		self.rateIncrement = 900
+		self.geoCache = geoCache
+		self.useNLP = False
+		self.NLP = NLPClassifier
+		self.extra = ''
+		self.sendStatus = 'sent'
+		
+		if cfg['OnlyKeepNLP'] != False:
+			global TweetMatch
+			self.useNLP = True
+			temp = cfg['OnlyKeepNLP']
+			if type(temp) is str:
+				if '_' in temp:
+					self.cfg['OnlyKeepNLP'] = temp.split('_')
+				else:
+					self.cfg['OnlyKeepNLP'] = temp.split(' ')
+			i

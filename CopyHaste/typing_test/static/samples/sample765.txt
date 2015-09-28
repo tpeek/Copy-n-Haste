@@ -1,0 +1,28 @@
+
+class HumanResource(base.Resource):
+	HUMAN_ID = True
+class HumanResourceManager(base.ManagerWithFind):
+	resource_class = HumanResource
+	def list(self):
+		return self._list("/human_resources", "human_resources")
+	def get(self, human_resource):
+		return self._get(
+			"/human_resources/%s" % base.getid(human_resource),
+			"human_resource")
+	def update(self, human_resource, name):
+		body = {
+			"human_resource": {
+				"name": name,
+			},
+		}
+		return self._put(
+			"/human_resources/%s" % base.getid(human_resource),
+			body,
+			"human_resource")
+class CrudResource(base.Resource):
+	pass
+class CrudResourceManager(base.CrudManager):
+	resource_class = CrudResource
+	collection_key = 'crud_resources'
+	key = 'crud_resource'
+	def get(self, crud_resourc

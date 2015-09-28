@@ -1,0 +1,30 @@
+
+class TEMPLATE:
+	TEMPLATE_NAME = 'name'
+	DESCRIPTION = 'description'
+	VIRTUAL_ENVIRONMENTS = 'virtual_environments'
+	VIRTUAL_ENVIRONMENT_PROVIDER = "provider"
+class DOCKER_UNIT:
+	NAME = 'name'
+	TYPE = 'type'
+	DESCRIPTION = 'description'
+	PORTS = 'ports'
+	PORTS_NAME = 'name'
+	PORTS_PORT = 'port'
+	PORTS_PUBLIC = 'public'
+	PORTS_PROTOCOL = 'protocol'
+	PORTS_URL = 'url'
+	PORTS_HOST_PORT = 'host_port'
+	PORTS_PUBLIC_PORT = 'public_port'
+	REMOTE = 'remote'
+	REMOTE_PROVIDER = 'provider'
+	REMOTE_PROTOCOL = 'protocol'
+	REMOTE_USERNAME = 'username'
+	REMOTE_PASSWORD = 'password'
+	REMOTE_PORT = 'port'
+	HOSTNAME = 'Hostname'
+	DOMAIN_NAME = 'Domainname'
+	USER = 'User'
+	ATTACH_STDIN = 'AttachStdin'
+	ATTACH_STDOUT = 'AttachStdout'
+	ATTACH_STDERR = 'AttachS

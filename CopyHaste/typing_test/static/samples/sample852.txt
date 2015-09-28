@@ -1,0 +1,23 @@
+
+def _parse_clinical_trial(doc):
+  t = {}
+  t['nctid'] = xpath_str(doc, '/clinical_study/id_info/nct_id/text()')
+  t['title'] = xpath_str(doc, '/clinical_study/official_title/text() | /clinical_study/brief_title/text()')
+  refs = []
+  for reftag in doc.xpath('/clinical_study/reference | /clinical_study/results_reference'):
+	cseref_str = xpath_str(reftag, 'citation/text()')
+	ref = refparse.parse_cse_ref(cseref_str)
+	pmid = xpath_str(reftag, 'PMID/text()')
+	if pmid:
+	  ref['pmid'] = pmid
+	refs.append(ref)
+  t['biblio'] = refs
+  completion_date_str = xpath_str(doc, '/clinical_study/completion_date/text()')
+  completion_date = completion_date_str
+  t['completion_date'] = completion_date 
+  
+  return t
+class Client:
+  def __init__(self):
+	pass
+ 

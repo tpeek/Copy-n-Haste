@@ -1,0 +1,19 @@
+
+						unicode_literals, with_statement)
+class TestJvmDependencyUsage(TaskTestBase):
+  @classmethod
+  def task_type(cls):
+	return JvmDependencyUsage
+  def _setup(self):
+	context = self.context()
+	classes_by_target = context.products.get_data('classes_by_target',
+												  lambda: defaultdict(MultipleRootedProducts))
+	product_deps_by_src = context.products.get_data('product_deps_by_src', dict)
+	return context, classes_by_target, product_deps_by_src
+  def make_java_target(self, *args, **kwargs):
+	assert 'target_type' not in kwargs
+	return self.make_target(target_type=JavaLibrary, *args, **kwargs)
+  def _cover_output(self, graph):
+	self.assertNotEqual(graph.to_json(), "")
+	self.assertNotEqual(graph.to_summary(), "")
+  def test_simple_dep_u

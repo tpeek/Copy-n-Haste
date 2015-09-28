@@ -1,0 +1,18 @@
+NetWorkIOError = (socket.error, ssl.SSLError, OpenSSL.SSL.Error, OSError)
+class GAEProxyHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+	gae_support_methods = tuple(["GET", "POST", "HEAD", "PUT", "DELETE", "PATCH"])
+	bufsize = 256*1024
+	max_retry = 3
+	def setup(self):
+		self.__class__.setup = BaseHTTPServer.BaseHTTPRequestHandler.setup
+		self.__class__.do_GET = self.__class__.do_METHOD
+		self.__class__.do_PUT = self.__class__.do_METHOD
+		self.__class__.do_POST = self.__class__.do_METHOD
+		self.__class__.do_HEAD = self.__class__.do_METHOD
+		self.__class__.do_DELETE = self.__class__.do_METHOD
+		self.__class__.do_OPTIONS = self.__class__.do_METHOD
+		self.setup()
+	def finish(self):
+		try:
+			BaseHTTPServer.BaseHTTPRequestHandler.finish(self)
+		

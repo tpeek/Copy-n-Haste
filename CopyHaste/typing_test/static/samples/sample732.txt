@@ -1,0 +1,28 @@
+
+def get_data_
+	data = xlrd.open_workbook('mRNAdata.xls')
+	table = data.sheets()[0]
+	col_values = table.col_values(7)
+	return col_values
+if __name__ == "__main__":
+	os.system('printf "\033c"')
+	genes_name = get_data_
+	genes_name.reverse()
+	for i in xrange(11):
+		genes_name.pop()
+	base_url = 'http://www.ncbi.nlm.nih.gov/gene/?term='
+	while len(genes_name) > 0:
+		gene_name = genes_name.pop()
+		print gene_name
+		url = base_url + gene_name
+		driver = webdriver.PhantomJS()
+		driver.get(url)
+		try:
+			result_element = driver.find_element_by_xpath('//*[@id="padded_content"]/div[4]/div/h2')
+		except:
+			print 'no result'
+			continue
+		line_numbers = 20
+		if len(result_element.text) < 15:
+			tmp_text = result_element.text.split()
+			line_numbers = i

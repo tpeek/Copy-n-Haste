@@ -1,0 +1,28 @@
+
+def mkplume(condition='left'):
+	if condition in 'lLleftLeftLEFT':
+		plume_data = pd.read_csv('plume_sim/left_plume_bounds.csv')
+	elif condition in 'rRrightRightRIGHT':
+		plume_data = pd.read_csv('plume_sim/right_plume_bounds.csv')
+	elif condition in 'noneNonecontrolControl':
+		plume_data = None
+	print plume_data
+	
+	return plume_data
+def mk_tree(plume):
+	return cKDTree(plume[['x', 'y']])
+class Plume():
+	def __init__(self):
+		self.plume = mkplume()
+		self.plume_kdTree = mk_tree(self.plume)
+		
+	def temp_lookup(self, position):
+		
+		distance, index = self.plume_kdTree.query(position)
+		
+		return self.plume.loc[index, 'temp']
+		
+	def show(self):
+		
+		ax = self.plume.plot(kind='hexbin', x='x', y='y', C='temp', reduce_C_function=np.max,
+						gri

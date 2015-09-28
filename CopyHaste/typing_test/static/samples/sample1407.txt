@@ -1,0 +1,28 @@
+
+sys.path.append(os.getcwd())
+instance=0
+startdate=False
+Split=False
+sys.path.insert(0,"/home/processor/Desktop/EQcorrscan")
+parallel=True
+if len(sys.argv) == 2:
+	flag=str(sys.argv[1])
+	if flag == '--debug':
+		Test=True
+		Prep=False
+	elif flag == '--debug-prep':
+		Test=False
+		Prep=True
+	else:
+		raise IOError("I don't recognise your arguments I know --debug and --debug-prep, and --instance, --splits, --startdate, --enddate")
+elif len(sys.argv) == 5:
+	args=sys.argv[1:len(sys.argv)]
+	if args[0] == '--instance' or args[2]=='--instance':
+		Split=True
+		Test=False
+		Prep=False
+		for i in xrange(len(args)):
+			if args[i] == '--instance':
+				instance=int(args[i+1])
+				print 'I will run this for instance '+str(instance)
+			elif args[i] == '--spli

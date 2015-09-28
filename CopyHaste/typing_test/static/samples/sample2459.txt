@@ -1,0 +1,35 @@
+
+	MutableSequence,
+	Callable
+)
+class FunList(MutableSequence):
+	def __init__(
+			self,
+			engine,
+			db
+	):
+		self.engine = engine
+		self.db = db
+		self._listeners = []
+		self._cache = {}
+	@property
+	def funcstore(self):
+		raise NotImplementedError
+	def _dispatch(self):
+		for f in self._listeners:
+			f(self)
+	def listener(self, f):
+		listen(self._listeners, f)
+	def _funn(self, v):
+		funn = v.__name__ if isinstance(v, Callable) else v
+		if funn not in self.funcstore:
+			if not isinstance(v, Callable):
+				raise KeyError("No such function: " + v)
+			self.funcstore[funn] = v
+		return funn
+	def _setlist(self, l):
+		self._savelist(l)
+		if self.engine.caching:
+			(branch, tick) = self.engine.time
+			if branch not in self._cache:
+				self._cache[b

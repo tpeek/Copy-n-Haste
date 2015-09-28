@@ -1,0 +1,19 @@
+
+here_doc_re = re.compile(r'.*\s<<[-]?(\w+)$')
+func_start_re = re.compile(r'^[-\w]+\s*\(\)\s*$')
+func_end_re = re.compile(r'^\}$')
+var_assign_re = re.compile(r'(^|^declare\s+-\S+\s+|^declare\s+|^export\s+)([^=\s]+)=("|\')?.*$')
+close_quote_re = re.compile(r'(\\"|"|\')\s*$')
+readonly_re = re.compile(r'^declare\s+-(\S*)r(\S*)\s+')
+var_declare_re = re.compile(r'^declare(\s+-\S+)?\s+([^=\s]+)\s*$')
+def have_end_quote(quote, line):
+	close_quote_match = close_quote_re.search(line)
+	return close_quote_match is not None and \
+		close_quote_match.group(1) == quote
+def filter_declare_readonly_opt(line):
+	readonly_match = readonly_re.match(line)
+	if readonly_match is not None:
+		declare_opts = ''
+		for i in (1, 2):
+			group = readonly_match.group(i)
+	

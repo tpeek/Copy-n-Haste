@@ -1,0 +1,25 @@
+
+LOG = logging.getLogger(__name__)
+class CapabilitiesFilter(filters.BaseHostFilter):
+	def _satisfies_extra_specs(self, capabilities, resource_type):
+		extra_specs = resource_type.get('extra_specs', [])
+		if not extra_specs:
+			return True
+		for key, req in six.iteritems(extra_specs):
+			scope = key.split(':')
+			if len(scope) > 1 and scope[0] != "capabilities":
+				continue
+			elif scope[0] == "capabilities":
+				del scope[0]
+			cap = capabilities
+			for index in range(len(scope)):
+				try:
+					cap = cap.get(scope[index])
+				except AttributeError:
+					cap = None
+				if cap is None:
+					LOG.debug("Host doesn't provide capability '%(cap)s' "
+							  "listed in the extra specs",
+							  {'cap': scope[index]})
+					return False
+			if not 

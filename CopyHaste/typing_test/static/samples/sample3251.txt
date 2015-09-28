@@ -1,0 +1,34 @@
+__author__ = 'salcianu@google.com (Alex Salcianu)'
+__pychecker__ = 'no-local'
+FLAGS = gflags.FLAGS
+def DefineFlags(flag_values=FLAGS):
+  gflags.DEFINE_boolean('tmod_bar_x', True, 'Boolean flag.',
+					   flag_values=flag_values)
+  gflags.DEFINE_string('tmod_bar_y', 'default', 'String flag.',
+					  flag_values=flag_values)
+  gflags.DEFINE_boolean('tmod_bar_z', False,
+					   'Another boolean flag
+					   flag_values=flag_values)
+  gflags.DEFINE_integer('tmod_bar_t', 4, 'Sample int flag.',
+					   flag_values=flag_values)
+  gflags.DEFINE_integer('tmod_bar_u', 5, 'Sample int flag.',
+					   flag_values=flag_values)
+  gflags.DEFINE_integer('tmod_bar_v', 6, 'Sample int flag.',
+					   flag_values=flag_values)
+def RemoveOneFlag(flag_name, flag_values=FLAGS):
+  if flag_name in flag_values.FlagDict():
+	flag_values.__delattr__(flag_name)
+def NamesOfDefinedFlags():
+  return ['tmod_bar_x',
+		  'tmod_bar_y',
+		  'tmod_bar_z',
+		  'tmod_bar_t',
+		  'tmod_bar_u',
+		  'tmod_bar_v']
+def RemoveFlags(flag_values=FLAGS):
+  for flag_name in NamesOfDefinedFlags():
+	RemoveOneFlag(flag_name, flag_values=flag_values)
+def GetModuleName():
+  return gflags._GetCallingModule()
+def ExecuteCode(code, global_dict):
+  exec code in global_dict

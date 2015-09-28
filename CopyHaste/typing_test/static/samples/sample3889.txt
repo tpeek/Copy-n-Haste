@@ -1,0 +1,26 @@
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "_ext")))
+extensions = ['configext']
+templates_path = ['_templates']
+source_suffix = '.rst'
+master_doc = 'index'
+project = u'phpMyAdmin'
+copyright = u'2012 - 2014, The phpMyAdmin devel team'
+version = '4.6.0-dev'
+release = version
+language = "hy"
+locale_dirs = ["../../translated/"]
+exclude_patterns = ['_build', 'html', 'doctrees']
+pygments_style = 'sphinx'
+html_theme = 'default'
+htmlhelp_basename = 'phpMyAdmindoc'
+latex_elements = {
+}
+latex_documents = [
+  ('index', 'phpMyAdmin.tex', u'phpMyAdmin Documentation',
+   u'The phpMyAdmin devel team', 'manual'),
+]
+man_pages = [
+	('index', 'phpmyadmin', u'phpMyAdmin Documentation',
+	 [u'The phpMyAdmin devel team'], 1)
+]
+texinfo

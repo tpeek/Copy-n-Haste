@@ -1,0 +1,23 @@
+
+						unicode_literals)
+def test_colormap_endian():
+	cmap = cm.get_cmap("jet")
+	a = [-0.5, 0, 0.5, 1, 1.5, np.nan]
+	for dt in ["f2", "f4", "f8"]:
+		anative = np.ma.masked_invalid(np.array(a, dtype=dt))
+		aforeign = anative.byteswap().newbyteorder()
+		assert_array_equal(cmap(anative), cmap(aforeign))
+def test_BoundaryNorm():
+	boundaries = [0, 1.1, 2.2]
+	vals = [-1, 0, 2, 2.2, 4]
+	expected = [-1, 0, 2, 3, 3]
+	ncolors = len(boundaries)
+	bn = mcolors.BoundaryNorm(boundaries, ncolors)
+	assert_array_equal(bn(vals), expected)
+def test_LogNorm():
+	ln = mcolors.LogNorm(clip=True, vmax=5)
+	assert_array_equal(ln([1, 6]), [0, 1.0])
+def test_PowerNorm():
+	a = np.array([0, 0.5, 1, 1.5], dtype=np.float)
+	pnorm = mcolors.PowerNorm(1)
+	norm = mcolors.Norma

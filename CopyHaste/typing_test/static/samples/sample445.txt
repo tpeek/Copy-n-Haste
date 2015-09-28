@@ -1,0 +1,17 @@
+
+class gridCalculation:
+  def __init__(self, \
+	prmtop_FN='apo.prmtop', inpcrd_FN=None, pqr_FN=None, \
+	header_FN=None, site_FN=None, \
+	PB_FN=None, ele_FN=None, LJa_FN=None, LJr_FN=None, \
+	spacing=None, counts=None):
+	self.FNs = {'prmtop':prmtop_FN, 'inpcrd':inpcrd_FN, 'header':header_FN, \
+	  'pqr':{True:'receptor.pqr',False:pqr_FN}[pqr_FN is None], \
+	  'site':{True:'../2-binding_site/measured_binding_site.py', \
+			  False:site_FN}[site_FN is None], \
+	  'PB':{True:'apbs.nc',False:PB_FN}[PB_FN is None], \
+	  'ele':{True:'ele.nc',False:ele_FN}[ele_FN is None], \
+	  'LJa':{True:'LJa.nc',False:LJa_FN}[LJa_FN is None], \
+	  'LJr':{True:'LJr.nc',False:LJr_FN}[LJr_FN is None]}
+	del prmtop_FN, inpcrd_FN, header_FN, ele_FN, LJa_FN, LJr_FN
+	for

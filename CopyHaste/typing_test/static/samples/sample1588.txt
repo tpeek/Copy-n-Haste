@@ -1,0 +1,24 @@
+
+class BestreamsResolver(Plugin, UrlResolver, PluginSettings):
+	implements = [UrlResolver, PluginSettings]
+	name = "bestreams"
+	domains = ["bestreams.net"]
+	def __init__(self):
+		p = self.get_setting('priority') or 100
+		self.priority = int(p)
+		self.net = Net()
+	def get_media_url(self, host, media_id):
+		try:
+			web_url = self.get_url(host, media_id)
+			html = self.net.http_GET(web_url).content
+			headers = {
+				'Referer': web_url
+			}
+			data = {}
+			r = re.findall(r'type="hidden"\s*name="(.+?)"\s*value="(.*?)"', html)
+			for name, value in r: data[name] = value
+			data.update({'referer': web_url})
+			data.update({'imhuman': 'Proceed to video'})
+			cookies = {}
+			for match in re.finditer("\$\.cookie\('([^']+)',\s*'([^']+)", html):
+				k

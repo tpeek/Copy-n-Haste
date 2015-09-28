@@ -1,0 +1,30 @@
+
+class StockItem(Item):
+	url = Field()
+def dfs(node):
+	if node.xpath('*'):
+		tmp = ''
+		for child in node.xpath('*'):
+			tmp += dfs(child)
+		return tmp
+	else:
+		if node.xpath('text()').extract():
+			return node.xpath('text()').extract()[0]
+		else:
+			return ''
+class StockQSpider(CrawlSpider):
+	name = "stockq"
+	allowed_domains = ["stockq.org"]
+	start_urls = ["http://www.stockq.org/stock/history/"]
+	rules = (
+		Rule(
+			SgmlLinkExtractor(allow = [".*20../../20......_tc.php"]),
+			callback = 'parse_stock',
+		),
+	)
+	def parse_stock(self, response):
+		file_name = './data/' + response.url[-15:-7] + '.csv'
+		if not os.path.isfile(file_name):
+			csvfile = open(file_name, 'wb')
+			writer = unicodecsv.writer(csvfile, quoting=csv.QUOTE_ALL)
+			for tab

@@ -1,0 +1,26 @@
+
+C, D = 'C', 'D'
+class TestInverse(TestPlayer):
+	name = "Inverse"
+	player = axelrod.Inverse
+	expected_classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': True,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.first_play_test(C)
+	def test_that_cooperate_if_opponent_has_not_defected(self):
+		self.responses_test([C] * 4, [C] * 4, [C])
+		self.responses_test([C] * 5, [C] * 5, [C])
+	def test_when_opponent_has_all_Ds(self):
+		self.responses_test([C], [D], [D], random_seed=5)
+		self.responses_test([C], [D, D], [D])
+		self.responses_test([C] * 8, [D] * 8, [D])
+	def test_when_opponent_som_Ds(self):
+		random.seed(5)
+		P1 = axelrod.Inverse()
+		P2 = axelrod.Player()
+		

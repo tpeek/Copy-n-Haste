@@ -1,0 +1,27 @@
+__author__ = 'Jacob Davis'
+class LogicProof(base.BaseInteraction):
+	name = 'Logic Proof'
+	description = (
+		'Allows learners to write proofs for simple logical statements.')
+	display_mode = base.DISPLAY_MODE_SUPPLEMENTAL
+	_dependency_ids = ['logic_proof', 'codemirror']
+	answer_type = 'CheckedProof'
+	instructions = 'Construct a proof'
+	needs_summary = True
+	_customization_arg_specs = [{
+		'name': 'question',
+		'description': 'Question to ask',
+		'schema': {
+			'type': 'custom',
+			'obj_type': 'LogicQuestion',
+		},
+		'default_value': {
+			'assumptions': [{
+				'top_kind_name': 'variable',
+				'top_operator_name': 'p',
+				'arguments': [],
+				'dummies': []
+			}],
+			'results': [{
+				'top_kind_name': 'variable',
+				'top_operator_name': 'p',

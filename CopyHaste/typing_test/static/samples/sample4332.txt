@@ -1,0 +1,22 @@
+class Scraper_Admin(object):
+	def __init__(self, media=None, lowrange=1, highrange=5000, message="default", debug=True):
+		
+		self.range = xrange(lowrange, highrange)
+		self.message = message
+		self.media = media
+		self.debug = debug
+		self.cache = {site:0 for site, base_url, sleep in self.media}
+		self.process_list = [(site, sleep, base_url + str(num)) for num in self.range for site, base_url, sleep in self.media ]
+		self.filename = "data/url_logger.csv"
+		global DEBUG
+		DEBUG = self.debug
+	def processor(self):
+		while len(self.process_list) > 0:
+			try:
+				queue = self.process_list[:25]
+				for order in range(len(queue)):
+					site, sleep, url = queue[order]
+					
+					try:
+						self.check_log(url)
+						elapsed_seconds = time.time() - 

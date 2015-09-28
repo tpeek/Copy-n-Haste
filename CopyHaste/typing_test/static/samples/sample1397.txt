@@ -1,0 +1,21 @@
+
+def _channel_loop(detection, template, i=0):
+	picks=[]
+	for i in xrange(len(template)):
+		image=detection.select(station=template[i].stats.station,\
+								channel=template[i].stats.channel)
+		if image:
+			ccc = normxcorr2(template[i].data, image[0].data)
+			shiftlen = len(ccc)*image[0].stats.sample_rate
+			picktime = image[0].stats.starttime+(np.argmax(ccc)*image[0].stats.delta)
+			picks.append(PICK())
+			((lag, np.max(ccc), template[i].stats.station, \
+				template[i].stats.channel))
+	return (i, picks)
+def day_loop(detection_streams, template):
+	lags=[]
+	num_cores=cpu_count()
+	if num_cores > len(detection_streams):
+		num_cores=len(detection_streams)
+	pool=Pool(processes=num_cores, maxtasksperchild=None)
+	results=[pool.apply_async(_chann

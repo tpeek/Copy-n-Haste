@@ -1,0 +1,20 @@
+
+class DiagnosticInterface( object ):
+  def __init__( self, user_options ):
+	self._user_options = user_options
+	self._buffer_number_to_line_to_diags = defaultdict(
+	  lambda: defaultdict( list ) )
+	self._next_sign_id = 1
+	self._previous_line_number = -1
+	self._diag_message_needs_clearing = False
+	self._placed_signs = []
+  def OnCursorMoved( self ):
+	line, _ = vimsupport.CurrentLineAndColumn()
+	line += 1
+	if line != self._previous_line_number:
+	  self._previous_line_number = line
+	  if self._user_options[ 'echo_current_diagnostic' ]:
+		self._EchoDiagnosticForLine( line )
+  def UpdateWithNewDiagnostics( self, diags ):
+	normalized_diags = [ _NormalizeDiagnostic( x ) for x in diags ]
+	self._buffer_number_to_line_to_diags = _ConvertDiagListToDic

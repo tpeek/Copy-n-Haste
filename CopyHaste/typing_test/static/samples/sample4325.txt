@@ -1,0 +1,27 @@
+class ParsingResult(object):
+	class Code:
+		SUCCESS = 0
+		CFGFILE_NOT_FOUND = 1
+		CFGSYNTAX_INVALID = 2
+		WEBREQUEST_FAILED = 3
+	def __init__(self, code, itemsList):
+		self.code = code
+		self.list = itemsList
+		self.message = None
+class Parser(object):
+	def parse(self, lItem):
+		url = lItem['url']
+		cfg = lItem['cfg']
+		ext = getFileExtension(url)
+		successfullyScraped = True
+		tmpList = None
+		if lItem['catcher']:
+			catcher = lItem['catcher']
+			cfg = os.path.join(common.Paths.catchersDir, '__' + catcher + '.cfg')
+			tmpList = self.__loadLocal(cfg, lItem)
+			if tmpList and len(tmpList.rules) > 0:
+				successfullyScraped = self.__loadRemote(tmpList, lItem)
+		else:
+			if ext == 'cfg':
+				tmpList = self.__loadLocal(url, lItem)
+				if tmpLis

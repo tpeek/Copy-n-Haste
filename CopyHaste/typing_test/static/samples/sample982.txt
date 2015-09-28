@@ -1,0 +1,23 @@
+
+def read_stream_body(stream, callback):
+	chunks = []
+	class Delegate(HTTPMessageDelegate):
+		def headers_received(self, start_line, headers):
+			self.headers = headers
+		def data_received(self, chunk):
+			chunks.append(chunk)
+		def finish(self):
+			callback((self.headers, b''.join(chunks)))
+	conn = HTTP1Connection(stream, True)
+	conn.read_response(Delegate())
+class HandlerBaseTestCase(AsyncHTTPTestCase):
+	def get_app(self):
+		return Application([('/', self.__class__.Handler)])
+	def fetch_json(self, *args, **kwargs):
+		response = self.fetch(*args, **kwargs)
+		response.rethrow()
+		return json_decode(response.body)
+class HelloWorldRequestHandler(RequestHandler):
+	def initialize(self, protocol="http"):
+		self.expected_protocol = protocol
+	def 

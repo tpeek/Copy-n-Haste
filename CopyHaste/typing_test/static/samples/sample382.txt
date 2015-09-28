@@ -1,0 +1,31 @@
+
+cwdInFunction()
+data1 = raw_input('Enter the name of the dataset to analyse: ')
+data = n.Dataset(data1,'r')
+def sstMissing():
+	dataSST = data.variables['sst'][:]
+	dataMiss = np.ma.masked_equal(dataSST,1e+20)
+	return dataMiss
+def KtoC():
+	dataCelsius = data.variables['ts'][:]
+	for i in dataCelsius:
+		i -= 273.15
+	mx = np.ma.masked_less(dataCelsius,0)
+	return mx
+def prMissing():
+	dataPr = data.variables['pr'][:]
+	dataMiss = np.ma.masked_equal(dataPr,1e+20)
+	return dataMiss
+def SectoDay():
+	dataDay = dataMiss
+	dataDay = np.ma.masked_less(dataDay,0)
+	for i in dataDay:
+		i *= 86400
+	return dataDay
+def accessTrim():
+	full_data = dataFull
+	data_flat = dataFull[605:1865]
+	return data_flat
+def accessAnnual():
+	data = np.array(data_flat)
+	data = np.

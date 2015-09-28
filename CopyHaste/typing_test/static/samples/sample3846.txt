@@ -1,0 +1,20 @@
+@step('There are no courses$')
+def no_courses(step):
+	world.clear_courses()
+	create_studio_user()
+@step('I click the New Course button$')
+def i_click_new_course(step):
+	world.css_click('.new-course-button')
+@step('I fill in the new course information$')
+def i_fill_in_a_new_course_information(step):
+	fill_in_course_info()
+@step('I create a course with "([^"]*)", "([^"]*)", "([^"]*)", and "([^"]*)"')
+def i_create_course(step, name, org, number, run):
+	fill_in_course_info(name=name, org=org, num=number, run=run)
+@step('I create a new course$')
+def i_create_a_course(step):
+	create_a_course()
+@step('I click the course link in Studio Home$')
+def i_click_the_course_link_in_studio_home(step):
+	course_css = 'a.course-link'
+	world.css_click(course_cs

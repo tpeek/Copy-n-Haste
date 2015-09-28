@@ -1,0 +1,43 @@
+
+text_tags = dict(
+	image=False,
+	p=False,
+	w=False,
+	fast=False,
+	b=True,
+	i=True,
+	u=True,
+	a=True,
+	plain=True,
+	font=True,
+	color=True,
+	size=True,
+	nw=False,
+	s=True,
+	rt=True,
+	rb=True,
+	k=True,
+	cps=True,
+	space=False,
+	vspace=False
+	)
+text_tags[""] = True
+def check_text_tags(s):
+	custom_tags = renpy.config.custom_text_tags
+	if custom_tags:
+		all_tags = dict(text_tags)
+		all_tags.update(renpy.config.custom_text_tags)
+	else:
+		all_tags = text_tags
+	tokens = textsupport.tokenize(unicode(s))
+	tag_stack = [ ]
+	for type, text in tokens:
+		if type != TAG:
+			continue
+		if text[0] == "
+			continue
+		if text.find('=') != -1:
+			text = text[:text.find('=')]
+		if text and text[0] == '/':
+			if not tag_stack:
+				return "Close text tag '%s' doe

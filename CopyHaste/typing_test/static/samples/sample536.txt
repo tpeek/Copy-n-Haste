@@ -1,0 +1,23 @@
+
+class RemoteImage(AstroImage):
+	def __init__(self, proxy, metadata=None, logger=None,
+				 inherit_primary_header=False):
+		self._proxy = proxy
+		self._shape = tuple([])
+		self.id = None
+		AstroImage.__init__(self, data_np=None, metadata=metadata,
+							logger=logger,
+							inherit_primary_header=inherit_primary_header)
+		self._data = None
+	@property
+	def shape(self):
+		return self._shape
+	def load_file(self, filepath, numhdu=None, naxispath=None):
+		self.id = filepath
+		shape, header = self._proxy.load_file(filepath, numhdu=numhdu,
+											  naxispath=naxispath)
+		self._shape = shape
+		ahdr = { key: header[key]['value'] for key in header.keys() }
+		self.update_keywords(ahdr)
+	def _set_minmax(self, noinf=False):
+		self.minval, self.ma

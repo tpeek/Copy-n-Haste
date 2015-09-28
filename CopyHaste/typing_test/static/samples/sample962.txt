@@ -1,0 +1,22 @@
+
+class _QuietException(Exception):
+	def __init__(self):
+		pass
+class _ExceptionLoggingContext(object):
+	def __init__(self, logger):
+		self.logger = logger
+	def __enter__(self):
+		pass
+	def __exit__(self, typ, value, tb):
+		if value is not None:
+			self.logger.error("Uncaught exception", exc_info=(typ, value, tb))
+			raise _QuietException
+class HTTP1ConnectionParameters(object):
+	def __init__(self, no_keep_alive=False, chunk_size=None,
+				 max_header_size=None, header_timeout=None, max_body_size=None,
+				 body_timeout=None, decompress=False):
+		self.no_keep_alive = no_keep_alive
+		self.chunk_size = chunk_size or 65536
+		self.max_header_size = max_header_size or 65536
+		self.header_timeout = header_timeout
+		self.max_body_size = max_body_si

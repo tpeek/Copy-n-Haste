@@ -1,0 +1,27 @@
+
+_INITIAL_CONNECT_TIMEOUT = 0.3
+class _Connector(object):
+	def __init__(self, addrinfo, io_loop, connect):
+		self.io_loop = io_loop
+		self.connect = connect
+		self.future = Future()
+		self.timeout = None
+		self.last_error = None
+		self.remaining = len(addrinfo)
+		self.primary_addrs, self.secondary_addrs = self.split(addrinfo)
+	@staticmethod
+	def split(addrinfo):
+		primary = []
+		secondary = []
+		primary_af = addrinfo[0][0]
+		for af, addr in addrinfo:
+			if af == primary_af:
+				primary.append((af, addr))
+			else:
+				secondary.append((af, addr))
+		return primary, secondary
+	def start(self, timeout=_INITIAL_CONNECT_TIMEOUT):
+		self.try_connect(iter(self.primary_addrs))
+		self.set_timout(timeout)
+		return self.future
+	def try_connect(self, ad

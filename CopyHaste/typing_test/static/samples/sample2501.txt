@@ -1,0 +1,18 @@
+
+class Geocoder:
+	def __init__(self, api_key=None):
+		self.api_key = api_key
+	def geocode(self, resource):
+		if resource.address is not None and not resource.address.isspace():
+			geolocator = GoogleV3(api_key=self.api_key)
+			new_location = geolocator.geocode(resource.address, exactly_one=True)
+			if new_location is not None:
+				new_res_location = ''
+				if new_location.address and not new_location.address.isspace():
+					resource.address = new_location.address
+				if new_location.latitude is not None and new_location.longitude is not None:
+					resource.latitude = new_location.latitude
+					resource.longitude = new_location.longitude
+				if new_location.raw:
+					address_components = new_location.raw.get('address_components')
+					if add

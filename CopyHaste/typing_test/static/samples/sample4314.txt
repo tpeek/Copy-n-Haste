@@ -1,0 +1,19 @@
+addon_handle = int(sys.argv[1])
+local_string = xbmcaddon.Addon(id='plugin.video.MyFoxAtlantaLive').getLocalizedString
+ROOTDIR = xbmcaddon.Addon(id='plugin.video.MyFoxAtlantaLive').getAddonInfo('path')
+ICON = ROOTDIR+"/icon.png"
+FANART = ROOTDIR+"/fanart.jpg"
+IPHONE_UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 8_3 like Mac OS X) AppleWebKit/600.1.4 (KHTML, like Gecko) Version/8.0 Mobile/12F70 Safari/600.1.4'
+SEARCH_HITS = '2'
+	
+def CATEGORIES():
+	addDir('Fox 5 News Live','/search',101,ICON,FANART)
+	 
+def LIST_STREAMS():
+	live_streams = []
+	upcoming_streams = []
+	url = 'http://api.new.livestream.com/curated_events?page=1&maxItems=500'
+	req = urllib2.Request(url)
+	req.add_header('User-Agent', IPHONE_UA)			  
+	response = urllib2.urlopen(req)	  
+	js

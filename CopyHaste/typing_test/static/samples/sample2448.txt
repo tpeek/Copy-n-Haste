@@ -1,0 +1,29 @@
+
+THRESHOLD = 5000
+class TreeNode(dict):
+	def __init__(self, iterable=(), **attributes):
+		self.attr = attributes
+		dict.__init__(self, iterable)
+	def __repr__(self):
+		return '%s(%s, %r)' % (type(self).__name__, dict.__repr__(self), self.attr)
+	def create(self, path):
+		if not path:
+			return self
+		if not path[0] in self:
+			self[path[0]] = TreeNode(name=path[0])
+		subtree = self[path[0]]
+		return subtree.create(path[1:])
+	def count_leaf(self):
+		result = sum(n.count_leaf() for n in self.itervalues())
+		if not result:
+			result = 1
+		return result
+	def get(self, path):
+		assert self.attr['name'] == path[0]
+		if len(path) == 1:
+			return self
+		if not path[1] in self:
+			return None
+		subtree = self[path[1]]
+		return subtree.get(path[1:])
+	

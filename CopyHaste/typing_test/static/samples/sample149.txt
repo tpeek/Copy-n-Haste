@@ -1,0 +1,26 @@
+
+opts,args=getopt.getopt(sys.argv[1:],'p:',['ref=','bam=','ppre=','sv='])
+dict_opts=dict(opts)
+out_path=dict_opts['-p']
+if not out_path[-1]=='/':
+	out_path+='/'
+stats_mean=[]
+stats_std=[]
+stats_name=[]
+total_name=[]
+for x in os.listdir(out_path):
+	if x.split('.')[-1]=='rsquare':
+		total_name.append(x)
+		stats=[[],[],[]]
+		fin=open(out_path+x)
+		for line in fin:
+			pin=line.strip().split()
+			stats[0].append(float(pin[0]))
+			stats[1].append(float(pin[1]))
+			stats[2].append(float(pin[2]))
+		fin.close()
+		if not stats[0]==[]:
+			stats_mean.append([numpy.mean(stats[0]),numpy.mean(stats[1]),numpy.mean(stats[2])])
+			stats_std.append([numpy.std(stats[0]),numpy.std(stats[1]),numpy.std(stats[2])])
+			stats_name.append(x)
+fo1=open(dict_opts['-p']+

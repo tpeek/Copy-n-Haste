@@ -1,0 +1,26 @@
+
+logger = logging.getLogger(__name__)
+class TProcessPoolServer(TServer):
+	def __init__(self, *args):
+		TServer.__init__(self, *args)
+		self.numWorkers = 10
+		self.workers = []
+		self.isRunning = Value('b', False)
+		self.stopCondition = Condition()
+		self.postForkCallback = None
+	def setPostForkCallback(self, callback):
+		if not callable(callback):
+			raise TypeError("This is not a callback!")
+		self.postForkCallback = callback
+	def setNumWorkers(self, num):
+		self.numWorkers = num
+	def workerProcess(self):
+		if self.postForkCallback:
+			self.postForkCallback()
+		while self.isRunning.value:
+			try:
+				client = self.serverTransport.accept()
+				if not client:
+				  continue
+				self.serveClient(client)
+			except (KeyboardInterrupt, SystemExi

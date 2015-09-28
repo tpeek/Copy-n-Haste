@@ -1,0 +1,24 @@
+
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+def
+			   filt_order=None, length=None):
+	if not os.path.isfile(sfile):
+		raise IOError('sfile does not exist')
+	wavefiles=Sfile_util.readwavename(sfile)
+	pathparts=sfile.split('/')[0:len(sfile.split('/'))-1]
+	wavpath=''
+	for part in pathparts:
+		if part == 'REA':
+			part='WAV'
+		wavpath+=part+'/'
+	for wavefile in wavefiles:
+		print "I am going to read waveform data
+		if 'st' in locals():
+			st+=obsread(wavpath+wavefile)
+		else:
+			st=obsread(wavpath+wavefile)
+	for tr in st:
+		if tr.stats.sampling_rate<tempdef.samp_rate:
+			print 'Sampling rate of data is lower than sampling rate asked

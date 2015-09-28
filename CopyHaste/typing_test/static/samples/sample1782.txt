@@ -1,0 +1,22 @@
+
+plt.style.use('ggplot')
+def make_csv_name_list():
+	print "Loading + filtering CSV files
+	os.chdir(TRAJECTORY_DATA_DIR)
+	csv_list = sorted([os.path.splitext(file)[0] for file in glob("*.csv")])
+	os.chdir(os.path.dirname(__file__))
+	return csv_list
+csv_list = make_csv_name_list()
+for csv_fname in csv_list:
+	print csv_fname
+	os.chdir(os.path.dirname(__file__))
+	df = i_o.load_csv2DF(csv_fname)
+	if not os.path.exists('./correlation_figs/{data_name}'.format(data_name = csv_fname)):
+		os.makedirs('./correlation_figs/{data_name}'.format(data_name = csv_fname))
+	
+	
+	for label, col in df.iteritems():
+		print label
+		
+		acf_fig = statsmodels.graphics.tsaplots.plot_acf(col, lags = 70)
+		plt.savefig("./correlation_figs/{data_name}/{label} - ACF.svg".fo

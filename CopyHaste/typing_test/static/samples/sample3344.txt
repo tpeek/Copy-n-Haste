@@ -1,0 +1,22 @@
+class CallTest(LinphoneTest):
+	def precond(self):
+		runComponent = 'org.linphone' + '/' + 'org.linphone.setup.LinphoneActivity'
+		self.device.startActivity(component=runComponent)
+		dialer = self.find('dialer')
+		self.easyDevice.touch(dialer, MonkeyDevice.DOWN_AND_UP)
+	def test(self):
+		address = self.find('Adress')
+		self.easyDevice.type(address, 'cotcot@sip.linphone.org')
+		self.device.press('KEYCODE_BACK', MonkeyDevice.DOWN_AND_UP)
+		call = self.find('Call')
+		self.easyDevice.touch(call, MonkeyDevice.DOWN_AND_UP)
+		MonkeyRunner.sleep(2)
+		contact = self.find('contactNameOrNumber')
+		return contact
+		
+	def postcond(self):
+		hangUp = self.find('hangUp')
+		self.easyDevice.touch(hangUp, MonkeyDevice.DOWN_AND_UP)
+		
+callTest = CallTest('Call')
+callTest.run()

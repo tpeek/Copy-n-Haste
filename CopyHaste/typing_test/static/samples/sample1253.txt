@@ -1,0 +1,28 @@
+
+										   classic_prompt,
+										   ipy_prompt,
+										   strip_encoding_cookie,
+										   cellmagic,
+										   assemble_logical_lines,
+										   help_end,
+										   escaped_commands,
+										   assign_
+										   assign_
+										   assemble_python_lines,
+										   )
+										ESC_HELP2, ESC_MAGIC, ESC_MAGIC2,
+										ESC_QUOTE, ESC_QUOTE2, ESC_PAREN, ESC_SEQUENCES)
+dedent_re = re.compile('|'.join([
+	r'^\s+raise(\s.*)?$',
+	r'^\s+raise\([^\)]*\).*$',
+	r'^\s+return(\s.*)?$',
+	r'^\s+return\([^\)]*\).*$',
+	r'^\s+pass\s*$',
+	r'^\s+break\s*$',
+	r'^\s+continue\s*$',
+]))
+ini_spaces_re = re.compile(r'^([ \t\r\f\v]+)')
+comment_line_re = re.compile('^\s*\
+def num_ini_spaces(s):
+	ini_spaces = ini_spaces_re.match(s)
+	if 

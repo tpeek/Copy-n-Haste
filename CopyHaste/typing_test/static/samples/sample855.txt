@@ -1,0 +1,22 @@
+
+_journal_re = re.compile(r'(?P<journal>[\w\s]+),?\s+(?P<year>\d{4}).*\;\s*(?P<volume>\d+).*\:\s*(?P<firstpage>\w+)')
+def parse_cse_ref(citstr):
+  pieces = [piece.strip() for piece in citstr.split(u'.') if len(piece) > 0]
+  (authors_str, title, journraw) = (pieces[0], pieces[1], pieces[-1])
+  authors = [(author.strip(), None) for author in authors_str.split(',')]
+  r = {
+	'authors': authors,
+	'title': title
+  }
+  m = _journal_re.match(journraw.strip())
+  if m:
+	r['journal']   = m.group('journal')
+	r['year']	  = m.group('year')
+	r['volume']	= m.group('volume')
+	r['firstpage'] = m.group('firstpage')
+  return r
+_list_elem_re = re.compile(r'^\d+\.\s+')
+def _parse_multiline_numbered_list(lines):
+  elems = list()
+  buf = u''
+  for line in lines:

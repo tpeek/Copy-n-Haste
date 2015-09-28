@@ -1,0 +1,21 @@
+
+class SphereForceField(ForceField):
+	def __init__(self, center, max_R, name='Sphere'):
+		self.arguments = (center, max_R)
+		ForceField.__init__(self, name)
+		self.center = center
+		self.max_R = max_R
+		self.name = name
+		self.volume = 4./3.*N.pi*(self.max_R*self.max_R*self.max_R)
+	def ready(self, global_data):
+		return True
+	def evaluatorParameters(self, universe, subset1, subset2, global_data):
+		return {self.name+' center': self.center,
+				self.name+' max R': self.max_R}
+	def evaluatorTerms(self, universe, subset1, subset2, global_data):
+		if subset1 is not None or subset2 is not None:
+			raise ValueError("sorry, no subsets here")
+		return [SphereTerm(universe, self.center, self.max_R, self.name)]
+  
+	def randomPoint(self):
+	  (x,y,z) =

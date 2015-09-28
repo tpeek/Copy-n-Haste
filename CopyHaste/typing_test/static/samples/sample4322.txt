@@ -1,0 +1,19 @@
+class Downloader(object):
+	def __init__(self):
+		self.pDialog = None
+	def downloadWithJDownloader(self, url, title):
+		common.runPlugin('plugin://plugin.program.jdownloader/?action=addlink&url=' + url)
+		common.showNotification('Sent to JDownloader:')
+	def downloadMovie(self, url, path, title, extension):
+		if not os.path.exists(path):
+			common.log('Path does not exist')
+			return None
+		if title == '':
+			common.log('No title given')
+			return None
+		file_path = xbmc.makeLegalFilename(os.path.join(path, title + extension))
+		file_path = urllib.unquote_plus(file_path)
+		if os.path.isfile(file_path):
+			self.pDialog = xbmcgui.Dialog()
+			if not common.ask('File already exists. Overwrite?\n' + os.path.basename(file_path)):
+				title = common

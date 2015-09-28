@@ -1,0 +1,29 @@
+
+						unicode_literals)
+@cleanup
+def test_repeated_save_with_alpha():
+	fig = Figure([1, 0.4])
+	canvas = FigureCanvas(fig)
+	fig.set_facecolor((0, 1, 0.4))
+	fig.patch.set_alpha(0.25)
+	buf = io.BytesIO()
+	fig.savefig(buf,
+				facecolor=fig.get_facecolor(),
+				edgecolor='none')
+	buf.seek(0)
+	fig.savefig(buf,
+				facecolor=fig.get_facecolor(),
+				edgecolor='none')
+	buf.seek(0)
+	assert_array_almost_equal(tuple(imread(buf)[0, 0]),
+							  (0.0, 1.0, 0.4, 0.250),
+							  decimal=3)
+@cleanup
+def test_large_single_path_collection():
+	buff = io.BytesIO()
+	f, ax = plt.subplots()
+	collection = collections.PathCollection(
+		[path.Path([[-10, 5], [10, 5], [10, -5], [-10, -5], [-10, 5]])])
+	ax.add_artist(collection)
+	ax.set_xlim(10**-3, 1)
+	plt.savefi

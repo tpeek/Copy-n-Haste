@@ -1,0 +1,23 @@
+
+_ = i18n._
+_LE = i18n._LE
+location_strategy_opts = [
+	cfg.StrOpt('location_strategy', default='location_order',
+			   choices=('location_order', 'store_type'),
+			   help=_("This value sets what strategy will be used to "
+					  "determine the image location order. Currently "
+					  "two strategies are packaged with Glance "
+					  "'location_order' and 'store_type'."))
+]
+CONF = cfg.CONF
+CONF.register_opts(location_strategy_opts)
+LOG = logging.getLogger(__name__)
+def _load_strategies():
+	modules = {}
+	namespace = "glance.common.image_location_strategy.modules"
+	ex = stevedore.extension.ExtensionManager(namespace)
+	for module_name in ex.names():
+		try:
+			mgr = stevedore.driver.DriverManager(
+				namespace=namespace,
+				name=module_name,

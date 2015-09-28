@@ -1,0 +1,16 @@
+
+class Ui_change_socket(object):
+	def setupUi(self, change_socket):
+		change_socket.setObjectName("change_socket")
+		change_socket.resize(405, 144)
+		self.verticalLayoutWidget = QtGui.QWidget(change_socket)
+		self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 381, 128))
+		self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
+		self.verticalLayout = QtGui.QVBoxLayout(self.verticalLayoutWidget)
+		self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+		self.verticalLayout.setObjectName("verticalLayout")
+		self.formLayout = QtGui.QFormLayout()
+		self.formLayout.setFieldGrowthPolicy(QtGui.QFormLayout.AllNonFixedFieldsGrow)
+		self.formLayout.setObjectName("formLayout")
+		self.label_2 = QtGui.QLabel(self.verticalLayoutWidget)
+		self

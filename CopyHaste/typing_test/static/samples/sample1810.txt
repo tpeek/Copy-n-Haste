@@ -1,0 +1,27 @@
+
+try:
+except:
+	class dummy_type(object): pass
+	paramdef = dummy_type
+class node(object):
+	def __init__(self,iplugs,oplugs,name=None):
+		self.name = name
+		self.ninst	= 1
+		self._parent  = None
+		self.iplugs = [plug(self,pname) for pname in iplugs]
+		self.oplugs = [plug(self,pname) for pname in oplugs]
+		self.__dict__.update({ plug.name : plug for plug in self.iplugs })
+		self.__dict__.update({ plug.name : plug for plug in self.oplugs })
+	@property
+	def parent(self):
+		return self._parent
+	@property
+	def path(self):
+		if not self._parent:
+			return ""
+		for i,child in enumerate(self.parent):
+			if child is self:
+				relpath = "["+str(i)+"]"
+				for name,attr in self.parent.__dict__.iteritems():
+					if self is attr:
+						relpath = "."+name

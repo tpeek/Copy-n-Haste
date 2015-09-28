@@ -1,0 +1,26 @@
+class EZO_pH_CALIBRATION(EZO_pH):
+	def cal_status(self):
+		return self._r('Cal,?',0.3)
+	def cal_clear(self):
+		self._r('Cal,clear',2)
+	def cal_mid(self,val):
+		self._r('Cal,mid,{:.2f}'.format(val),2)
+	def cal_low(self,val):
+		self._r('Cal,low,{:.2f}'.format(val),2)
+	def cal_high(self,val):
+		self._r('Cal,high,{:.2f}'.format(val),2)
+if '__main__' == __name__:
+	ph = EZO_pH_CALIBRATION(lowpower=False)
+	print 'Supply voltage:'
+	print '{} volt'.format(ph.supply_v())
+	print
+	print 'Current T value (supplied for calibration, not measured):'
+	print '{} Deg.C'.format(ph.t())
+	print
+	tmp = ph.cal_status()
+	if tmp.startswith('?CAL,'):
+		tmp = int(tmp.strip().split(',')[-1])
+		if 0 == tmp:
+			print 'Sensor is NOT calibrated.'
+		elif 1 == tmp:
+			print 

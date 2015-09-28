@@ -1,0 +1,17 @@
+
+depot_tools_url = 'https://chromium.googlesource.com/chromium/tools/depot_tools.git'
+depot_tools_archive_url = 'https://src.chromium.org/svn/trunk/tools/depot_tools.zip'
+cef_git_url = 'https://bitbucket.org/chromiumembedded/cef.git'
+script_dir = os.path.dirname(__file__)
+def msg(message):
+  sys.stdout.write('--> ' + message + "\n")
+def run(command_line, working_dir, depot_tools_dir=None, output_file=None):
+  env = os.environ
+  if not depot_tools_dir is None:
+	env['PATH'] = depot_tools_dir+os.pathsep+env['PATH']
+  sys.stdout.write('-------- Running "'+command_line+'" in "'+\
+				   working_dir+'"...'+"\n")
+  if not options.dryrun:
+	args = shlex.split(command_line.replace('\\', '\\\\'))
+	if not output_file:
+	  return subprocess.check_call(ar

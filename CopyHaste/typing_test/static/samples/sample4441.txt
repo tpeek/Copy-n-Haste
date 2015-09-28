@@ -1,0 +1,13 @@
+class AssessmentPage(BasePageClass):
+	ast_status_Inprogress = "In Progress"
+	ast_status_Not_Started = "Not Started"
+	ast_status_Submitted = "Submitted"
+	_ast_name_text = ".//*[@id='header']/span[2]/span"
+	_ast_main_table_locator = ".//*[@id='tblAssessments']/tbody/tr/td"
+	_ast_assessment_table_header_locator = ".//*[@id='tblAssessments']/thead/tr/th"
+	_ast_staus_table_column_locator = ".//*[@id='tblAssessments']/tbody/tr/td[7]"
+	_ast_asset_table_locator = ".//*[@id='assessmentManager_table']/tbody/tr[1]/td"
+	_ast_asset_table_header_locator = ".//*[@id='assessmentManager_table']/thead/tr/th"
+	_ast_status_filter_drop_down_locator = "//div[@label='Status']"
+	_ast_type_filter_drop_down_locator = "//div[@label='Type']"
+	_ast_filter_reset_button 

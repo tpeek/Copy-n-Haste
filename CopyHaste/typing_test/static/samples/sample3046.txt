@@ -1,0 +1,57 @@
+def crypt():
+	path = raw_input("Enter OIIO plugin path: ")
+	in_file = raw_input("Enter the name of the file for encryption: ")
+	out_file = raw_input("Enter the name of the resulting file: ")
+	key_path = raw_input("Enter the name of the file in which to store the key: ")
+	spec = o.ImageSpec()
+	pic = o.ImageInput.create(in_file, path)
+	pic.open(in_file, spec)
+	desc = spec.format
+	arr = array.array("B", "\0" * spec.image_bytes())
+	new_values = arr[:]
+	length = range(len(new_values))
+	print "Working, please wait..."
+	pic.read_image(desc, arr)
+	state = random.getstate()
+	for i in length:
+		rand_val = random.randint(0, 255)
+		new_values[i] = (arr[i] + rand_val) % 256
+	out = o.ImageOutput.create(out_file, path)
+	out.open(out_file, spec, False)
+	out.write_image(desc, new_values)
+	out.close()
+	f = open(key_path, "w")
+	pickle.dump(state, f)
+	f.close()
+	return True
+def decrypt():
+	path = raw_input("Enter OIIO plugin path: ")
+	key_path = raw_input("Name of the file with the key: ")
+	in_file = raw_input("Name of the encrypted file: ")
+	f = open(key_path, "r")
+	key = pickle.load(f)
+	
+	spec_cr = o.ImageSpec()
+	pic_cr = o.ImageInput.create(in_file, path)
+	pic_cr.open(in_file, spec_cr)
+	desc_cr = spec_cr.format
+	arr_cr = array.array("B", "\0" * spec_cr.image_bytes())
+	length = range(len(arr_cr))
+	print "Working, please wait..."
+	pic_cr.read_image(desc_cr, arr_cr)
+	random.setstate(key)
+	for i in length:
+		rand_val = random.randint(0, 255)
+		restored_pixel = arr_cr[i] - rand_val
+		if restored_pixel < 0:
+			arr_dec[i] = 256 + restored_pixel
+		else:
+			arr_dec[i] = restored_pixel
+	print "Decryption completed!"
+	image = raw_input("Enter the name under which to store the result: ")
+	print "Working, please wait..."	
+	out_dec = o.ImageOutput.create(image, path)
+	out_dec.open(image, spec_cr, False)
+	out_dec.write_image(desc_cr, arr_dec)
+	out_dec.close()
+	return True

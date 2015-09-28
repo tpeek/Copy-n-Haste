@@ -1,0 +1,21 @@
+USERS_KEYSPACE,
+								 USERS_CONSENT_TABLE,
+								 SENSOR_DATA_KEYSPACE,
+								 ANALYTICS_KEYSPACE,
+								 TAGS_TABLE_NAME,
+								 AGGREGATES_TABLE_NAME)
+_CREATE_KEYSPACE = ("DROP KEYSPACE %s;\n"
+					"CREATE KEYSPACE %s WITH replication = "
+					"{'class': 'SimpleStrategy', 'replication_factor': 3 };\n"
+					"USE %s;")
+def _create_users_keyspace_and_table(outFile):
+	create_keyspace = _CREATE_KEYSPACE % (USERS_KEYSPACE,
+										  USERS_KEYSPACE,
+										  USERS_KEYSPACE)
+	create_table = ("CREATE TABLE %s (user_id text, timestamp timestamp, "
+					"consent text, age double, gender text, "
+					"PRIMARY KEY (user_id));\n") % USERS_CONSENT_TABLE
+	outFile.write(create_keyspace)
+	outFile.write("\n")
+	outFile.write(create_table)
+	ou

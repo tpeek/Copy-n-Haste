@@ -1,0 +1,31 @@
+
+try:
+except ImportError:
+__all__ = ["Error", "Packer", "Unpacker", "ConversionError"]
+class Error(Exception):
+	def __init__(self, msg):
+		self.msg = msg
+	def __repr__(self):
+		return repr(self.msg)
+	def __str__(self):
+		return str(self.msg)
+class ConversionError(Error):
+	pass
+class Packer:
+	def __init__(self):
+		self.reset()
+	def reset(self):
+		self.__buf = _StringIO()
+	def get_buffer(self):
+		return self.__buf.getvalue()
+	get_buf = get_buffer
+	def pack_uint(self, x):
+		self.__buf.write(struct.pack('>L', x))
+	def pack_int(self, x):
+		self.__buf.write(struct.pack('>l', x))
+	pack_enum = pack_int
+	def pack_bool(self, x):
+		if x: self.__buf.write('\0\0\0\1')
+		else: self.__buf.write('\0\0\0\0')
+	def pack_uhyper(self, x):
+		self.pack_uint(x>>32

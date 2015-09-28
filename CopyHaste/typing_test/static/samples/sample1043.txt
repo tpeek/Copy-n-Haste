@@ -1,0 +1,20 @@
+
+	ServerAlreadyJoinedException, RebalanceFailedException, \
+	FailoverFailedException, InvalidArgumentException, ServerSelfJoinException, \
+	AddNodeException
+log = logger.Logger.get_logger()
+class RebalanceHelper():
+	@staticmethod
+	def wait_for_mc_stats_all_nodes(master, bucket, stat_key, stat_value, timeout_in_seconds=120, verbose=True):
+		log.info("waiting for bucket {0} stat : {1} to match {2} on {3}".format(bucket, stat_key, \
+																				stat_value, master.ip))
+		time_to_timeout = 0
+		previous_stat_value = -1
+		curr_stat_value = -1
+		verified = False
+		all_stats = {}
+		while not verified:
+			rest = RestConnection(master)
+			nodes = rest.node_statuses()
+			for node in nodes:
+				_server = {"ip": node.ip, "port": node.port, "usern

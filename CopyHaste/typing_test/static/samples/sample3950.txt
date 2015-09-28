@@ -1,0 +1,17 @@
+class Questioner(object):
+	def __init__(self, human_sensor=None, target_order=None, target_weights=1,
+				 use_ROS=False, repeat_annoyance=0.5, repeat_time_penalty=60):
+		self.human_sensor = human_sensor
+		self.use_ROS = use_ROS
+		self.target_order = target_order
+		self.repeat_annoyance = repeat_annoyance
+		self.repeat_time_penalty = repeat_time_penalty
+		target_weights = np.asarray(target_weights, dtype=np.float32)
+		if target_weights.size == len(target_order):
+			target_weights /= target_weights.sum()
+			self.target_weights = target_weights
+		else:
+			logging.warn("Target weights don't match target order. Assuming "
+				"equal weights.")
+			self.target_weights = np.ones(len(target_order)) * 1 / len(target_order)
+		self.generate_questions(

@@ -1,0 +1,22 @@
+
+def outgoing_counts_of_type(articles, node_type):
+  return [len([neighbor for neighbor in article.neighbors(mode = igraph.OUT) if neighbor['type'] == node_type]) for article in articles]
+def h_index(counts):
+  n = len(counts)
+  indexed_counts = [0] * (n + 1)
+  for i in range(n):
+	indexed_counts[min(counts[i], n)] += 1
+  running_sum = 0
+  for i in range(n, -1, -1):
+	running_sum += indexed_counts[i]
+	if running_sum >= i:
+	  return i
+  return 0
+def tg_score(articles):
+  tg_count = 0
+  total_count = 0
+  visited = set()
+  for article in articles:
+	for citing_article in filter(lambda n: n['type'] == 'article' and n['pubtypes'] != None, article.neighbors(mode = igraph.OUT)):
+	  if citing_article.index in visited: continue
+	  visited.add(citing_ar

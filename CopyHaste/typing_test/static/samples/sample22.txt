@@ -1,0 +1,19 @@
+
+class Bootstrapper:
+	DIAMOND_SEARCH_METHOD = "diamond"
+	HMM_SEARCH_METHOD = "hmmsearch"	
+	def __init__(self, **kwargs):
+		self.search_hmm_files = kwargs.pop('search_hmm_files',[])
+		self.maximum_range = kwargs.pop('maximum_range',None)
+		self.threads = kwargs.pop('threads',None)
+		self.evalue = kwargs.pop('evalue',None)
+		self.min_orf_length = kwargs.pop('min_orf_length',None)
+		graftm_package = kwargs.pop('graftm_package',None)
+		if len(kwargs) > 0:
+			raise Exception("Unexpected arguments detected: %s" % kwargs)
+		
+		if graftm_package:
+			self.diamond_database = graftm_package.diamond_database_path()
+			self.unaligned_sequence_database = graftm_package.unaligned_sequence_database_path()
+			for h in graftm_package.search_hmm_paths():
+				

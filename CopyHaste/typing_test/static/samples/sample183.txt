@@ -1,0 +1,31 @@
+
+if sys.version_info[0] < 3:
+	print("ShellLocker requires Python 3 or higher.")
+	exit()
+class DevNull:
+	def write(self, msg):
+		pass
+sys.stderr = DevNull()
+class ansi_colors:
+	RED = "\033[31m"
+	GREEN = "\033[32m"
+	YELLOW = "\033[33m"
+	BLUE = "\033[34m"
+	MAGENTA = "\033[35m"
+	CYAN = "\033[36m"
+	RESET = "\033[0m"
+SCRIPT_PATH = os.path.realpath(__file__)
+SCRIPT_PARENT_DIR = os.path.dirname(SCRIPT_PATH)
+FLAGS = []
+def invalidate():
+	COMMAND = ""
+	if os.access(SCRIPT_PATH, os.X_OK):
+		COMMAND = SCRIPT_PATH
+	else:
+		COMMAND = "python3 " + SCRIPT_PATH
+	for flag in FLAGS:
+		COMMAND += " " + flag
+	os.system(COMMAND)
+def verify(TESTMODE):
+	if not os.path.exists(SCRIPT_PARENT_DIR + "/shelllocker.conf"):
+		print(ansi_colors.YELLOW + "shelllocker.conf n

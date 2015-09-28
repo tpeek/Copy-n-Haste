@@ -1,0 +1,33 @@
+
+try:
+	_dbmerror = dbm.error
+except ImportError:
+	dbm = None
+	_dbmerror = IOError
+def whichdb(filename):
+	try:
+		f = open(filename + os.extsep + "pag", "rb")
+		f.close()
+		if not (dbm.library == "GNU gdbm" and sys.platform == "os2emx"):
+			f = open(filename + os.extsep + "dir", "rb")
+			f.close()
+		return "dbm"
+	except IOError:
+		try:
+			f = open(filename + os.extsep + "db", "rb")
+			f.close()
+			if dbm is not None:
+				d = dbm.open(filename)
+				d.close()
+				return "dbm"
+		except (IOError, _dbmerror):
+			pass
+	try:
+		os.stat(filename + os.extsep + "dat")
+		size = os.stat(filename + os.extsep + "dir").st_size
+		if size == 0:
+			return "dumbdbm"
+		f = open(filename + os.extsep + "dir", "rb")
+		try:
+			if f.read(1) in ("'", '"'):
+				return 

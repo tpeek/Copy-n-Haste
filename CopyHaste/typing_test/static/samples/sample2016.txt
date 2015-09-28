@@ -1,0 +1,29 @@
+
+__version__ = "0.2"
+MAGIC = 0x3ADE68B1
+def i32(c):
+	return ord(c[0]) + (ord(c[1])<<8) + (ord(c[2])<<16) + (ord(c[3])<<24)
+def _accept(prefix):
+	return i32(prefix) == MAGIC
+class DcxImageFile(PcxImageFile):
+	format = "DCX"
+	format_description = "Intel DCX"
+	def _open(self):
+		s = self.fp.read(4)
+		if i32(s) != MAGIC:
+			raise SyntaxError, "not a DCX file"
+		self._offset = []
+		for i in range(1024):
+			offset = i32(self.fp.read(4))
+			if not offset:
+				break
+			self._offset.append(offset)
+		self.__fp = self.fp
+		self.seek(0)
+	def seek(self, frame):
+		if frame >= len(self._offset):
+			raise EOFError("attempt to seek outside DCX directory")
+		self.frame = frame
+		self.fp = self.__fp
+		self.fp.seek(self._offset[frame])
+		PcxImageFile._open(sel

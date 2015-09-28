@@ -1,0 +1,44 @@
+states = {
+	"OK": 0,
+	"WARNING": 1,
+	"CRITICAL": 2,
+	"UNKNOWN": 3
+	}
+def report(state, msg):
+	print "%s: %s" % (state, msg)
+	exit(states[state])
+def get_loc_over_ssh(host, func):
+	try:
+		return subprocess.check_output(['ssh', host, '-l', 'zulip',
+										'psql -t -c "SELECT %s()"' % (func,)],
+									   stderr=subprocess.STDOUT)
+	except subprocess.CalledProcessError as e:
+		report('CRITICAL', 'ssh failed: %s: %s' % (str(e),e.output))
+def loc_to_abs_offset(loc_str):
+	m = re.match(r'^\s*([0-9a-fA-F]+)/([0-9a-fA-F]+)\s*$', loc_str)
+	if not m:
+		raise ValueError("Unknown xlog location format: " + loc_str)
+	(xlog_file, file_offset) = (m.group(1), m.group(2))
+	return 0xFF000000 * int(xlog_file, 16) + int(file_offset, 16)
+secondary_replay_loc = get_loc_over_ssh('postgres-secondary.zulip.net', 'pg_last_xlog_replay_location')
+secondary_recv_loc   = get_loc_over_ssh('postgres-secondary.zulip.net', 'pg_last_xlog_receive_location')
+primary_loc		  = get_loc_over_ssh('postgres-primary.zulip.net', 'pg_current_xlog_location')
+primary_offset = loc_to_abs_offset(primary_loc)
+secondary_recv_offset = loc_to_abs_offset(secondary_recv_loc)
+secondary_replay_offset = loc_to_abs_offset(secondary_replay_loc)
+recv_diff = primary_offset - secondary_recv_offset
+replay_diff = secondary_recv_offset - secondary_replay_offset
+if recv_diff > 5 * 16 * 1024**2:
+	report('CRITICAL', 'secondary is %d bytes behind on receiving xlog' % (recv_diff,))
+if replay_diff > 5 * 16 * 1024**2:
+	report('CRITICAL', 'secondary is %d bytes behind on applying received xlog' % (replay_diff))
+if recv_diff < 0:
+	report('CRITICAL', 'secondary is %d bytes ahead on receiving xlog' % (recv_diff,))
+if replay_diff < 0:
+	report('CRITICAL', 'secondary is %d bytes ahead on applying received xlog' % (replay_diff,))
+if recv_diff > 16 * 1024**2:
+	report('WARNING', 'secondary is %d bytes behind on receiving xlog' % (recv_diff,))
+if replay_diff > 16 * 1024**2:
+	report('WARNING', 'secondary is %d bytes behind on applying received xlog' % (replay_diff))
+report('OK', ('secondary is %d bytes behind on receiving and %d bytes behind on applying xlog'
+			  % (recv_diff, replay_diff)))

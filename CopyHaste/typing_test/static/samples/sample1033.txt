@@ -1,0 +1,31 @@
+
+class FakeMemcachedClient(object):
+	def __init__(self, *args):
+		self.db = {}
+	def set(self, key, exp, flags, val):
+		self.db[key] = val
+	def get(self, key):
+		return (0,0,self.db[key])
+	def add(self, key, exp, flags, val):
+		self.db[key] = val
+	def delete(self, key):
+		del self.db[key]
+	def sasl_auth_plain(self, *args):
+		pass
+class LoadThread(threading.Thread):
+	def __init__(self, load_info, server_index):
+		threading.Thread.__init__(self)
+		self.daemon = True
+		self.log = logger.Logger()
+		self.stopped = False
+		self.paused = True
+		self.mutation_index = 0
+		self.get_index = 0
+		self.value_failures = 0
+		self.backoff = 0
+		self.mutation_index_max = 0
+		self.items = 0
+		self.operations = 0
+		self.time = 0
+		self.size = 0
+		self.operation

@@ -1,0 +1,20 @@
+
+
+
+class stats(object):
+	con = sqlite3.connect(":memory:", check_same_thread=False)
+	con.execute("create table log (ts real, date text, command text, hostname text, url text, ppname text, success integer, time real)")
+	logger = logging.getLogger('FW_Lite')
+
+	def __init__(self, conf):
+		self.conf = conf
+		Timer(3600, self._purge, ()).start()
+
+	def log(self, command, hostname, url, ppname, success, rtime):
+		with self.con:
+			self.con.execute('INSERT into log values (?,?,?,?,?,?,?,?)', (time.time(), datetime.date.today(), command, hostname, url, ppname, success, rtime))
+		if not success:
+			if self.is_bad_pp('direct') is False:
+				if self.is_bad_pp(ppname):
+					self.logger.info('Probable bad parent: %s, remove.' % ppname)
+	

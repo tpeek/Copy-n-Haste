@@ -1,0 +1,19 @@
+
+class PokerRandomOpponent(DefaultOpponent):
+	OPPONENT_ID = "random"
+	def __init__(self):
+		super(PokerRandomOpponent, self).__init__(PokerRandomOpponent.OPPONENT_ID)
+	def initialize(self, seed):
+		self.random_generator_ = numpy.random.RandomState(seed=seed)
+	def execute(self, point_id, inputs, valid_actions, is_training):
+		return self.random_generator_.choice(valid_actions)
+class PokerAlwaysFoldOpponent(DefaultOpponent):
+	OPPONENT_ID = "always_fold"
+	def __init__(self):
+		super(PokerAlwaysFoldOpponent, self).__init__(PokerAlwaysFoldOpponent.OPPONENT_ID)
+	def initialize(self, seed):
+		pass
+	def execute(self, point_id, inputs, valid_actions, is_training):
+		return 0
+class PokerAlwaysCallOpponent(DefaultOpponent):
+	OPPONENT_ID = "always_call

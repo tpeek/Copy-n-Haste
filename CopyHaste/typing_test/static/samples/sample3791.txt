@@ -1,0 +1,12 @@
+﻿
+__addonname__ = "酷6云中剧场(www.juchang.com)"
+__addonid__ = "plugin.video.ku6"
+__addon__ = xbmcaddon.Addon(id=__addonid__)
+__addonicon__ = os.path.join( __addon__.getAddonInfo('path'), 'icon.png' )
+UserAgent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-GB; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3'
+RATE_LIST = [['超清','1500'], ['高清','600'], ['标清','300'], ['流畅','170'],]
+ORDER_LIST = [['更新时间','4'], ['上映时间','1'], ['播放次数','2'], ['热门评分','3'],]
+ORDER_DICT = dict(ORDER_LIST)
+MOVIE_AREA_LIST = {}
+MOVIE_AREA_LIST['1'] = [['全部','0'],['内地','17'],['香港','18'],['台湾','37'],['欧美','1001'],['日本','21'],['韩国','22'],['法国','26'],['其他','3002'],]
+MOVIE_AREA_LIST['2'] = 

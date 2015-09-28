@@ -1,0 +1,21 @@
+conn = sqlite3.connect('../blm.sqlite')
+c = conn.cursor()
+dbitems = {}
+c.execute("SELECT imageid, dm_id, strftime('%Y', date) FROM All_Surveys")
+for i in c.fetchall():
+	dbitems[str(i[0])] = i[1:]
+s_ds = ogr.Open('cutline-map.shp')
+s_layer = s_ds.GetLayerByIndex(0)
+srs = s_layer.GetSpatialRef().Clone()
+srs.AutoIdentifyEPSG()
+driver = ogr.GetDriverByName("ESRI Shapefile")
+out_fn = "summary-maps/summary.shp"
+driver.DeleteDataSource(out_fn)
+ds = driver.CreateDataSource(out_fn)
+layer = ds.CreateLayer("tiles", srs, ogr.wkbPolygon)
+field_name = ogr.FieldDefn("imagefn", ogr.OFTString)
+field_name.SetWidth(16)
+layer.CreateField(field_name)
+field_name = ogr.FieldDefn("refed", ogr.OFTInteger)
+layer.CreateField(field_name)
+field_name = ogr.FieldDefn("dm

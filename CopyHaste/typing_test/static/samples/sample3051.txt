@@ -1,0 +1,20 @@
+imagedir = parent + "/openexr-images/DisplayWindow"
+imagedir = parent + "/openexr-images/ScanLines"
+files = [ "Desk.exr", "MtTamWest.exr" ]
+for f in files:
+	command += rw_command (imagedir, f)
+command = command + rw_command (imagedir, "Cannon.exr", extraargs="--compression zip")
+files = [ "StillLife.exr", "Tree.exr", "Blobbies.exr" ]
+for f in files:
+	command += rw_command (imagedir, f)
+imagedir = parent + "/openexr-images/TestImages"
+files = [ "AllHalfValues.exr", "BrightRings.exr", "BrightRingsNanInf.exr",
+		  "GammaChart.exr", "GrayRampsDiagonal.exr",
+		  "GrayRampsHorizontal.exr", "RgbRampsDiagonal.exr",
+		  "SquaresSwirls.exr", "WideColorGamut.exr", "WideFloatRange.exr" ]
+for f in files:
+	command += rw_command (imagedir, f)
+imagedir = parent + "/openexr-images/Tiles"
+files = [ "GoldenGate.exr", "Ocean.exr" ]
+for f in files:
+	command += rw_command (imagedir, f)

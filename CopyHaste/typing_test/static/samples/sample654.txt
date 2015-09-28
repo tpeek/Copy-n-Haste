@@ -1,0 +1,38 @@
+
+	path_len,
+	CacheError,
+	TravelException,
+	encache,
+	enkeycache,
+	dekeycache,
+	cache_forward,
+	needcache,
+	JSONReWrapper,
+	JSONListReWrapper
+)
+class Thing(Node):
+	extrakeys = {
+		'name',
+		'character',
+		'location',
+		'next_location',
+		'arrival_time',
+		'next_arrival_time'
+	}
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		self._loccache = {}
+	def __contains__(self, key):
+		if key in self.extrakeys:
+			return True
+		self._cache_keys()
+		(branch, tick) = self.engine.time
+		return key in self._keycache[branch][tick]
+	def __getitem__(self, key):
+		if key == 'name':
+			return self.name
+		elif key == 'character':
+			return self.character.name
+		elif key == 'location':
+			return self['locations'][0]
+		elif key == 'ar

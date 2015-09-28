@@ -1,0 +1,23 @@
+
+
+def main(project_ws, start_date=None, end_date=None, crop_str='',
+		 overwrite_flag=False):
+	input_folder = 'daily_stats'
+	output_folder = 'growing_season_stats'
+	date_field  = 'Date'
+	doy_field   = 'DOY'
+	season_field = 'Season'
+	crop_keep_list = list(parse_int_set(crop_str))
+	crop_skip_list = [44, 45, 46, 55]
+	gs_summary_name = 'growing_season_full_summary.csv'
+	gs_mean_annual_name = 'growing_season_mean_annual.csv'
+	baddata_name = 'growing_season_bad_data.txt'
+	header_lines = 2
+	sep = ','
+
+	try:
+		logging.info('\nComputing growing season statistics')
+		logging.info('  Project Folder: {0}'.format(project_ws))
+		input_ws = os.path.join(project_ws, input_folder)
+		output_ws = os.path.join(project_ws, output_folder)
+		if not os.pat

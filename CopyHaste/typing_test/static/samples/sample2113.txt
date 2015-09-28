@@ -1,0 +1,35 @@
+
+common_flavor_details = {
+	"name": "get-flavor-details",
+	"http-method": "GET",
+	"url": "flavors/%s",
+	"resources": [
+		{"name": "flavor", "expected_result": 404}
+	]
+}
+common_flavor_list = {
+	"name": "list-flavors-with-detail",
+	"http-method": "GET",
+	"url": "flavors/detail",
+	"json-schema": {
+		"type": "object",
+		"properties": {
+		}
+	}
+}
+common_admin_flavor_create = {
+	"name": "flavor-create",
+	"http-method": "POST",
+	"admin_client": True,
+	"url": "flavors",
+	"default_result_code": 400,
+	"json-schema": {
+		"type": "object",
+		"properties": {
+		   "flavor": {
+			   "type": "object",
+			   "properties": {
+				   "name": {"type": "string",
+							"exclude_tests": ["gen_str_min_length"]},
+				   "ram": {"type": "integer", "minimum": 1},
+				

@@ -1,0 +1,26 @@
+
+			 path_to_slave, path_to_builder
+class JhStatusResourceBuilder(StatusResourceBuilder):
+	def getTitle(self, request):
+		buildbot_service = request.site.buildbot_service
+		builder_name = self.builder_status.getName()
+		for slave in buildbot_service.slaves:
+			if builder_name.endswith(slave):
+				slave_name = slave
+				module_name = builder_name[:-len(slave)-1]
+				break
+		else:
+			slave_name = None
+			module_name = None
+		status = self.getStatus(request)
+		p = status.getProjectName()
+		if slave_name:
+			return '%s - %s @ %s' % (
+					p, module_name, slave_name)
+		return '%s - %s' % (p, builder_name)
+	def body(self, req):
+		b = self.builder_status
+		control = self.builder_control
+		status = self.getStatus(req)
+		slaves = b.getSlaves()
+		con

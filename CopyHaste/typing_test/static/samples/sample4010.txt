@@ -1,0 +1,25 @@
+class ConditionalWidget(GUIComponent):
+	def __init__(self, withTimer = True):
+		GUIComponent.__init__(self)
+		self.setConnect(None)
+		if withTimer:
+			self.conditionCheckTimer = eTimer()
+			self.conditionCheckTimer.callback.append(self.update)
+			self.conditionCheckTimer.start(1000)
+	def postWidgetCreate(self, instance):
+		self.visible = 0
+	def setConnect(self, conditionalFunction):
+		self.conditionalFunction = conditionalFunction
+	def activateCondition(self, condition):
+		if condition:
+			self.visible = 1
+		else:
+			self.visible = 0
+	def update(self):
+		if self.conditionalFunction is not None:
+			try:
+				self.activateCondition(self.conditionalFunction())
+			except:
+				self.conditionalFunction = None
+				self.activateCondition(False)
+clas

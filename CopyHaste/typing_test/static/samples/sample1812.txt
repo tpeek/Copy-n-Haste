@@ -1,0 +1,29 @@
+
+def calc_auc(z, y, want_curve = False):
+	assert len(z) == len(y)
+	order = np.argsort(z, axis=0, kind="mergesort")[::-1].ravel()
+	z = z[order]
+	y = y[order]
+	tpr = y.cumsum()
+	fpr = 1 + np.arange(len(y)).astype(y.dtype) - tpr
+	if fpr[0] != 0:
+		tpr = np.r_[0,tpr]
+		fpr = np.r_[0,fpr]
+	if fpr[-1] == 0 or tpr[-1] == 0:
+		return (np.nan,None) if want_curve else np.nan
+	tpr = tpr / tpr[-1]
+	fpr = fpr / fpr[-1]
+	auc = np.trapz(tpr,fpr,axis=0)
+	if want_curve:
+		curve = np.hstack([fpr,tpr])
+		return auc,curve
+	return auc
+def bootstrap_auc(z, y, ntrial=10):
+	n = len(y)
+	aucs = []
+	for t in range(ntrial):
+		sample = npr.randint(0,n,n)
+		zt = z[sample].copy().reshape((-1,1))
+		yt = y[sample].copy().reshape((-1,1))
+		auc = calc_auc(zt,yt)
+		if np.isna

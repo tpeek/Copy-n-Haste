@@ -1,0 +1,21 @@
+
+class TestNetflix(TestCase):
+	netflix_init_caches()
+	def test_netflix_init_caches1(self):
+		global movie_cache
+		movie_cache_ = netflix_init_caches(movie='9192')
+		self.assertEqual(movie_cache_["rm"], 3.6449)
+		self.assertEqual(movie_cache_["rs"], 1.0993)
+		self.assertEqual(movie_cache_["count"], 1946)
+	def test_netflix_init_caches2(self):
+		global customer_cache
+		customer_cache_ = netflix_init_caches(customer='2878')
+		self.assertEqual(customer_cache_["rm"], 3.9656)
+		self.assertEqual(customer_cache_["om"], -0.2114)
+		self.assertEqual(customer_cache_["count"], 784)
+		self.assertEqual(customer_cache_["rs"], 0.7841)
+	def test_netflix_eval1(self):
+		r = netflix_eval('1', '30878')
+		actual = 4
+		self.assertTrue(abs(r - actual) < 1.0)
+	def te

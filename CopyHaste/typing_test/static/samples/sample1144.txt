@@ -1,0 +1,18 @@
+
+class StationsTunein():
+	base_url = 'http://tunein.com/'
+	search_url = base_url + "search/?"
+	_stream_regex = re.compile(r'"StreamUrl":"(http://stream.radiotime.com/listen.stream[^"]+)')
+	def get_station(self, name):
+		logging.debug("tunein: Searching for: {}".format(name))
+		try:
+			station_url = StationsTunein._get_station_page(name)
+			logging.debug('tunein: Station url {}'.format(station_url))
+			stream = StationsTunein._get_station_stream(station_url)
+			logging.info("tunin: Found stream {}".format(stream))
+		except RuntimeError:
+			return None
+		return self._convert_tunein_steam_to_station(stream)
+	@staticmethod
+	def _get_station_page(name):
+		search_page = urllib.urlopen(StationsTunein.search_url + urllib.urlencode({"query": name}))

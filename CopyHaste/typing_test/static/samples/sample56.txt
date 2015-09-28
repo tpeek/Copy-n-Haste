@@ -1,0 +1,30 @@
+
+class TestNetflix (TestCase) :
+	def test_rmse_1 (self) :
+		w = StringIO()
+		p = [1,1,1,1]
+		a = [1,1,1,1]
+		netflix_rmse(w, p, a)
+		self.assertEqual(w.getvalue(), 'RMSE: 0.00\n')
+	def test_rmse_2 (self) :
+		w = StringIO()
+		p = (1,1,1,1)
+		a = (1,1,1,1)
+		netflix_rmse(w, p, a)
+		self.assertEqual(w.getvalue(), 'RMSE: 0.00\n')
+	def test_rmse_3 (self) :
+		w = StringIO()
+		p = (4, 3, 2, 1)
+		a = (4, 3, 2, 1)
+		netflix_rmse(w,p,a)
+		self.assertEqual(w.getvalue(), 'RMSE: 0.00\n')
+	def test_rmse_4 (self) :
+		w = StringIO()
+		p = {'user1':[1,2,3], 'user2': [4,5,6]}
+		a = {'user1':[2,3,4],'user2':[5,6,7]}
+		netflix_rmse(w, p, a)
+		self.assertEqual(w.getvalue(), 'RMSE: 1.00\n')
+	def test_read_1 (self) :
+		s = "1:\n"
+		i, j = netflix_read(s)
+		self.a

@@ -1,0 +1,26 @@
+
+def objective_and_grad(data, params, d, len_voc, word_drop=0.3, rho=1e-5):
+	params = unroll_params(params, d, len_voc, deep=3)
+	(W, b, W2, b2, W3, b3, L) = params
+	grads = init_grads(d, len_voc, deep=3)
+	error_sum = 0.0
+	for qs, ans in data:
+		comp = L[:, ans[0]].reshape((d, 1))
+		prev_sum = zeros((d, 1))
+		history = []
+		for dist in qs:
+			sent = qs[dist]
+			history += sent
+			curr_hist = []
+			mask = random.rand(len(history)) > word_drop
+			for index, keep in enumerate(mask):
+				if keep:
+					curr_hist.append(history[index])
+			if len(curr_hist) == 0:
+				curr_hist = history
+			if len(curr_hist) == 0:
+				continue
+			av = average(L[:, curr_hist], axis=1).reshape((d, 1))
+			p = relu(W.dot(av) + b)
+			p2 = relu(W2.dot(p) + b2)
+			p3 = rel

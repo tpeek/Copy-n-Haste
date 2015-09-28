@@ -1,0 +1,30 @@
+
+VERSION = sys.version.split()[0].split('.')
+MAJOR = int(VERSION[0])
+if MAJOR < 2:
+	print 'You must have at least Python version 2.0 to run Lumpy.'
+	sys.exit()
+MINOR = int(VERSION[1])
+if MAJOR == 2 and MINOR < 4:
+	pass
+		
+if MAJOR == 2:
+	TKINTER_MODULE = Tkinter
+else:
+	TKINTER_MODULE = tkinter
+FONT = ("Helvetica", 10)
+SMALLFONT = ("Helvetica", 9)
+class DiagCanvas(GuiCanvas):
+	
+	def box(self, box, padx=0.4, pady=0.2, **options):
+		underride(options, outline='black')
+		box.left -= padx
+		box.top -= pady
+		box.right += padx
+		box.bottom += pady
+		item = self.rectangle(box, **options)
+		return item
+	def arrow(self, start, end, **options):
+		return self.line([start, end], **options)
+	def offset_text(self, pos, text, dx=0, dy=0, **options):
+		und

@@ -1,0 +1,33 @@
+
+MAXBLOCK = 65536
+SAFEBLOCK = 1024*1024
+ERRORS = {
+	-1: "image buffer overrun error",
+	-2: "decoding error",
+	-3: "unknown error",
+	-8: "bad configuration",
+	-9: "out of memory error"
+}
+def _tilesort(t1, t2):
+	return cmp(t1[2], t2[2])
+class ImageFile(Image.Image):
+	"Base class for image file format handlers."
+	def __init__(self, fp=None, filename=None):
+		Image.Image.__init__(self)
+		self.tile = None
+		self.readonly = 1
+		self.decoderconfig = ()
+		self.decodermaxblock = MAXBLOCK
+		if Image.isStringType(fp):
+			self.fp = open(fp, "rb")
+			self.filename = fp
+		else:
+			self.fp = fp
+			self.filename = filename
+		try:
+			self._open()
+		except IndexError, v:
+			if Image.DEBUG > 1:
+				traceback.print_exc()
+			raise SyntaxError, v
+		except TypeEr

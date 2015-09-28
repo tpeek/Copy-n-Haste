@@ -1,0 +1,21 @@
+"Calculate Estimated Dates"
+						 FilterOption, PersonOption, EnumeratedListOption
+							Citation, Note, NoteType)
+try:
+	_trans = glocale.get_addon_translator(__file__)
+except ValueError:
+	_trans = glocale.translation
+_ = _trans.gettext
+class CalcEstDateOptions(MenuToolOptions):
+	def __init__(self, name, person_id=None, dbstate=None):
+		self.__db = dbstate.get_database()
+		self.__dbstate = dbstate
+		MenuToolOptions.__init__(self, name, person_id, dbstate)
+	def get_dbstate(self):
+		return self.__dbstate
+	def add_menu_options(self, menu):
+		category_name = _("Options")
+		self.__filter = FilterOption(_("Filter"), 0)
+		self.__filter.set_help(_("Select filter to restrict people"))
+		menu.add_option(category_name, "filter", self.__filter)
+		sel

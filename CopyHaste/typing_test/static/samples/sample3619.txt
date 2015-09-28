@@ -1,0 +1,25 @@
+def usage():
+	print("PIL Convert 0.5/1998-12-30 -- convert image files")
+	print("Usage: pilconvert [option] infile outfile")
+	print()
+	print("Options:")
+	print()
+	print("  -c <format>  convert to format (default is given by extension)")
+	print()
+	print("  -g		   convert to greyscale")
+	print("  -p		   convert to palette image (using standard palette)")
+	print("  -r		   convert to rgb")
+	print()
+	print("  -o		   optimize output (trade speed for size)")
+	print("  -q <value>   set compression quality (0-100, JPEG only)")
+	print()
+	print("  -f		   list supported file formats")
+	sys.exit(1)
+if len(sys.argv) == 1:
+	usage()
+try:
+	opt, argv = getopt.getopt(sys.argv[1:], "c:dfgopq:r")
+except getopt.error as v:
+	print(v)
+	sys.exit(1)
+output_format = 

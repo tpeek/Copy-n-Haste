@@ -1,0 +1,21 @@
+def plot_multisurface(X, Y, Z, ax, cmaps=None, min_alpha=0.6, **kwargs):
+	num_surfs = Z.shape[2]
+	if cmaps == None:
+		cmaps = ['Greys', 'Reds', 'Purples', 'Oranges', 'Greens', 'Blues',
+				   'RdPu']
+		while num_surfs > len(cmaps):
+				cmaps += cmaps
+	z_max = np.zeros(num_surfs)
+	for i in range(num_surfs):
+		z_max[i] = np.nanmax(Z[:,:,i])
+	z_min = np.zeros(num_surfs)
+	for i in range(num_surfs):
+		z_min[i] = np.nanmin(Z[:,:,i])
+	C = np.zeros_like(Z, dtype=object)
+	for z_i in range(num_surfs):
+		for i in range(X.shape[0]):
+			for j in range(X.shape[1]):
+				cmap = cmaps[z_i]
+				z_norm = (Z[i, j, z_i] - z_min[z_i]) / (z_max[z_i] - z_min[z_i])
+				color = list(plt.get_cmap(cmap)(z_norm * 0.6 + 0.2) )
+				color[3] = np.max([z_norm * 0.7 + 0.2, 

@@ -1,0 +1,36 @@
+
+
+
+class basesocket(object):
+	bufsize = 8192
+
+	def __init__(self):
+		self._rbuffer = io.BytesIO()
+		self._sock = None
+
+	def read(self, size):
+		data = b''
+		while len(data) < size:
+			data += self.recv(size-len(data))
+		return data
+
+	def readline(self, size=-1):
+		buf = self._rbuffer
+		buf.seek(0, 2)
+		if buf.tell() > 0:
+			buf.seek(0)
+			bline = buf.readline(size)
+			if bline.endswith('\n') or len(bline) == size:
+				self._rbuffer = io.BytesIO()
+				self._rbuffer.write(buf.read())
+				return bline
+			del bline
+		if size < 0:
+			buf.seek(0, 2)
+			self._rbuffer = io.BytesIO()
+			while True:
+				try:
+					data = self.recv(self.bufsize)
+				except socket.error as e:
+					if e.args[0] == errno.EINTR:
+						continue

@@ -1,0 +1,26 @@
+
+class CharListView(ListView):
+	character_name = StringProperty()
+	set_char = ObjectProperty()
+	def __init__(self, **kwargs):
+		if 'adapter' not in kwargs:
+			kwargs['adapter'] = ListAdapter(
+				data=[],
+				selection_mode='single',
+				allow_empty_selection=True,
+				cls=ListItemButton,
+				args_converter=lambda i, char: {
+					'size_hint_y': None,
+					'height': 30,
+					'text': char
+				}
+			)
+		super().__init__(**kwargs)
+	def on_adapter(self, *args):
+		def selchange(*args):
+			if len(self.adapter.selection) == 0:
+				i = self.adapter.data.index(self.character_name)
+				view = self.adapter.get_view(i)
+				self.adapter.select_list([view])
+			elif self.character_name != self.adapter.selection[0].text:
+				self.set_char(self.adapter.select

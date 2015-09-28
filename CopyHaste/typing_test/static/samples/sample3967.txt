@@ -1,0 +1,31 @@
+django.setup()
+gminx = 0
+gminy = 0
+gmaxx = GALAXY_WIDTH
+gmaxy = GALAXY_HEIGHT
+testimage = Image.new('RGBA',(int(gmaxx),int(gmaxy)))
+nebulae = Image.new('RGB',(int(gmaxx),int(gmaxy)))
+draw  = ImageDraw.Draw(testimage)
+draw2 = ImageDraw.Draw(nebulae)
+povfile = open("stars.pov","w")
+squares={}
+numstars = 0
+totalstars = 0
+sectors = {}
+planets = []
+nplanets = []
+tree = Quadtree((gminx,gminy,gmaxx,gmaxy),maxdepth = 16)
+ntree = Quadtree((gminx,gminy,gmaxx,gmaxy),maxdepth = 16)
+def is_nan2(num):
+  return str(num) == "nan"
+  
+def setsize(color):
+  basesize = .05
+  sizemods = {'blue': 2.0, 
+			  'red': .7, 
+			  'yellow': 1.0,
+			  'orange': 4, 
+			  'green': 4}
+  size = basesize * sizemods[color]
+  if color == 'red' and random.random() < .011:
+	size

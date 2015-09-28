@@ -1,0 +1,87 @@
+COMPLETIONS_COMMAND = ". /etc/bash_completion"
+BIGLIST_WARNING = "(y or n)"
+NEXT_PAGE_INDICATOR = "--More--"
+DEFAULT_TIMEOUT=2
+DEFAULT_SHELL="bash"
+def print_string(message, string):
+	print message + " \"" + string + "\""
+def completions(partial_command, shell=DEFAULT_SHELL, return_raw=False,
+				timeout=DEFAULT_TIMEOUT, biglist=True, verbose=False,
+				logfile=None):
+	child = pexpect.spawn(shell, timeout=timeout)
+	if verbose:
+		child.logfile = sys.stdout
+	if logfile is not None:
+		logfile = open(logfile, "w")
+		child.logfile = logfile
+	child.setecho(True)
+	if get_prompt:
+		child.sendline()
+		child.expect_exact("\r\n")
+		prompt = child.before
+		child.expect_exact(prompt)
+		if verbose:
+			print_string("Prompt:", prompt)
+	if
+		child.sendline(COMPLETIONS_COMMAND)
+		child.expect_exact(prompt)
+	child.send(partial_command + "\t\t")
+	child.expect_exact(partial_command)
+	index = child.expect_exact([" ", "\r\n", pexpect.TIMEOUT])
+	if index == 0:
+		return [partial_command + child.before]
+	elif index == 1:
+		index = child.expect_exact([BIGLIST_WARNING, NEXT_PAGE_INDICATOR, prompt])
+		if index == 0 or index == 1:
+			if biglist:
+				completions = ""
+				if index == 0:
+					child.send("y")
+				else:
+					completions += child.before
+					child.send(" ")
+				while True:
+					index = child.expect_exact([NEXT_PAGE_INDICATOR, prompt])
+					completions += child.before
+					if index == 0:
+						child.send(" ")
+					elif index == 1:
+						break
+				completions = completions.replace("\x1b[K", "")
+		elif index == 2:
+			completions = child.before
+ 
+	elif index == 2:
+		return [partial_command + child.buffer.replace("\x07", "")]
+	
+	child.close()
+	return completions.split()
+if __name__ == "__main__":
+	
+	parser = argparse.ArgumentParser(
+		description="Returns the tab completions found by the shell for the input string.")
+	parser.add_argument("COMMAND", type=str,
+						help="The partial command that the shell should attempt to complete.")
+	parser.add_argument("--no_biglists", action="store_false", default=True,
+						help="Abort execution if the shell finds a large number of completions.")
+	parser.add_argument("--no_detect_prompt", action="store_false", default=True,
+						help="Don't attempt to detect the command prompt, and use a built-in constant instead. This should speed up execution times.")
+	parser.add_argument("--no_
+						help="Don't set up completions by running the script at /etc/completions.")
+	parser.add_argument("--raw", action="store_false", default=False,
+						help="Returns all output
+	parser.add_argument("--separator", "-s", default="\n",
+						help="Character used to separate the list of completions.")
+	parser.add_argument("--shell", default="bash",
+						help="The shell to query for completions. Defaults to bash.")
+	parser.add_argument("--timeout", "-t", metavar="SECONDS", type=float, default=DEFAULT_TIMEOUT,
+						help="The time in seconds before the program detects no shell output.")
+	parser.add_argument("--verbose", "-v", action="store_true", default=False,
+						help="Verbose mode.")
+	parser.add_argument("--log", "-l", metavar="LOGFILE", default=None,
+						help="Log all shell output to file named LOGFILE.")
+	args = parser.parse_args()
+	completion_list = completions(args.COMMAND, verbose=args.verbose, 
+		return_raw=args.raw, get_prompt=args.no_detect_prompt, 
+		timeout=args.timeout, biglist=args.no_biglists, logfile=args.log)
+	print str(args.separator).join(completion_list)

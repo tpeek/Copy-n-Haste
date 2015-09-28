@@ -1,0 +1,23 @@
+
+try:
+except ImportError:
+	sys.exit("Could not find Inbox installation. "
+			 "Maybe the Vagrant box provisioning didn't succeed?\n"
+			 "Try running sudo ./setup.sh")
+@click.command()
+@click.argument('cmd')
+@click.argument('email_address', default='')
+@click.option('--all', default=False, is_flag=True,
+			  help='Apply the command to all accounts.')
+def main(cmd, email_address, all):
+	if (not email_address and not all) or (email_address and all):
+		sys.exit('Must either specify an email address or \'--all\'')
+	if cmd not in ('start', 'stop'):
+		sys.exit('No such command.')
+	with session_scope() as db_session:
+		accounts = []
+		if all:
+			accounts.extend(db_session.query(Account).all())
+		else:
+			try:
+				account = db_session.query(Account

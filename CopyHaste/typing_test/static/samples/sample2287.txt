@@ -1,0 +1,22 @@
+
+DB_PLUGIN_KLASS = 'neutron.db.db_base_plugin_v2.NeutronDbPluginV2'
+DEVICE_OWNER_COMPUTE = 'compute:None'
+DEVICE_OWNER_NOT_COMPUTE = constants.DEVICE_OWNER_DHCP
+def optional_ctx(obj, fallback):
+	if not obj:
+		return fallback()
+	@contextlib.contextmanager
+	def context_wrapper():
+		yield obj
+	return context_wrapper()
+def _fake_get_pagination_helper(self, request):
+	return api_common.PaginationEmulatedHelper(request, self._primary_key)
+def _fake_get_sorting_helper(self, request):
+	return api_common.SortingEmulatedHelper(request, self._attr_info)
+def _get_create_db_method(resource):
+	ml2_method = '_create_%s_db' % resource
+	if hasattr(manager.NeutronManager.get_plugin(), ml2_method):
+		return ml2_method
+	else:
+		return 'create_%s' % resource
+cl

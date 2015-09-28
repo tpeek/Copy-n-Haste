@@ -1,0 +1,21 @@
+
+def _fetch_folder_status_data():
+	folder_status_data = {}
+	with session_scope() as db_session:
+		throttled_state_data = db_session \
+			.query(ImapFolderSyncStatus.state,
+				   func.count(ImapFolderSyncStatus.state)) \
+			.join(ImapAccount).filter(ImapAccount.throttled == true()) \
+			.group_by(ImapFolderSyncStatus.state) \
+			.all()
+		folder_status_data.update(
+			dict([(".".join(["throttled", k]), v)
+				  for k, v in throttled_state_data]))
+		normal_state_data = db_session \
+			.query(ImapFolderSyncStatus.state,
+				   func.count(ImapFolderSyncStatus.state)) \
+			.join(ImapAccount).filter(ImapAccount.throttled == false()) \
+			.group_by(ImapFolderSyncStatus.state) \
+			.all()
+		folder_status_data.update(
+			dict([(".".join(["normal", k

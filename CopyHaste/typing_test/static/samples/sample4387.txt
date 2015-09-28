@@ -1,0 +1,25 @@
+parser = optparse.OptionParser('Usage: %prog [-P|-C|-S|-R|...] [-r] [-q] '
+							   '[<pathname>]')
+parser.add_option('-P', '--puppet',
+				  dest='generate',
+				  action='store_const',
+				  const='puppet',
+				  help='generate a Puppet module')
+parser.add_option('-C', '--chef',
+				  dest='generate',
+				  action='store_const',
+				  const='chef',
+				  help='generate a Chef cookbook')
+parser.add_option('-S', '--sh',
+				  dest='generate',
+				  action='store_const',
+				  const='sh',
+				  help='generate POSIX shell code')
+parser.add_option('-R', '--rules',
+				  dest='generate',
+				  action='store_const',
+				  const='blueprint_rules',
+				  help='generate Blueprint rules')
+parser.add_option('--cfn',
+				  dest='generate',
+				  acti

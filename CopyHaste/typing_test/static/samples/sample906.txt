@@ -1,0 +1,33 @@
+__author__ = 'SAMARTH'
+def readFile(filepath):
+	edgesTS = []
+	nodes = set()
+	edges = set()
+	with open(filepath,'r') as fd:
+		for line in fd.readlines():
+			line = line.strip()
+			items = line.split(' ')
+			tstamp = ' '.join(items[0:2])
+			tstamp = tstamp[1:-1]
+			timestamp = tstamp[5:10]
+			timemonth = int(timestamp[0:2])
+			timeday = int(timestamp[3:5])
+			if timemonth == 5:
+				day = timeday - 9
+			elif timemonth == 6:
+				day = timeday + 23
+			elif timemonth == 7:
+				day = timeday + 53
+			elif timemonth == 8:
+				day = timeday + 84
+			t = items[2:4]
+			t = map(int,t)
+			if t[0] == t[1]:
+				continue
+			t.sort();
+			edgesTS.append((day, t))
+			nodes.add(t[0])
+			nodes.add(t[1])
+			edges.add(tuple([t[0],t[1]]))
+	node_list = list(nodes)
+	s

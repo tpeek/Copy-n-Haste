@@ -1,0 +1,30 @@
+
+C, D = 'C', 'D'
+class TestCooperator(TestPlayer):
+	name = "Cooperator"
+	player = axelrod.Cooperator
+	expected_classifier = {
+		'memory_depth': 0,
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.first_play_test(C)
+	def test_effect_of_strategy(self):
+		self.markov_test([C, C, C, C])
+class TestTrickyCooperator(TestPlayer):
+	name = "Tricky Cooperator"
+	player = axelrod.TrickyCooperator
+	expected_classifier = {
+		'memory_depth': 10,
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def test_strategy(self):
+		self.first_play_test(C)
+	def test_effect_of_s

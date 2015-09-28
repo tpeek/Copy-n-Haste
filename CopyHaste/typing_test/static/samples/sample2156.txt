@@ -1,0 +1,25 @@
+
+STDOUT = -11
+STDERR = -12
+try:
+	windll = LibraryLoader(ctypes.WinDLL)
+except (AttributeError, ImportError):
+	windll = None
+	SetConsoleTextAttribute = lambda *_: None
+else:
+	COORD = wintypes._COORD
+	class CONSOLE_SCREEN_BUFFER_INFO(Structure):
+		_fields_ = [
+			("dwSize", COORD),
+			("dwCursorPosition", COORD),
+			("wAttributes", wintypes.WORD),
+			("srWindow", wintypes.SMALL_RECT),
+			("dwMaximumWindowSize", COORD),
+		]
+		def __str__(self):
+			return '(%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d)' % (
+				self.dwSize.Y, self.dwSize.X
+				, self.dwCursorPosition.Y, self.dwCursorPosition.X
+				, self.wAttributes
+				, self.srWindow.Top, self.srWindow.Left, self.srWindow.Bottom, self.srWindow.Right
+				, self.dwMaximumWindowSize.Y, self.dwMaximumWindowS

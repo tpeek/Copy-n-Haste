@@ -1,0 +1,29 @@
+def get_documents(year, input_directory, filename):
+	global undef_count
+	
+	documents_list = []
+	read_file = open(input_directory + str(year) + '/' + filename, 'r')
+	line = read_file.readline()
+	
+	day, month = filename.split('.')[0].split('_')
+	while line != '':
+		if(line == '<DOC>\n'):
+			document = []
+			document.append(day + ' ' + month + ' ' + str(year))
+			line = read_file.readline()
+			if line.startswith('<DOC_NAME>'):
+				line = line[10:]
+			if line.endswith('</DOC_NAME>\n'):
+				line = line[:-12]
+		   
+			document.append(line)
+			topic = ''
+			read_file.readline()
+			
+			line = read_file.readline().strip()
+			parts = line.rsplit('Topics', 1)
+			line = parts[0]
+			if len(parts) == 1:
+				topic = 'UNDEFINED'
+				undef_count += 1
+			els

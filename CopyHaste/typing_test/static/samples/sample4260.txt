@@ -1,0 +1,22 @@
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+def _download_restricted(url, filename, age):
+	params = {
+		'age_limit': age,
+		'skip_download': True,
+		'writeinfojson': True,
+		'outtmpl': '%(id)s.%(ext)s',
+	}
+	ydl = YoutubeDL(params)
+	ydl.add_default_info_extractors()
+	json_filename = os.path.splitext(filename)[0] + '.info.json'
+	try_rm(json_filename)
+	ydl.download([url])
+	res = os.path.exists(json_filename)
+	try_rm(json_filename)
+	return res
+class TestAgeRestriction(unittest.TestCase):
+	def _assert_restricted(self, url, filename, age, old_age=None):
+		self.assertTrue(_download_restricted(url, filename, old_age))
+		self.assertFalse(_download_restricted(url, filename, age))
+	def test_youtube(self):
+		self._as

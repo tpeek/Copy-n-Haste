@@ -1,0 +1,26 @@
+
+sys.path.append("libs/kangaroo")
+sys.path.append("libs/deepity")
+sys.path.append("libs/smat/py")
+datasource = kangaroo.datasource
+train = kangaroo.train
+loadcfg = kangaroo.loadcfg
+calibrate = kangaroo.calibrate
+acgt2ord = kangaroo.util.acgt2ord
+ord2acgt = kangaroo.util.ord2acgt
+revcomp = kangaroo.util.revcomp
+makepath = kangaroo.util.makepath
+predict = kangaroo.predict
+calc_metrics = deepity.calc_metrics
+globals = kangaroo.globals
+load_metrics = deepity.load_metrics
+save_gradientmaps = kangaroo.save_gradientmaps
+def set_devices(devices):
+	kangaroo.globals.set_devices(devices)
+def ord2mask_b(x):	
+	mask = np.zeros((x.size,4))
+	for i in range(x.size):
+		if   x[0,i] <= 3:
+			mask[i,x[0,i]] = 1
+		elif x[0,i] == 255:	 
+			mask[i,:] = 0.25*np.one

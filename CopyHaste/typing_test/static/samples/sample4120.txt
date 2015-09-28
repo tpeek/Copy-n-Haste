@@ -1,0 +1,15 @@
+state_conform_type, is_coverage_complete, run_counts, convert_run,
+	summarize_runs, GLASS_HALF_EMPTY, break_state, nice_integer
+	)
+class TestSummarizeFunctions (unittest.TestCase):
+	def response_content(self, url, request):
+		if (url.hostname, url.path) == ('example.com', '/sample.json'):
+			return response(200, b'[["Yo"], [0]]', headers={'Content-Type': 'application/json; charset=utf-8'})
+		
+		raise ValueError()
+	def test_state_conform_type(self):
+		self.assertIsNone(state_conform_type({}))
+		self.assertIsNone(state_conform_type({'cache': None}))
+		self.assertEqual(state_conform_type({'cache': 'foo.zip', 'geometry type': 'Polygon'}),
+						 'shapefile-polygon')
+		self.assertEqual(state_conform_type({'cache': 'foo.zip', 'geometry type': 'Mu

@@ -1,0 +1,25 @@
+def convert_ui():
+	cur_dir = os.path.dirname(os.path.realpath(__file__))
+	ui_path = cur_dir + "\\main_window.ui"
+	
+	window_tmp_path = cur_dir + "\\main_window_tmp.py"
+	if len(sys.argv) < 2:
+		script_path = ui_path
+	else:
+		script_path = sys.argv[1]
+	subprocess.Popen(["python.exe", "H:\\01-NAD\\Divers\\WinPython\\python-2.7.9.amd64\\Lib\\site-packages\\PyQt4\\uic\\pyuic.py", ui_path, "-o",
+					  window_tmp_path, "-x"])
+	time.sleep(0.5)
+	tmp_file = []
+	with open(window_tmp_path, "r") as f:
+		for line in f:
+			tmp_file.append(line)
+	f.close()
+	line_to_find = "QtCore.QMetaObject.connectSlotsByName(Form)"
+	match = False
+	try:
+		os.remove(cur_dir + "\\main_window.py")
+	except:
+		pass
+	f = open(cur_dir + "\\main_window.py", "a")
+	for line in tmp_

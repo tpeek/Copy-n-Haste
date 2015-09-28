@@ -1,0 +1,24 @@
+ASS_HEADER_TPL =
+
+USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:10.0.2) Gecko/20100101 Firefox/10.0.2'
+
+def get_logger(logger_name):
+	format_string = '%(asctime)s %(levelname)5s %(message)s'
+	level = logging.WARNING
+	logging.basicConfig(format=format_string, level=level)
+	logger = logging.getLogger(logger_name)
+	return logger
+
+logger = get_logger('niconvert')
+
+def fetch_url(url):
+	resp = urllib2.urlopen(url)
+	content = resp.read()
+	content_encoding = resp.headers.get('content-encoding', None)
+	if content_encoding == 'gzip':
+		content = gzip.GzipFile(fileobj=StringIO(content), mode='rb').read()
+	elif content_encoding == 'deflate':
+		content = zlib.decompressobj(-zlib.MAX_WBITS).decompress(content)
+	return content
+
+cl

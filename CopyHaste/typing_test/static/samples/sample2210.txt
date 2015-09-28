@@ -1,0 +1,25 @@
+
+class LifecycleInventory():
+	profile = None
+	def __init__(self, profile):
+		parser = argparse.ArgumentParser()
+		self.profile = profile
+	def get_e_d_
+		environment = "default_environment"
+		deployment = "default_deployment"
+		for r in group.tags:
+			if r.key == "environment":
+				environment = r.value
+			elif r.key == "deployment":
+				deployment = r.value
+		return environment,deployment
+	def get_instance_dict(self):
+		ec2 = boto.connect_ec2(profile_name=self.profile)
+		reservations = ec2.get_all_instances()
+		dict = {}
+		for instance in [i for r in reservations for i in r.instances]:
+			dict[instance.id] = instance
+		return dict
+	def run(self):
+		autoscale = boto.connect_autoscale(profile_name=self.profile)
+		groups = autoscale.get_all_gr

@@ -1,0 +1,23 @@
+TIME_FORMAT = '{0:d}:{1:02d}:{2:02d}.{3:02d}'
+
+def _parse_time(time_str):
+	time_split = time_str.split(':')
+	hour = int(time_split[0])
+	minute = int(time_split[1])
+	second_and_microsecond = time_split[2].split('.')
+	second = int(second_and_microsecond[0])
+	microsecond = int(second_and_microsecond[1])
+	origin_time = datetime.datetime(1000, 1, 2, hour, minute, second, microsecond)
+	return origin_time
+
+
+def subtitle_offset(file_name, offset):
+	offset = int(round(offset))
+	print offset
+	target_file_name = '.'.join(file_name.split('.')[:-1]) + '_' + str(offset) + '.ass'
+	subtitle_file = open(file_name)
+	target_subtitle_file = open(target_file_name, 'w')
+	is_events_line = False
+	is_title_line = True
+
+	for line in subtitle_fi

@@ -1,0 +1,29 @@
+
+class Gui(Tkinter.Tk):
+	def __init__(self, debug=False):
+		Tkinter.Tk.__init__(self)
+		self.debug = debug
+		self.frame = self
+		self.frames = []
+	def pushfr(self, frame):
+		self.frames.append(self.frame)
+		self.frame = frame
+	def endfr(self):
+		self.frame = self.frames.pop()
+		return self.frame
+	popfr = endfr
+	endgr = endfr
+	endrow = endfr
+	endcol = endfr
+	def tl(self, **options):
+		return Tkinter.Toplevel(**options)
+	def fr(self, *args, **options):
+		if self.debug:
+			override(options, bd=5, relief=Tkinter.RIDGE)
+		frame = self.widget(Tkinter.Frame, **options)
+		self.pushfr(frame)
+		return frame
+	def row(self, weights=[], **options):
+		return self.gr(10000, weights, [1], **options)
+	def col(self, weights=[], **options):
+		return self.gr(1

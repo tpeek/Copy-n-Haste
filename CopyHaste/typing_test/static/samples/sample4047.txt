@@ -1,0 +1,32 @@
+class FileList:
+	def __init__(self, root):
+		self.root = root
+		self.dict = {}
+		self.inversedict = {}
+		self.vars = {}
+	def open(self, filename, action=None):
+		assert filename
+		filename = self.canonize(filename)
+		if os.path.isdir(filename):
+			tkMessageBox.showerror(
+				"File Error",
+				"%r is a directory." % (filename,),
+				master=self.root)
+			return None
+		key = os.path.normcase(filename)
+		if key in self.dict:
+			edit = self.dict[key]
+			edit.top.wakeup()
+			return edit
+		if action:
+			return action(filename)
+		else:
+			edit = self.EditorWindow(self, filename, key)
+			if edit.good_load:
+				return edit
+			else:
+				edit._close()
+				return None
+	def gotofileline(self, filename, lineno=None):
+		edit = self.open(filename)
+		if edit

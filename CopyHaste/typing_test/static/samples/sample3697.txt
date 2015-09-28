@@ -1,0 +1,23 @@
+class TestImdbParser(object):
+	@use_vcr
+	def test_parsed_data(self):
+		parser = ImdbParser()
+		parser.parse('tt0114814')
+		assert parser.actors == {
+			'nm0000592': 'Pete Postlethwaite',
+			'nm0261452': 'Christine Estabrook',
+			'nm0000751': 'Suzy Amis',
+			'nm0000286': 'Stephen Baldwin',
+			'nm0000445': 'Dan Hedaya',
+			'nm0800339': 'Phillipe Simon',
+			'nm0002064': 'Giancarlo Esposito',
+			'nm0001590': 'Chazz Palminteri',
+			'nm0000321': 'Gabriel Byrne',
+			'nm0790436': 'Jack Shearer',
+			'nm0000228': 'Kevin Spacey',
+			'nm0001629': 'Kevin Pollak',
+			'nm0107808': 'Carl Bressler',
+			'nm0001125': 'Benicio Del Toro',
+			'nm0000860': 'Paul Bartel'
+		}, 'Actors not parsed correctly'
+		assert parser.directors == {'nm0001741': 'Bryan Singer'},

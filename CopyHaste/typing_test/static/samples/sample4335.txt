@@ -1,0 +1,21 @@
+class NLP(object):
+	def __init__(self, title, text):
+		self.title = title
+		self.text = text
+		self.tokens = [word for sent in nltk.sent_tokenize(self.text) for word in nltk.word_tokenize(sent)]
+		self.sentences = nltk.sent_tokenize(self.text)
+		self.json = {}
+	def count(self):
+		token_dict = {}
+		for token in sorted(set(self.tokens))[:30]:
+			 token_dict[token] = str(self.tokens.count(token))
+		return token_dict
+	def stemmer(self):
+		stemmer = SnowballStemmer("english")
+		stemmed_tokens = [stemmer.stem(t) for t in self.tokens]
+		
+		for token in sorted(stemmed_tokens):
+			print token + ' [' + str(stemmed_tokens.count(token)) + ']'
+	def lemmatizer(self):
+		lemmatizer = nltk.WordNetLemmatizer()
+		temp_sent = "Several women told me I have lyin

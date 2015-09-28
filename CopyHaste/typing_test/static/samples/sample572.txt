@@ -1,0 +1,18 @@
+
+items_table = Table("invtypes", gamedata_meta,
+					Column("typeID", Integer, primary_key = True),
+					Column("typeName", String, index=True),
+					Column("description", String),
+					Column("raceID", Integer),
+					Column("factionID", Integer),
+					Column("volume", Float),
+					Column("mass", Float),
+					Column("capacity", Float),
+					Column("published", Boolean),
+					Column("marketGroupID", Integer, ForeignKey("invmarketgroups.marketGroupID")),
+					Column("iconID", Integer, ForeignKey("icons.iconID")),
+					Column("groupID", Integer, ForeignKey("invgroups.groupID"), index=True))
+mapper(Item, items_table,
+	   properties = {"group" : relation(Group, backref = "items"),
+					 "icon" : relation(Icon),
+					 "_Item__attributes" : relati

@@ -1,0 +1,25 @@
+
+if sys.version_info < (2, 7):
+else:
+API_KEY = TMDB_API_KEY
+API_CFG = 'http://api.themoviedb.org/3/configuration?api_key=%s'
+API_URL = 'http://api.themoviedb.org/3/movie/%s/images?api_key=%s'
+BASE_IMAGEURL = "http://d3gtl9l2a4fn1j.cloudfront.net/t/p/"
+class TMDB(object):
+	def __init__(self):
+		self.name = 'TMDB'
+		self.apikey = TMDB_API_KEY
+		self.baseurl = 'http://api.themoviedb.org/3'
+		try:
+			self.imagebaseurl = self._getPosterBaseUrl()
+		except Exception,e:
+			pass
+			
+	def _buildUrl(self, cmd, parms={}):
+		parmsCopy = parms.copy()
+		parmsCopy.update({'api_key' : self.apikey})
+		url = '%s/%s?%s' % (self.baseurl, cmd, urllib.urlencode(parmsCopy))
+		return url
+		
+	def _getPosterBaseUrl(self):
+		response = json.loads(urllib2.urlopen(urlli

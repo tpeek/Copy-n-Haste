@@ -1,0 +1,16 @@
+Dict, Enum)
+__all__ = ['TrajectoryView']
+class TrajectoryView(DOMWidget):
+	disabled = Bool(False, help="Enable or disable user changes.", sync=True)
+	_view_name = Unicode('TrajectoryView', sync=True)
+	frame = CInt(0, help='Which frame
+	trajectory = Any()
+	_top = Dict(sync=True)
+	_frameData = Dict(sync=True)
+	camera = Enum(['perspective', 'orthographic'], 'perspective', sync=True)
+	background = Enum(['black', 'grey', 'white'], 'white', sync=True)
+	colorBy = Enum(['spectrum', 'chain', 'secondary structure', 'residue',
+					'polarity', 'atom'], 'spectrum', sync=True)
+	primaryStructure = Enum(['lines', 'stick', 'ball & stick', 'sphere',
+							 'nothing'], 'nothing', sync=True)
+	secondaryStructure = Enum(['ribbon', 'strand', 'cylinder & plate',

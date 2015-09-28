@@ -1,0 +1,33 @@
+
+						unicode_literals)
+@cleanup
+def test_contour_shape_1d_valid():
+	x = np.arange(10)
+	y = np.arange(9)
+	z = np.random.random((9, 10))
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	ax.contour(x, y, z)
+@cleanup
+def test_contour_shape_2d_valid():
+	x = np.arange(10)
+	y = np.arange(9)
+	xg, yg = np.meshgrid(x, y)
+	z = np.random.random((9, 10))
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	ax.contour(xg, yg, z)
+@cleanup
+def test_contour_shape_mismatch_1():
+	x = np.arange(9)
+	y = np.arange(9)
+	z = np.random.random((9, 10))
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+	try:
+		ax.contour(x, y, z)
+	except TypeError as exc:
+		assert exc.args[0] == 'Length of x must be number of columns in z.'
+@cleanup
+def test_contour_shape_mismatch_2():
+	x = 

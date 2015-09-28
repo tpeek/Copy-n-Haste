@@ -1,0 +1,14 @@
+
+class Cluster(object):
+	def __init__(self):
+		self.task_manager = TaskManager("Cluster_Thread")
+		self.task_manager.start()
+	def async_create_default_bucket(self, server, size, replicas=1, enable_replica_index=1, eviction_policy='valueOnly', bucket_priority = None):
+		_task = BucketCreateTask(server, 'default', replicas, size,
+								 enable_replica_index=enable_replica_index, eviction_policy=eviction_policy,bucket_priority=bucket_priority)
+		self.task_manager.schedule(_task)
+		return _task
+	def async_create_sasl_bucket(self, server, name, password, size, replicas, enable_replica_index=1,
+								 eviction_policy='valueOnly', bucket_priority=None):
+		_task = BucketCreateTask(server, name, replicas, size, password=password,
+								 enable

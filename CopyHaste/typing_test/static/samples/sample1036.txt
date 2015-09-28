@@ -1,0 +1,30 @@
+
+__author__ = "Joe Gregorio (joe@bitworking.org)"
+__copyright__ = "Copyright 2006, Joe Gregorio"
+__contributors__ = ["Thomas Broyer (t.broyer@ltgt.net)",
+					"James Antill",
+					"Xavier Verges Farrero",
+					"Jonathan Feinberg",
+					"Blair Zajac",
+					"Sam Ruby",
+					"Louis Nyffenegger"]
+__license__ = "MIT"
+__version__ = "$Rev: 259 $"
+try:
+	md = hashlib.md5()
+except ImportError:
+	md = md5.new()
+try:
+	md = hashlib.md5()
+except ImportError:
+	md = md5.new()
+try:
+except ImportError:
+	socks = None
+if sys.version_info >= (2, 3):
+else:
+	def iri2uri(uri):
+		return uri
+__all__ = ['Http', 'Response', 'ProxyInfo', 'HttpLib2Error',
+		   'RedirectMissingLocation', 'RedirectLimit', 'FailedToDecompressContent',
+		   'UnimplementedDigestAuthOptionErro

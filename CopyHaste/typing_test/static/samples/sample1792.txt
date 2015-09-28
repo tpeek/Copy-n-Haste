@@ -1,0 +1,22 @@
+
+datadir = "../data/selex"
+def main():
+	util.enable_reversecomplement()
+	args   = loadargs()
+	models = loadmodels(args)
+	trdata = None
+	tedata = None
+	tfids  = load_tfids(args)
+	for tfid in tfids:
+		if "calib" in args.steps:
+			print "-------------- calib:", tfid, "--------------"
+			set_motif_lengths(args, models, tfid)
+			trdata = load_traindata(tfid, args)
+			util.calibrate(models, trdata, args.calibdir, nfold=args.nfold, ncalib=args.ncalib, allfolds=False)
+		if "train" in args.steps:
+			print "-------------- train:", tfid, "--------------"
+			set_motif_lengths(args, models, tfid)
+			trdata = load_traindata(tfid, args)
+			util.train(models, trdata, args.calibdir, args.finaldir, nfold=1,		  ntrial=args.ntrial)
+	if "test" in args.steps:
+		

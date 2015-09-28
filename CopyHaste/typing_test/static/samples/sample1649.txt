@@ -1,0 +1,31 @@
+
+version_file = 'src/lib/Bcfg2/version.py'
+try:
+	execfile(version_file)
+except NameError:
+	exec(compile(open(version_file).read(), version_file, 'exec'))
+inst_reqs = [
+	'lockfile',
+	'lxml',
+	'python-daemon',
+]
+if sys.version_info[:2] < (2, 6):
+	inst_reqs.append('M2Crypto')
+setup(name="Bcfg2",
+	  version=__version__,
+	  description="Bcfg2 Server",
+	  author="Narayan Desai",
+	  author_email="desai@mcs.anl.gov",
+	  test_suite='nose.collector',
+	  packages=["Bcfg2",
+				"Bcfg2.Options",
+				"Bcfg2.Client",
+				"Bcfg2.Client.Tools",
+				"Bcfg2.Client.Tools.POSIX",
+				"Bcfg2.Reporting",
+				"Bcfg2.Reporting.Storage",
+				"Bcfg2.Reporting.Transport",
+				"Bcfg2.Reporting.migrations",
+				"Bcfg2.Reporting.templatetags",
+				'Bcfg2.Server',
+				"Bc

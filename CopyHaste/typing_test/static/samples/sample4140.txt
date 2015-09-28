@@ -1,0 +1,28 @@
+has_numpy, np = _
+if not has_numpy:
+	raise ImportError("must has numpy installed")
+class AtomSelect(object):
+	def __init__(self, top=None, traj=None, frameidx=0, frame=None):
+		self.top = top
+		self.traj = traj
+		self._frameidx = frameidx
+		if self.traj is not None:
+			self._selected_frame = self.traj[self._frameidx]
+	def set_top(self, top):
+		self.top = top
+	@property
+	def frameidx(self):
+		return self._frameidx
+	@frameidx.setter
+	def frameidx(self, value):
+		self._frameidx = value
+		self._selected_frame = self.traj[value]
+	def set_traj(self, traj):
+		self.traj = traj
+	@property
+	def selected_frame(self):
+		return self._selected_frame
+	@selected_frame.setter
+	def selected_frame(self, value):
+		self._selected_frame = value
+	def __call__(sel

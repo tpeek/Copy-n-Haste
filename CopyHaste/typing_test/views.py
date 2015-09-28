@@ -10,13 +10,49 @@ import json
 from random import randint
 
 
-with open("typing_test/test1.txt", "r") as myfile:
-    data2 = myfile.read().replace('\n', '\\n')
-    data2 = data2.replace('    ', '\t')
+def get_code(language):
+    while True:
+        # Get the 100 most recently updated large repos and pick one randomly.
+        url = ('https://api.github.com/search/repositories?q=language:' +
+               language + '{}+sort:updated+size:>20000&per_page=100&page=3')
+        try:
+            data = json.load(urllib2.urlopen(url))
+            info = data['items'][randint(0, 99)]
+        except:
+            continue
+        repo = info['name']
+        user = info['owner']['login']
+        full_name = info['full_name']
+
+        # Get the files and pick one randomly.
+        repo_url = ('https://api.github.com/search/code?q=language:' +
+                    '{}+sort:size+repo:{}'.format(language, full_name))
+        try:
+            data = json.load(urllib2.urlopen(repo_url))
+            path = data['items'][randint(0, len(data['items'])-1)]['path']
+        except:
+            continue
+        # Get the raw text of the file.
+        code = urllib2.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
+                               .format(user, repo, path)).read()
+        # Get rid of doc strings, comments, import statements, blank lines and
+        # convert multi spaces to tabs.
+
+        code = re.sub(r'[\s]*"{3}([\s\S]*?"{3})', '', code)
+        code = re.sub(r"[\s]*'{3}([\s\S]*?'{3})", '', code)
+        code = re.sub(r'[\s]*#([\w\W\s].*)', '', code)
+        code = re.sub(r'[\s]*from([\w\W\s].*)', '', code)
+        code = re.sub(r'[\s]*import([\w\W\s].*)', '', code)
+        code = re.sub(r'^[\s]*$', '', code)
+        code = re.sub(r'\n{2,}', '\n', code)
+        code = re.sub(r'[ ]{4}', '\t', code)
+        code = code.lstrip()
+        if len(code) > 750:
+            return code
 
 
 def play_view(request):
-    return render(request, 'typingtest2.html', {'data2': data2})
+    return render(request, 'typingtest3.html')
 
 
 @csrf_exempt
@@ -45,60 +81,15 @@ def matchmaking_view(request):
         opponent = r.get('host')
         r.delete('host')
         r.set(request.user.username, '')
+    code = get_code('python')
     return render(request, 'typingtest3.html',
-                  {'opponent': opponent, 'role': role})
-
-
-def get_code(language):
-    while True:
-        # Get the 100 most recently updated repos that are large and pick one randomly.
-        url = ('https://api.github.com/search/repositories?q=language:' +
-               '{}+sort:updated+size:>20000&per_page=100'.format(language))
-        data = json.load(urllib2.urlopen(url))
-        try:
-            info = data['items'][randint(0, 99)]
-        except:
-            continue
-        repo = info['name']
-        user = info['owner']['login']
-        full_name = info['full_name']
-
-        # Get the files and pick one randomly.
-        repo_url = ('https://api.github.com/search/code?q=language:' +
-                    '{}+sort:size+repo:{}'.format(language, full_name))
-        data = json.load(urllib2.urlopen(repo_url))
-        try:
-            path = data['items'][randint(0, len(data['items'])-1)]['path']
-        except:
-            continue
-        print path
-        # Get the raw text of the file.
-        code = urllib2.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
-                               .format(user, repo, path)).read()
-        print code
-        # Get rid of doc strings, comments, import statements, blank lines and
-        # convert multi spaces to tabs.
-
-        code = re.sub(r'[\s]*"{3}([\s\S]*?"{3})', '', code)
-        code = re.sub(r"[\s]*'{3}([\s\S]*?'{3})", '', code)
-        code = re.sub(r'[\s]*#([\w\W\s].*)', '', code)
-        code = re.sub(r'[\s]*from([\w\W\s].*)', '', code)
-        code = re.sub(r'[\s]*import([\w\W\s].*)', '', code)
-        code = re.sub(r'^[\s]*$', '', code)
-        code = re.sub(r'\n{2,}', '\n', code)
-        code = re.sub(r'[ ]{4}', '\t', code)
-        code = code.lstrip()
-        if len(code) > 750:
-            return code
+                  {'opponent': opponent, 'role': role, 'code': code})
 
 
 @csrf_exempt
 def get_content_view(request):
-    print 1
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
-    print request.POST
     if request.POST['role'] == 'guest':
-        print 2.1
         while r.get(request.POST['opponent'] + "_sample") is None:
             pass
         code = r.get(request.POST['opponent'] + "_sample")
@@ -106,19 +97,8 @@ def get_content_view(request):
 
         return HttpResponse(code)
 
-    if request.POST['role'] == 'host':
-        print 3.1
-        user = request.POST['user']
-        repo = request.POST['repo']
-        path = request.POST['path']
-        code = urllib2.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
-                               .format(user, repo, path)).read()
-        code = str(code)
-        code = re.sub(r'"""([\w\W\s]+)"""', '', code)
-        code = re.sub(r'#([\w\W\s].*)', '', code)
-        code = re.sub(r'from([\w\W\s].*)', '', code)
-        code = re.sub(r'import([\w\W\s].*)', '', code)
-        code = code.lstrip()
+    if request.POST['role'] == 'guest':
+        code = get_code('python')
         r.set(request.user.username + "_sample", code)
         return HttpResponse(code)
 

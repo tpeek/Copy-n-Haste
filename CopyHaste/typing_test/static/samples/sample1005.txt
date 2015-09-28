@@ -1,0 +1,16 @@
+
+parser = argparse.ArgumentParser(usage='pycbc_plot_glitchgram [--options]',
+				  description="Plot template duration versus time for \
+				  each trigger, and a colorbar to indicate significance.")
+parser.add_argument('--trigger-files', type=str, nargs="+",
+				  help='Input trigger files. May be XML or HDF files.')
+parser.add_argument('--output-file', type=str,
+				  help='Output image file.')
+parser.add_argument('--config-file', type=str,
+				  help='Output configuration file for the image file.')
+parser.add_argument('--ifo', type=str,
+				  help='IFO to plot in HDF trigger files. Required if \
+						using HDF trigger files.')
+parser.add_argument('--gps-start-time', type=int,
+				  help='Time to start plotting.')
+parser.add_argument('--

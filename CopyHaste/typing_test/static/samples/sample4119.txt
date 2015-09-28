@@ -1,0 +1,37 @@
+GLASS_HALF_FULL = 1
+GLASS_HALF_EMPTY = 2
+def _get_cached(memcache, key):
+	if not memcache:
+		return None
+	
+	pickled = memcache.get(key)
+	
+	if pickled is None:
+		return None
+	try:
+		value = pickle.loads(pickled)
+	except Exception as e:
+		return None
+	else:
+		return value
+def _set_cached(memcache, key, value):
+	if not memcache:
+		return
+	
+	pickled = pickle.dumps(value, protocol=2)
+	memcache.set(key, pickled)
+def is_coverage_complete(source):
+	if 'coverage' in source:
+		cov = source['coverage']
+		if ('ISO 3166' in cov or 'US Census' in cov or 'geometry' in cov):
+			return True
+	
+	return False
+def state_conform_type(state):
+	if 'cache' not in state:
+		return None
+	
+	if state['cache'] is None:
+		return None
+	
+	if state['cache'].endswith('.zip'):

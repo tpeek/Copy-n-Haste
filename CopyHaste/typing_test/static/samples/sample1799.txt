@@ -1,0 +1,29 @@
+
+if not hasattr(threading, "current_thread"):
+	threading.current_thread = threading.currentThread
+if not hasattr(threading.Thread, "get_name"):
+	threading.Thread.get_name = threading.Thread.getName
+__all__ = ['Error', 'LockError', 'LockTimeout', 'AlreadyLocked',
+		   'LockFailed', 'UnlockError', 'NotLocked', 'NotMyLock',
+		   'LinkLockFile', 'MkdirLockFile', 'SQLiteLockFile',
+		   'LockBase']
+class Error(Exception):
+	pass
+class LockError(Error):
+	pass
+class LockTimeout(LockError):
+	pass
+class AlreadyLocked(LockError):
+	pass
+class LockFailed(LockError):
+	pass
+class UnlockError(Error):
+	pass
+class NotLocked(UnlockError):
+	pass
+class NotMyLock(UnlockError):
+	pass
+class LockBase:
+	def __init__(self, path, threaded=True):
+		self.path = path
+		se

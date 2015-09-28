@@ -1,0 +1,25 @@
+
+registry = { }
+parsers = renpy.parser.ParseTrie()
+def register(name, parse=None, lint=None, execute=None, predict=None, next=None, scry=None, block=False, init=False, translatable=False):
+	name = tuple(name.split())
+	registry[name] = dict(parse=parse,
+						  lint=lint,
+						  execute=execute,
+						  predict=predict,
+						  next=next,
+						  scry=scry)
+	def parse_user_statement(l, loc):
+		renpy.exports.push_error_handler(l.error)
+		try:
+			rv = renpy.ast.UserStatement(loc, l.text, l.subblock)
+			rv.translatable = translatable
+			if not block:
+				l.expect_noblock(" ".join(name) + " statement")
+				l.advance()
+			else:
+				l.expect_block(" ".join(name) + " statement")
+				l.advance()
+		finally:
+			renpy.exports.pop_error_handler()
+		if 

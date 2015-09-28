@@ -1,0 +1,22 @@
+
+net = Net()
+USER_AGENT = 'Mozilla/5.0 (X11; Ubuntu; Linux i686; rv:36.0) Gecko/20100101 Firefox/36.0'
+class OneeightyuploadResolver(Plugin, UrlResolver, PluginSettings):
+	implements = [UrlResolver, PluginSettings]
+	name = "180upload"
+	domains = ["180upload.com"]
+	def __init__(self):
+		p = self.get_setting('priority') or 100
+		self.priority = int(p)
+		self.net = Net()
+	def get_media_url(self, host, media_id):
+			stream_url = self.__get_link('http://180upload.com/embed-%s.html' % media_id)
+			if not stream_url:
+				stream_url = self.__get_link(self.get_url(host, media_id))
+			return stream_url
+	def __get_link(self, url):
+		try:
+			headers = {
+					   'User-Agent': USER_AGENT
+					   }
+			common.addon.log_debug('180upload: get_link: %s' % (ur

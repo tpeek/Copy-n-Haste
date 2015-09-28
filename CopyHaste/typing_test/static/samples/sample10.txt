@@ -1,0 +1,31 @@
+
+class Deduplicator:
+	r
+	
+	def deduplicate(self, aligned_sequence_objects):
+		r
+		
+		sequence_to_groups = {}
+		for s in aligned_sequence_objects:
+			try:
+				sequence_to_groups[s.seq].append(s)
+			except KeyError:
+				sequence_to_groups[s.seq] = [s]
+		return sequence_to_groups.values()
+	
+	def lca_taxonomy(self, deduplicated_sequences, taxonomy_hash):
+		r
+		
+		to_return = []
+		for dup_group in deduplicated_sequences:
+			lca = taxonomy_hash[dup_group[0].name]
+			for s in dup_group[1:]:
+				for i, tax in enumerate(taxonomy_hash[s.name]):
+					if i >= len(lca) or tax != lca[i]:
+						lca = lca[:i]
+						break
+				if len(lca) > len(taxonomy_hash[s.name]):
+					lca = lca[:len(taxonomy_hash[s.name])]
+			to_return.append(lca)
+		return to_return
+			

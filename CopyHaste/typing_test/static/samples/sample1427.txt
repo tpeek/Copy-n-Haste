@@ -1,0 +1,19 @@
+
+pybindgen.settings.wrapper_registry = pybindgen.settings.StdMapWrapperRegistry
+class ErrorHandler(pybindgen.settings.ErrorHandler):
+	def __init__(self, apidefs_file):
+		self.apidefs_file = apidefs_file
+	def handle_error(self, wrapper, exception, traceback_):
+		stack = getattr(wrapper, 'stack_where_defined', [])
+		stack.reverse()
+		for l in stack:
+			if l[0] == self.apidefs_file:
+				warnings.warn_explicit("exception %r in wrapper %s" % (exception, wrapper),
+									   Warning, l[0], l[1])
+				break
+		else:
+			warnings.warn("exception %r in wrapper %s" % (exception, wrapper))
+		return True
+pybindgen.settings.gcc_rtti_abi_complete = bool(eval(os.environ["GCC_RTTI_ABI_COMPLETE"]))
+class MyMultiSectionFactory(MultiSectionFactory):
+	def __init

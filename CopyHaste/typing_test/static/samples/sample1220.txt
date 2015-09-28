@@ -1,0 +1,32 @@
+
+class Grudger(Player):
+	name = 'Grudger'
+	classifier = {
+		'memory_depth': float('inf'),
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def strategy(self, opponent):
+		if opponent.defections:
+			return 'D'
+		return 'C'
+class ForgetfulGrudger(Player):
+	name = 'Forgetful Grudger'
+	classifier = {
+		'memory_depth': 10,
+		'stochastic': False,
+		'inspects_source': False,
+		'manipulates_source': False,
+		'manipulates_state': False
+	}
+	def __init__(self):
+		super(ForgetfulGrudger, self).__init__()
+		self.mem_length = 10
+		self.grudged = False
+		self.grudge_memory = 0
+	def strategy(self, opponent):
+		if self.grudge_memory >= self.mem_length:
+			self.grudge_memory = 0
+			self.grudge

@@ -1,0 +1,19 @@
+
+class BaseVolumeQuotasNegativeV2TestJSON(base.BaseVolumeAdminTest):
+	force_tenant_isolation = True
+	@classmethod
+	def setup_credentials(cls):
+		super(BaseVolumeQuotasNegativeV2TestJSON, cls).setup_credentials()
+		cls.demo_tenant_id = cls.os.credentials.tenant_id
+	@classmethod
+	def resource_setup(cls):
+		super(BaseVolumeQuotasNegativeV2TestJSON, cls).resource_setup()
+		cls.default_volume_size = cls.volumes_client.default_volume_size
+		cls.shared_quota_set = {'gigabytes': 3 * cls.default_volume_size,
+								'volumes': 1, 'snapshots': 1}
+		cls.quotas_client.update_quota_set(
+			cls.demo_tenant_id,
+			**cls.shared_quota_set)
+		cls.volume = cls.create_volume()
+		cls.snapshot = cls.create_snapshot(cls.volume['id'])
+	@test.attr(type='negative')

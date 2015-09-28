@@ -1,0 +1,41 @@
+
+	LimitOrder,
+	MarketOrder,
+	StopLimitOrder,
+	StopOrder,
+)
+	setup_logger,
+	teardown_logger,
+)
+	BadOrderParameters
+)
+class ExecutionStyleTestCase(TestCase):
+	epsilon = .000001
+	EXPECTED_PRICE_ROUNDING = [
+		(0.00, 0.00, 0.00),
+		(0.0005, 0.00, 0.00),
+		(1.0005, 1.00, 1.00),
+		(1.0005 + epsilon, 1.00, 1.01),
+		(1.0095 - epsilon, 1.0, 1.01),
+		(1.0095, 1.01, 1.01),
+		(0.01, 0.01, 0.01)
+	]
+	EXPECTED_PRICE_ROUNDING += [
+		(x + delta, y + delta, z + delta)
+		for (x, y, z) in EXPECTED_PRICE_ROUNDING
+		for delta in range(1, 10)
+	]
+	class ArbitraryObject():
+		def __str__(self):
+			return
+	INVALID_PRICES = [
+		(-1,),
+		(-1.0,),
+		(0 - epsilon,),
+		(float('nan'),),
+		(float('inf'),),
+		(ArbitraryObject(),),
+	]
+	def setUp(self):
+		setup_logger(self)
+	d

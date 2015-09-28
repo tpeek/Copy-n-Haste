@@ -1,0 +1,31 @@
+
+ProgName = "Hebrew language handler"
+ProgVersion = "0.05"
+ProgNameVersion = "{} v{}".format( ProgName, ProgVersion )
+debuggingThisModule = False
+alef = 'א'
+bet = 'ב'
+gimel = 'ג'
+dalet = 'ד'
+he = 'ה'
+waw = 'ו'
+zayin = 'ז'
+het = 'ח'
+tet = 'ט'
+yod = 'י'
+kaf = 'כ'
+lamed = 'ל'
+mem = 'מ'; memFinal = 'ם'
+nun = 'נ'; nunFinal = 'ן'
+samekh = 'ס'
+ayin = 'ע'
+pe = 'פ'
+tsadi = 'צ'; tsadiFinal = 'ץ'
+qof = 'ק'; qofFinal = 'ך'
+resh = 'ר'
+sinShin = 'ש'
+taw = 'ת'
+normalConsonants = ( alef, bet, gimel, dalet, he, waw, zayin, het, tet, yod, kaf, lamed, mem, nun, samekh, ayin, pe, tsadi, qof, resh, sinShin, taw, )
+assert( len(normalConsonants) == 22 )
+finalConsonants = ( memFinal, nunFinal, tsadiFinal, qofFinal, )
+consonants = normalCo

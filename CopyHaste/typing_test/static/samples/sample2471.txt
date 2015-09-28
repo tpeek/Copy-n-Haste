@@ -1,0 +1,32 @@
+
+	ObjectProperty,
+	BooleanProperty,
+	ListProperty,
+	StringProperty,
+	NumericProperty,
+	ReferenceListProperty
+)
+	InstructionGroup,
+	Color,
+	Line
+)
+class PawnSpot(ImageStack, MirrorMapping):
+	board = ObjectProperty()
+	engine = ObjectProperty()
+	selected = BooleanProperty(False)
+	hit = BooleanProperty(False)
+	linecolor = ListProperty()
+	name = ObjectProperty()
+	listen_branch = StringProperty('master')
+	listen_tick = NumericProperty(0)
+	listen_time = ReferenceListProperty(listen_branch, listen_tick)
+	use_boardspace = True
+	def on_remote(self, *args):
+		if (
+				self.remote is None or
+				not hasattr(self.remote, 'name')
+		):
+			Logger.debug('PawnSpot: bad remote {}'.format(self.remote))
+			return
+		self.name = self.remote.name
+		self.paths = se

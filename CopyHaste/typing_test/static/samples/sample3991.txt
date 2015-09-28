@@ -1,0 +1,25 @@
+class TimerSanityCheck:
+	def __init__(self, timerlist, newtimer=None):
+		self.localtimediff = 25*3600 - mktime(gmtime(25*3600))
+		self.timerlist = timerlist
+		self.newtimer = newtimer
+		self.simultimer = []
+		self.rep_eventlist = []
+		self.nrep_eventlist = []
+		self.bflag = -1
+		self.eflag = 1
+	def check(self, ext_timer=1):
+		if ext_timer != 1:
+			self.newtimer = ext_timer
+		if self.newtimer is None:
+			self.simultimer = []
+		else:
+			self.simultimer = [ self.newtimer ]
+		return self.checkTimerlist()
+	def getSimulTimerList(self):
+		return self.simultimer
+	def doubleCheck(self):
+		if self.newtimer is not None and self.newtimer.service_ref.ref.valid():
+			self.simultimer = [ self.newtimer ]
+			for timer in self.timerlist:
+				if timer == self

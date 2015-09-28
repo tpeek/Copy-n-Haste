@@ -1,0 +1,30 @@
+class CharSetGroupProber(CharSetProber):
+	def __init__(self):
+		CharSetProber.__init__(self)
+		self._mActiveNum = 0
+		self._mProbers = []
+		self._mBestGuessProber = None
+	def reset(self):
+		CharSetProber.reset(self)
+		self._mActiveNum = 0
+		for prober in self._mProbers:
+			if prober:
+				prober.reset()
+				prober.active = True
+				self._mActiveNum += 1
+		self._mBestGuessProber = None
+	def get_charset_name(self):
+		if not self._mBestGuessProber:
+			self.get_confidence()
+			if not self._mBestGuessProber:
+				return None
+		return self._mBestGuessProber.get_charset_name()
+	def feed(self, aBuf):
+		for prober in self._mProbers:
+			if not prober:
+				continue
+			if not prober.active:
+				continue
+			st = prober.feed(aBuf)
+			if not st:
+				continu

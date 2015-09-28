@@ -1,0 +1,170 @@
+class TextDocument(object):
+	def __init__(self, xMSF,listener=None,bShowStatusIndicator=None,
+		FrameName=None,_sPreviewURL=None,_moduleIdentifier=None,
+		_textDocument=None, xArgs=None):
+		self.xMSF = xMSF
+		self.xTextDocument = None
+		if listener is not None:
+			if FrameName is not None:
+				self.xFrame = OfficeDocument.createNewFrame(
+					xMSF, listener, FrameName)
+				return
+			elif _sPreviewURL is not None:
+				self.xFrame = OfficeDocument.createNewFrame(xMSF, listener)
+				self.xTextDocument = self.loadAsPreview(_sPreviewURL, True)
+			elif xArgs is not None:
+				self.xDesktop = Desktop.getDesktop(xMSF);
+				self.xFrame = OfficeDocument.createNewFrame(xMSF, listener)
+				self.xTextDocument = OfficeDocument.load(
+					xFrame, URL, "_self", xArgs);
+				self.xWindowPeer = xFrame.getComponentWindow()
+				self.m_xDocProps = self.xTextDocument.DocumentProperties
+				CharLocale = self.xTextDocument.CharLocale
+				return
+			else:
+				self.xDesktop = Desktop.getDesktop(xMSF);
+				self.xFrame = self.xDesktop.getActiveFrame()
+				self.xTextDocument = self.xFrame.getController().Model
+		elif _moduleIdentifier is not None:
+			try:
+				self.xTextDocument = xMSF.createInstance(
+					"com.sun.star.text.TextDocument")
+				self.xTextDocument.initNew()
+				self.xTextDocument.setIdentifier(
+					_moduleIdentifier.Identifier)
+				xDesktop = Desktop.getDesktop(xMSF)
+				loadArgs = list(range(1))
+				loadArgs[0] = "Model"
+				loadArgs[0] = -1
+				loadArgs[0] = self.xTextDocument
+				loadArgs[0] = DIRECT_VALUE
+				xDesktop.loadComponentFromURL(
+					"private:object", "_blank", 0, loadArgs)
+				self.xFrame = self.xTextDocument.CurrentController.Frame
+			except Exception:
+				traceback.print_exc()
+		elif _textDocument is not None:
+			self.xFrame = _textDocument.CurrentController.Frame
+			self.xTextDocument = _textDocument
+		if bShowStatusIndicator:
+			self.showStatusIndicator()
+		self.init()
+	def init(self):
+		self.xWindowPeer = self.xFrame.getComponentWindow()
+		self.m_xDocProps = self.xTextDocument.DocumentProperties
+		self.CharLocale = self.xTextDocument.CharLocale
+		self.xText = self.xTextDocument.Text
+	def showStatusIndicator(self):
+		self.xProgressBar = self.xFrame.createStatusIndicator()
+		self.xProgressBar.start("", 100)
+		self.xProgressBar.setValue(5)
+	def loadAsPreview(self, sDefaultTemplate, asTemplate):
+		loadValues = list(range(3))
+		loadValues[0] = uno.createUnoStruct(
+			'com.sun.star.beans.PropertyValue')
+		loadValues[0].Name = "ReadOnly"
+		loadValues[0].Value = True
+		loadValues[1] = uno.createUnoStruct(
+			'com.sun.star.beans.PropertyValue')
+		loadValues[1].Name = "AsTemplate"
+		if asTemplate:
+			loadValues[1].Value = True
+		else:
+			loadValues[1].Value = False
+		loadValues[2] = uno.createUnoStruct(
+			'com.sun.star.beans.PropertyValue')
+		loadValues[2].Name = "Preview"
+		loadValues[2].Value = True
+		self.xTextDocument = OfficeDocument.load(
+			self.xFrame, sDefaultTemplate, "_self", loadValues)
+		self.DocSize = self.getPageSize()
+		try:
+			self.xTextDocument.CurrentController.ViewSettings.ZoomType = ENTIRE_PAGE
+		except Exception:
+			traceback.print_exc()
+		myFieldHandler = TextFieldHandler(self.xMSF, self.xTextDocument)
+		myFieldHandler.updateDocInfoFields()
+		return self.xTextDocument
+			
+	def getPageSize(self):
+		try:
+			xNameAccess = self.xTextDocument.StyleFamilies
+			xPageStyleCollection = xNameAccess.getByName("PageStyles")
+			xPageStyle = xPageStyleCollection.getByName("First Page")
+			return xPageStyle.Size
+		except Exception:
+			traceback.print_exc()
+			return None
+	def createTextCursor(self, oCursorContainer):
+		xTextCursor = oCursorContainer.createTextCursor()
+		return xTextCursor
+	def refresh(self):
+		self.xTextDocument.refresh()
+	def setWizardTemplateDocInfo(self, WizardName, TemplateDescription):
+		try:
+			xNA = Configuration.getConfigurationRoot(
+				self.xMSF, "/org.openoffice.UserProfile/Data", False)
+			gn = xNA.getByName("givenname")
+			sn = xNA.getByName("sn")
+			fullname = str(gn) + " " + str(sn)
+			now = time.localtime(time.time())
+			year = time.strftime("%Y", now)
+			month = time.strftime("%m", now)
+			day = time.strftime("%d", now)
+			dateObject = dateTimeObject(int(year), int(month), int(day))
+			du = self.DateUtils(self.xMSF, self.xTextDocument)
+			ff = du.getFormat(DATE_SYS_DDMMYY)
+			myDate = du.format(ff, dateObject)
+			xDocProps2 = self.xTextDocument.DocumentProperties
+			xDocProps2.Author = fullname
+			xDocProps2.ModifiedBy = fullname
+			description = xDocProps2.Description
+			description = description + " " + TemplateDescription
+			description = description.replace("<wizard_name>", WizardName)
+			description = description.replace("<current_date>", myDate)
+			xDocProps2.Description = description
+		except Exception:
+			traceback.print_exc()
+	@classmethod
+	def getPageCount(self, model):
+		xController = model.getCurrentController()
+		xPC = xController.getViewCursor()
+		xPC.jumpToLastPage()
+		return xPC.getPage()
+	@classmethod
+	def getFrameByName(self, sFrameName, xTD):
+		if xTD.TextFrames.hasByName(sFrameName):
+			return xTD.TextFrames.getByName(sFrameName)
+		return None
+	def searchFillInItems(self, typeSearch):
+		sd = self.xTextDocument.createSearchDescriptor()
+		
+		if typeSearch == 0:
+			sd.setSearchString("<[^>]+>")
+		elif typeSearch == 1:
+			sd.setSearchString("
+			
+		sd.setPropertyValue("SearchRegularExpression", True)
+		sd.setPropertyValue("SearchWords", True)
+		
+		auxList = []
+		allItems = self.xTextDocument.findAll(sd)
+		for i in list(range(allItems.Count)):
+			auxList.append(allItems.getByIndex(i))
+			
+		return auxList
+	class DateUtils(object):
+		def __init__(self, xmsf, document):
+			self.formatSupplier = document
+			formatSettings = self.formatSupplier.getNumberFormatSettings()
+			date = formatSettings.NullDate
+			self.calendar = dateTimeObject(date.Year, date.Month, date.Day)
+			self.formatter = NumberFormatter.createNumberFormatter(xmsf,
+				self.formatSupplier)
+		def getFormat(self, format):
+			return NumberFormatter.getNumberFormatterKey(
+				self.formatSupplier, format)
+		def format(self, formatIndex, date):
+			difference =  date - self.calendar
+			return self.formatter.convertNumberToString(formatIndex,
+				difference.days)

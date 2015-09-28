@@ -1,0 +1,19 @@
+
+__all__ = ['KMeans', 'MiniBatchKMeans', 'AffinityPropagation', 'MeanShift',
+		   'GMM', 'SpectralClustering', 'Ward', 'KCenters', 'NDGrid',
+		   'LandmarkAgglomerative', 'RegularSpatial', 'KMedoids',
+		   'MiniBatchKMedoids', 'MultiSequenceClusterMixin']
+def _replace_labels(doc):
+	lines = doc.splitlines()
+	labelstart, labelend = None, None
+	foundattributes = False
+	for i, line in enumerate(lines):
+		if 'Attributes' in line:
+			foundattributes = True
+		if 'labels' in line and not labelstart and foundattributes:
+			labelstart = len('\n'.join(lines[:i]))
+		if labelstart and line.strip() == '' and not labelend:
+			labelend = len('\n'.join(lines[:i + 1]))
+	replace =
+	return doc[:labelstart] + replace + doc[labelend:]
+class KMeans(MultiSequenceC

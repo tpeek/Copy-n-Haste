@@ -1,0 +1,26 @@
+
+a_cache =  {"1": {"30878":"5", "1283744":"4"},
+			"10":{"1952305":"3"},
+			"1000":{"2326571":"2"}}
+class TestNetflix (TestCase) :
+	
+	def test_netflix_read_1 (self) :
+		actual = []
+		a = netflix_read(actual, a_cache, "1", "30878")
+		self.assertEqual(a, 5)
+		a = netflix_read(actual, a_cache, "1", "1283744")
+		self.assertEqual(a, 4)
+	def test_netflix_read_2 (self) :
+		actual = []
+		a = netflix_read(actual, a_cache, "10", "1952305")
+		self.assertEqual(a, 3)
+	def test_netflix_read_3 (self) :
+		actual = []
+		a = netflix_read(actual, a_cache, "1000", "2326571")
+		self.assertEqual(a, 2)
+	def test_netflix_eval_1 (self) :
+		predicted = []
+		w = StringIO()
+		p = netflix_eval(w, predicted, 1.5, 2.5, 3.5, 4.5)
+		self.assertEqual(p, 1)
+	def test_netflix

@@ -1,0 +1,28 @@
+
+stop = stopwords.words('english')
+kNEG_INF = float("-inf")
+class AnswerPresent(FeatureExtractor):
+	@staticmethod
+	def has_guess():
+		return False
+	def name(self):
+		return "answer_present"
+	def score_one_guess(self, title, text):
+		d = {}
+		if "(" in title:
+			title = title[:title.find("(")].strip()
+		val = fuzz.partial_ratio(title, text)
+		d["raw"] = log(val + 1)
+		d["length"] = log(val * len(title) / 100. + 1)
+		longest_match = 1
+		for ii in title.split():
+			if ii.lower() in stop:
+				continue
+			longest_match = max(longest_match, len(ii) if ii in text else 0)
+		d["longest"] = log(longest_match)
+		return d
+	def vw_
+		val = self.score_one_guess(title, text)
+		return self.vw_
+	def vw_
+		return "|%s %s" % (self.name(), " ".join("%s:%f" % (

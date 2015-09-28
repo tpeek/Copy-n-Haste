@@ -1,0 +1,19 @@
+
+	DropboxAddonTestCase, mock_responses, MockDropbox, patch_client
+)
+mock_client = MockDropbox()
+class TestAuthViews(OsfTestCase):
+	def setUp(self):
+		super(TestAuthViews, self).setUp()
+		self.user = AuthUserFactory()
+		self.app.authenticate(*self.user.auth)
+	def test_dropbox_oauth_start(self):
+		url = api_url_for('dropbox_oauth_start_user')
+		res = self.app.get(url)
+		assert_is_redirect(res)
+		assert_in('&force_reapprove=true', res.location)
+	@mock.patch('website.addons.dropbox.views.auth.DropboxOAuth2Flow.finish')
+	@mock.patch('website.addons.dropbox.views.auth.get_client_
+	def test_dropbox_oauth_finish(self, mock_get, mock_finish):
+		mock_client = mock.MagicMock()
+		mock_client.account_info.return_value = {'display_name': 'Mr. Drop Box'}

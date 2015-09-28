@@ -1,0 +1,26 @@
+
+						unicode_literals)
+baseline_dir, result_dir = _image_directories(lambda: 'dummy func')
+def check_for(texsystem):
+	header =
+	try:
+		latex = subprocess.Popen(["xelatex", "-halt-on-error"],
+								 stdin=subprocess.PIPE,
+								 stdout=subprocess.PIPE)
+		stdout, stderr = latex.communicate(header.encode("utf8"))
+	except OSError:
+		return False
+	return latex.returncode == 0
+def switch_backend(backend):
+	def switch_backend_decorator(func):
+		def backend_switcher(*args, **kwargs):
+			try:
+				prev_backend = mpl.get_backend()
+				mpl.rcdefaults()
+				plt.switch_backend(backend)
+				result = func(*args, **kwargs)
+			finally:
+				plt.switch_backend(prev_backend)
+			return result
+		return nose.tools.make_decorator(func)(backend_switcher)
+	retu

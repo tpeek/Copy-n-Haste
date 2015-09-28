@@ -1,0 +1,26 @@
+
+
+class TictactoeMatch():
+
+	EMPTY = 0
+	DRAW = 0
+
+	def __init__(self):
+		self.inputs_ = [TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
+						TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY,
+						TictactoeMatch.EMPTY, TictactoeMatch.EMPTY, TictactoeMatch.EMPTY]
+		self.result_ = -1
+		self.print_game_ = Config.USER['reinforcement_parameters']['debug_matches']
+
+	def perform_action(self, current_player, action):
+		self.inputs_[action] = current_player
+		if self.print_game_:
+			print "---"
+			print str(self.inputs_[0:3])
+			print str(self.inputs_[3:6])
+			print str(self.inputs_[6:9])
+
+	def valid_actions(self):
+		valids = []
+		for index, space in enumerate(self.inputs_):
+			if space == T

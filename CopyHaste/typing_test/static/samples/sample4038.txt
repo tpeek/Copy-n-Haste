@@ -1,0 +1,24 @@
+r
+__all__ = ["CookieError", "BaseCookie", "SimpleCookie"]
+_nulljoin = ''.join
+_semispacejoin = '; '.join
+_spacejoin = ' '.join
+def _warn_deprecated_setter(setter):
+	msg = ('The .%s setter is deprecated. The attribute will be read-only in '
+		   'future releases. Please use the set() method instead.' % setter)
+	warnings.warn(msg, DeprecationWarning, stacklevel=3)
+	pass
+_UnescapedChars = _LegalChars + ' ()/<=>?@[]{}'
+_Translator = {n: '\\%03o' % n
+			   for n in set(range(256)) - set(map(ord, _UnescapedChars))}
+_Translator.update({
+	ord('"'): '\\"',
+	ord('\\'): '\\\\',
+})
+_is_legal_key = re.compile('[%s]+' % _LegalChars).fullmatch
+def _quote(str):
+	r
+	if str is None or _is_legal_key(str):
+		return str
+	else:
+		return '"' + str.translate(_Tran

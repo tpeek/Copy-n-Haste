@@ -1,0 +1,14 @@
+GEOM_FIELDNAME, X_FIELDNAME, Y_FIELDNAME,
+	csv_source_to_csv, find_source_path, row_transform_and_convert,
+	row_fxn_regexp, row_smash_case, row_round_lat_lon, row_merge,
+	row_extract_and_reproject, row_convert_to_out, row_fxn_join,
+	row_canonicalize_street_and_number, conform_smash_case, conform_cli,
+	csvopen, csvDictReader, convert_regexp_replace
+	)
+class TestConformTransforms (unittest.TestCase):
+	"Test low level data transform functions"
+	def test_row_smash_case(self):
+		r = row_smash_case(None, {"UPPER": "foo", "lower": "bar", "miXeD": "mixed"})
+		self.assertEqual({"upper": "foo", "lower": "bar", "mixed": "mixed"}, r)
+	def test_conform_smash_case(self):
+		d = { "conform": { "street": [ "U", "l", "MiXeD" ], "number": "U", "split": "U", "

@@ -1,0 +1,28 @@
+
+class Highway(TurtleWorld):
+	def __init__(self):
+		TurtleWorld.__init__(self)
+		self.rows = 2.0
+		self.delay = 0.01
+		self.colors = color_list.make_color_dict().values()
+	def random_color(self):
+		return random.choice(self.colors)
+	def get_length(self):
+		return self.ca_width * self.rows
+	def project(self, turtle):
+		p = 1.0 * turtle.position % self.get_length()
+		x = p % self.ca_width
+		y = p / self.ca_width * self.ca_height / self.rows
+		return x, y
+	def lane_heading(self):
+		x = self.ca_width
+		y = 1.0 * self.ca_height / self.rows
+		angle = math.atan2(y, x)
+		heading = angle * 180 / math.pi
+		return heading
+	def step(self):
+		TurtleWorld.step(self)
+		total = 0.0
+		for turtle in self.animals:
+			total += turtle.speed
+		print total / len(

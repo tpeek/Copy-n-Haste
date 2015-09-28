@@ -1,0 +1,28 @@
+
+punc = set(string.punctuation)
+paren = re.compile("\\([^\\)]*\\)")
+class Question:
+	def __init__(self, qnum, answer, category, naqt,
+				 tournaments, page, ans_type, fold, gender):
+		self.qnum = qnum
+		self.answer = answer
+		self.category = category
+		self.naqt = naqt
+		self.tournaments = tournaments
+		self.page = page
+		self.ans_type = ans_type
+		self.fold = fold
+		self.gender = gender
+		self.text = {}
+		self._last_query = None
+		self._cache_query = ""
+	@staticmethod
+	def cut_naqt_markup(sentence):
+		return paren.sub("", sentence).replace("}", "").replace("{", "")
+	def raw_words(self):
+		for ii in sorted(self.text):
+			for jj in self.split_and_remove_punc(self.text[ii]):
+				yield jj
+	@staticmethod
+	def split_and_remove_punc(text):
+		for

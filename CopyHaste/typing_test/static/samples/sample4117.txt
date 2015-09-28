@@ -1,0 +1,22 @@
+class SourceSaysSkip(RuntimeError): pass
+def process(source, destination, extras=dict()):
+	temp_dir = tempfile.mkdtemp(prefix='process_one-', dir=destination)
+	temp_src = join(temp_dir, basename(source))
+	copy(source, temp_src)
+	
+	log_handler = get_log_handler(temp_dir)
+	logging.getLogger('openaddr').addHandler(log_handler)
+	
+	cache_result, conform_result = CacheResult.empty(), ConformResult.empty()
+	skipped_source = False
+	try:
+		with open(temp_src) as file:
+			if json.load(file).get('skip', None):
+				raise SourceSaysSkip()
+		cache_result = cache(temp_src, temp_dir, extras)
+	
+		if not cache_result.cache:
+			_L.warning('Nothing cached')
+		else:
+			_L.info(u'Cached data in {}'.format(cache_result.cache))
+			conform_result = conform(temp_src

@@ -1,0 +1,27 @@
+
+config = ConfigParser()
+config.read("config.ini")
+username = config.get("way2sms", "uname")
+password = config.get("way2sms", "password")
+post_wait = 8
+debug = True
+user_agent = "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.8) Gecko/20100722 Firefox/3.6.8 GTB7.1 (.NET CLR 3.5.30729)"
+dump_file = "/tmp/way2sms.debug.html"
+try:
+except ImportError:
+	print "Please install mechanize module for python"
+	print "Install python-mechanize, if you are on a Ubuntu/Debian machine"
+	sys.exit(1)
+try:
+except ImportError:
+	print "Error
+	sys.exit(1)
+ 
+class smsHandler():
+   def __init__(self,username,password):
+	  print ">>> initializing.."
+	  if debug:
+		 print ">>> Debug: ON"
+	  self.username	= username
+	  self.password	= password
+	  self.idreg

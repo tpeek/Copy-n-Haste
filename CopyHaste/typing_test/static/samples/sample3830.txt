@@ -1,0 +1,27 @@
+if len(sys.argv) != 3:
+  print 'usage: <index.json> <output json file>'
+  sys.exit(-1)
+def save_json(data):
+  with codecs.open(sys.argv[2], 'wb', 'utf-8') as out:
+	out.write(json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False))
+def copydict(d, *keys):
+  ret = {}
+  for key in keys:
+	if type(d[key]) in [str, unicode]:
+	  ret[key] = d[key].strip()
+	else:
+	  ret[key] = d[key]
+  return ret
+artists = {}
+major_tags = {}
+major_tags_rel = defaultdict(list)
+minor_tags = {}
+minor_tags_rel = defaultdict(list)
+works = []
+with codecs.open(sys.argv[1], 'rb', 'utf-8') as f:
+  kadist = json.loads(f.read())
+  for row in kadist:
+	if row["model"] == "kadist.artist":
+	  artists[row['pk']] = {"name": row["fields"]["name"] }
+  for row in kadist:
+	if row

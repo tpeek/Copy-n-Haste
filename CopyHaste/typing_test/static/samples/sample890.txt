@@ -1,0 +1,19 @@
+
+						unicode_literals, with_statement)
+_kwargs_separator = (object(),)
+def equal_args(*args, **kwargs):
+  key = args
+  if kwargs:
+	key += _kwargs_separator + tuple(sorted(kwargs.items()))
+  return key
+def per_instance(*args, **kwargs):
+  instance = args[0]
+  unique_retained_instance = (id(instance), instance)
+  instance_and_rest = (unique_retained_instance,) + args[1:]
+  return equal_args(*instance_and_rest, **kwargs)
+def memoized(func=None, key_factory=equal_args, cache_factory=dict):
+  if func is None:
+	return functools.partial(memoized, key_factory=key_factory, cache_factory=cache_factory)
+  if not inspect.isfunction(func):
+	raise ValueError('The @memoized decorator must be applied innermost of all decorators.')
+  key_func = key_factor

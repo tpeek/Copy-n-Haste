@@ -1,0 +1,28 @@
+
+textColumn = 'text'
+categoryColumn = 'check1'
+defaultFile = 'nlpTrainers/NLTK_Ready_Tweets.csv'
+cutoff = .75
+resultKey = {1:"Category 1",2:"Category 2",3:"Category 3"}
+stopWords = stopwords.words('english')
+lmtzr = WordNetLemmatizer()
+def stripUnicode(text):
+	if text == None:
+		return "NaN"
+	else:
+		if type(text) == unicode:
+			return str(unicodedata.normalize('NFKD', text).encode('ascii', 'ignore'))
+		else:
+			return str(text)
+def loadFile(text):
+	outPut = []
+	if text == "null":
+		text = defaultFile
+	if type(text) is list:
+		fileIn = open('nlpTrainers/'+text[1],'rU')
+	else:
+		fileIn = open('nlpTrainers/'+text,'rU')
+	loaded = read_csv(fileIn)
+	
+	for pos in loaded.index:
+		if len(str(loaded[categoryColumn][pos])) != 0 and str(loaded[categor

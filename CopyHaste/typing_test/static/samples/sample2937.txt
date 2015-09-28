@@ -1,0 +1,88 @@
+sys.path.append( '../pymod' )
+class TestTiffSRS:
+	def __init__( self, epsg_code, use_epsg_code, expected_fail ):
+		self.epsg_code = epsg_code
+		self.use_epsg_code = use_epsg_code
+		self.expected_fail = expected_fail
+	def test( self ):
+		sr = osr.SpatialReference()
+		sr.ImportFromEPSG(self.epsg_code)
+		if self.use_epsg_code == 0:
+			proj4str = sr.ExportToProj4()
+			sr.SetFromUserInput(proj4str)
+		ds = gdal.GetDriverByName('GTiff').Create('/vsimem/TestTiffSRS.tif',1,1)
+		ds.SetProjection(sr.ExportToWkt())
+		ds = None
+		ds = gdal.Open('/vsimem/TestTiffSRS.tif')
+		wkt = ds.GetProjectionRef()
+		sr2 = osr.SpatialReference()
+		sr2.SetFromUserInput(wkt)
+		ds = None
+		gdal.Unlink('/vsimem/TestTiffSRS.tif')
+		if sr.IsSame(sr2) != 1:
+			if self.expected_fail:
+				print('did not get expected SRS. known to be broken currently. FIXME!')
+				return 'expected_fail'
+			gdaltest.post_reason('did not get expected SRS')
+			print(sr)
+			print(sr2)
+			return 'fail'
+		return 'success'
+def tiff_srs_without_linear_units():
+	sr = osr.SpatialReference()
+	sr.ImportFromProj4('+proj=vandg +datum=WGS84')
+	ds = gdal.GetDriverByName('GTiff').Create('/vsimem/tiff_srs_without_linear_units.tif',1,1)
+	ds.SetProjection(sr.ExportToWkt())
+	ds = None
+	ds = gdal.Open('/vsimem/tiff_srs_without_linear_units.tif')
+	wkt = ds.GetProjectionRef()
+	sr2 = osr.SpatialReference()
+	sr2.SetFromUserInput(wkt)
+	ds = None
+	gdal.Unlink('/vsimem/tiff_srs_without_linear_units.tif')
+	if sr.IsSame(sr2) != 1:
+		gdaltest.post_reason('did not get expected SRS')
+		print(sr)
+		print(sr2)
+		return 'fail'
+	return 'success'
+gdaltest_list = []
+tiff_srs_list = [ 2758,
+				  2036,
+				  2046,
+				  [3031, True, False],
+				  32661,
+				  3035,
+				  2062,
+				  [2065, True, True],
+				  [2066, False, True],
+				  2964,
+				  3410,
+				  [3786, True, False],
+				  2934,
+				  27200,
+				  2057,
+				  [29100, True, False],
+				  2056,
+				  2027,
+				  4326,
+				  26943,
+]
+for item in tiff_srs_list:
+	try:
+		epsg_code = item[0]
+		epsg_broken = item[1]
+		epsg_proj4_broken = item[2]
+	except:
+		epsg_code = item
+		epsg_broken = False
+		epsg_proj4_broken = False
+	ut = TestTiffSRS( epsg_code, 1, epsg_broken )
+	gdaltest_list.append( (ut.test, "tiff_srs_epsg_%d" % epsg_code) )
+	ut = TestTiffSRS( epsg_code, 0, epsg_proj4_broken )
+	gdaltest_list.append( (ut.test, "tiff_srs_proj4_of_epsg_%d" % epsg_code) )
+gdaltest_list.append( tiff_srs_without_linear_units )
+if __name__ == '__main__':
+	gdaltest.setup_run( 'tiff_srs' )
+	gdaltest.run_tests( gdaltest_list )
+	gdaltest.summarize()

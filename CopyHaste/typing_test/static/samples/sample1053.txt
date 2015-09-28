@@ -1,0 +1,14 @@
+
+mydir = os.path.expanduser("~/")
+sys.path.append(mydir + "GitHub/hydrobide/tools/metrics")
+sys.path.append(mydir + "GitHub/hydrobide/tools/LBM")
+sys.path.append(mydir + "GitHub/hydrobide/tools/bide")
+sys.path.append(mydir + "GitHub/hydrobide/tools/randparams")
+GenPath = mydir + '/GitHub/hydrobide/results/simulated_data/'
+OUT1 = open(GenPath + 'examples/SimData.csv','w')
+OUT2 = open(GenPath + 'examples/RADs.csv','w')
+OUT3 = open(GenPath + 'examples/Species.csv','w')
+OUT4 = open(GenPath + 'examples/IndRTD.csv','w')
+OUT5 = open(GenPath + 'examples/TracerRTD.csv','w')
+OUT6 = open(GenPath + 'examples/ResRTD.csv','w')
+print>>OUT1, 'RowID, motion, ind.production, biomass.prod.N, biomass.prod.P, biomass.prod.C, res.inflow, N.types, P.types, C.type

@@ -1,0 +1,22 @@
+class ChecklistModule(mp_module.MPModule):
+	def __init__(self, mpstate):
+		super(ChecklistModule, self).__init__(mpstate, "checklist", "checklist module")
+		self.checklist = mp_checklist.CheckUI()
+	def mavlink_packet(self, msg):
+		if not isinstance(self.checklist, mp_checklist.CheckUI):
+			return
+		if not self.checklist.is_alive():
+			return
+		
+		type = msg.get_type()
+		master = self.master
+		if type == 'HEARTBEAT':
+			if self.mpstate.status.heartbeat_error == True:
+				self.checklist.set_check("Pixhawk Booted", 0)
+			else:
+				self.checklist.set_check("Pixhawk Booted", 1)
+		if self.mpstate.status.flightmode == "MANUAL":
+			self.checklist.set_check("Flight mode MANUAL", 1)
+		else:
+			self.checklist.set_check("Flight mode MANUAL", 0)
+		if ty

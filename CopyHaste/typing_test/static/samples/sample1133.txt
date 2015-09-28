@@ -1,0 +1,20 @@
+
+def addannot(specData, subPlot, bandName, classType):
+	TXT_SIZE = 7
+	H2O   = 'H' + '$\sf_2$' + 'O'
+	COH2O = 'CO+' + H2O
+	H2OH2 = H2O + ' + H' + '$\sf_2$' + ' CIA'
+	EARTH = r'$\oplus$'
+	if bandName == 'J':
+		ANNOT = [None] * 11
+		ANNOT[0]  = [H2O,   (0.890,0.990),   0, 'Band']
+		ANNOT[1]  = ['FeH', (0.980,1.017),   0, 'Band']
+		ANNOT[2]  = ['VO',  (1.050,1.080),   0, 'Band']
+		ANNOT[3]  = [H2O,   (1.090,1.200),   0, 'Band']
+		ANNOT[4]  = ['Na I', 1.141,		 15, 'Line']
+		ANNOT[5]  = ['K I',  1.170,		-30, 'Line']
+		ANNOT[6]  = ['VO',  (1.160,1.200),   0, 'Band']
+		ANNOT[7]  = ['FeH', (1.194,1.239),   0, 'Band']
+		ANNOT[8]  = ['K I',  1.250,		-25, 'Line']
+		ANNOT[9]  = [r'Pa $\beta$', 1.280, -20, 'LineT']
+		ANNOT[10] = [H2O,   (1.310,1.390),   

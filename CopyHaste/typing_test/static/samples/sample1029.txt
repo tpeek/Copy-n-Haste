@@ -1,0 +1,15 @@
+
+DELETED_ITEMS_FAILURE_ANALYSIS_FORMAT="\n1) Failure :: Deleted Items :: Expected {0}, Actual {1}"
+DELETED_ITEMS_SUCCESS_ANALYSIS_FORMAT="\n1) Success :: Deleted Items "
+ADDED_ITEMS_FAILURE_ANALYSIS_FORMAT="\n2) Failure :: Added Items :: Expected {0}, Actual {1}"
+ADDED_ITEMS_SUCCESS_ANALYSIS_FORMAT="\n2) Success :: Added Items "
+UPDATED_ITEMS_FAILURE_ANALYSIS_FORMAT="\n3) Failure :: Updated Items :: Expected {0}, Actual {1}"
+UPDATED_ITEMS_SUCCESS_ANALYSIS_FORMAT="\n3) Success :: Updated Items"
+ADD_ITEMS="addedItems"
+DELETED_ITEMS="deletedItems"
+UPDATED_ITEMS="updatedItems"
+LOGICAL_RESULT="logicalresult"
+RESULT="result"
+MEMCACHED_PORT=11210
+class DataAnalysisResultAnalyzer:
+	def analyze_all_result(self,result,deletedItems = False ,addedItems

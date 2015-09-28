@@ -1,0 +1,22 @@
+
+ExtensionShortName = 'AzureEnhancedMonitor'
+def printable(s):
+	return filter(lambda c : c in string.printable, str(s))
+def enable(hutil):
+	pid = None
+	pidFile = os.path.join(aem.LibDir, "pid");
+	if os.path.isfile(pidFile):
+		pid = waagent.GetFileContents(pidFile)
+		if os.path.isdir(os.path.join("/proc", pid)):
+			if hutil.is_seq_smaller():
+				hutil.do_exit(0, 'Enable', 'success', '0', 
+							  'Azure Enhanced Monitor is already running')
+			else:
+				waagent.Log("Stop old daemon: {0}".format(pid))
+				os.kill(int(pid), 9)
+		os.remove(pidFile)
+	args = [os.path.join(os.getcwd(), __file__), "daemon"]
+	devnull = open(os.devnull, 'w')
+	child = subprocess.Popen(args, stdout=devnull, stderr=devnull)
+	if child.pid == None or child.pid < 1:
+		hut

@@ -1,0 +1,24 @@
+enable_jpeg2k = hasattr(Image.core, 'jp2klib_version')
+if enable_jpeg2k:
+i8 = _binary.i8
+HEADERSIZE = 8
+def nextheader(fobj):
+	return struct.unpack('>4sI', fobj.read(HEADERSIZE))
+def read_32t(fobj, start_length, size):
+	(start, length) = start_length
+	fobj.seek(start)
+	sig = fobj.read(4)
+	if sig != b'\x00\x00\x00\x00':
+		raise SyntaxError('Unknown signature, expecting 0x00000000')
+	return read_32(fobj, (start + 4, length - 4), size)
+def read_32(fobj, start_length, size):
+	(start, length) = start_length
+	fobj.seek(start)
+	pixel_size = (size[0] * size[2], size[1] * size[2])
+	sizesq = pixel_size[0] * pixel_size[1]
+	if length == sizesq * 3:
+		indata = fobj.read(length)
+		im = Image.
+	else:
+		im = Image.new("RGB", pixel_size, None)
+		for band_ix

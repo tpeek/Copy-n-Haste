@@ -1,0 +1,91 @@
+class Desktop(object):
+	@classmethod
+	def getDesktop(self, xMSF):
+		xDesktop = None
+		if xMSF is not None:
+			try:
+				xDesktop = xMSF.createInstance( "com.sun.star.frame.Desktop")
+			except Exception:
+				traceback.print_exc()
+		else:
+			print ("Can't create a desktop. null pointer !")
+		return xDesktop
+	@classmethod
+	def getActiveFrame(self, xMSF):
+		xDesktop = self.getDesktop(xMSF)
+		return xDesktop.getActiveFrame()
+	@classmethod
+	def getDispatcher(self, xMSF, xFrame, _stargetframe, oURL):
+		try:
+			xDispatch = xFrame.queryDispatch(oURL, _stargetframe, ALL)
+			return xDispatch
+		except Exception:
+			traceback.print_exc()
+		return None
+	@classmethod
+	def connect(self, connectStr):
+		localContext = uno.getComponentContext()
+		resolver = localContext.ServiceManager.createInstanceWithContext(
+						"com.sun.star.bridge.UnoUrlResolver", localContext)
+		ctx = resolver.resolve( connectStr )
+		orb = ctx.ServiceManager
+		return orb
+	@classmethod
+	def getIncrementSuffix(self, xElementContainer, sElementName):
+		bElementexists = True
+		i = 1
+		sIncSuffix = ""
+		BaseName = sElementName
+		while bElementexists:
+			try:
+				bElementexists = xElementContainer.hasByName(sElementName)
+			except:
+				bElementexists = xElementContainer.hasByHierarchicalName(
+					sElementName)
+			if bElementexists:
+				i += 1
+				sElementName = BaseName + str(i)
+		if i > 1:
+			sIncSuffix = str(i)
+		return sIncSuffix
+	@classmethod
+	def checkforfirstSpecialCharacter(self, _xMSF, _sString, _aLocale):
+		try:
+			nStartFlags = ANY_LETTER_OR_NUMBER + ASC_UNDERSCORE
+			ocharservice = _xMSF.createInstance(
+				"com.sun.star.i18n.CharacterClassification")
+			aResult = ocharservice.parsePredefinedToken(KParseType.IDENTNAME,
+				_sString, 0, _aLocale, nStartFlags, "", nStartFlags, " ")
+			return aResult.EndPos
+		except Exception:
+			traceback.print_exc()
+			return -1
+	@classmethod
+	def removeSpecialCharacters(self, _xMSF, _aLocale, _sname):
+		snewname = _sname
+		i = 0
+		while i < snewname.length():
+			i = Desktop.checkforfirstSpecialCharacter(_xMSF, snewname,
+				_aLocale)
+			if i < snewname.length():
+				sspecialchar = snewname.substring(i, i + 1)
+				snewname = JavaTools.replaceSubString(snewname, "",
+					sspecialchar)
+		return snewname
+	@classmethod
+	def getUniqueName(self, xElementContainer, sElementName):
+		sIncSuffix = self.getIncrementSuffix(xElementContainer, sElementName)
+		return sElementName + sIncSuffix
+	@classmethod
+	def getDispatchURL(self, xMSF, _sURL):
+		try:
+			oTransformer = xMSF.createInstance("com.sun.star.util.URLTransformer")
+			oURL = URL()
+			oURL.Complete = _sURL
+			ok, oURL = oTransformer.parseStrict(oURL)
+			if (not ok):
+				return None
+			return oURL
+		except Exception:
+			traceback.print_exc()
+		return None
