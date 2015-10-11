@@ -11,7 +11,7 @@
 <table cellpadding="5" align="center" width="50%">
 <tbody>
 <tr>
- <td class="score_label">Net / Gross WPM</td>
+ <td class="score_label">&nbsp;&nbsp;Net / Gross WPM</td>
  <td class="score_label">Entry Errors</td>
  <td class="score_label">Accuracy</td>
  <td class="score_label">Elapsed / Remaining</td>
@@ -25,16 +25,15 @@
 </tbody>
 </table>
 
-<div id='test'>
-    <textarea onkeypress="doCheck();" onkeydown="//calcStat()" id="typed" name="typed" rows=40></textarea>
-    <textarea id="type" value="{{ code }}" name="given" rows=40 disabled>{{ code }}</textarea>
-</div>
-
 <div id='test2'>
-  <textarea id="typed2" rows=40 disabled></textarea>
   <textarea id="type2" rows=40 disabled></textarea>
+  <textarea id="typed2" rows=40 disabled></textarea>
 </div>
 
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+<div id='test'>
+  <textarea id="type" value="{{ code }}" name="given" rows=40 disabled>{{ code }}dddd</textarea>
+  <textarea onkeypress="doCheck();" onkeydown="//calcStat()" id="typed" name="typed" rows=40></textarea>
+</div>
+
 <script type="text/javascript" src="{% static 'typing_test.js' %}"></script>
 {% endblock %}

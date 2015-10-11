@@ -12,6 +12,11 @@ p {
 h1, h2, h3, li{
     font-family: Monospace;
     font-size: 30px;
+    margin-top: -5px;
+}
+
+h2 {
+  margin-top: 5px;
 }
 
 span {
@@ -101,5 +106,6 @@ body {
   padding: 5px 10px;
   font-weight: bold;
   margin-top: 20px;
+  margin-bottom: 20px;
   font-size: 25px;
 }

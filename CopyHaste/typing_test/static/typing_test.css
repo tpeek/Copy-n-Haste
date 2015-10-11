@@ -37,11 +37,11 @@ textarea {
 }
 
 #test {
-  float: left;
-  margin-left: 365px;
+  margin-left: -1115px;
+  margin-bottom: 675px;
 }
 
 #test2 {
-  float: right;
-  margin-right: 924px;
+  /*float: right;*/
+  margin-left: 1px;
 }
