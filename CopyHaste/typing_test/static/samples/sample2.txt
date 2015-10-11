@@ -1,0 +1,34 @@
+COMMASPACE = ', '
+def main():
+	parser = ArgumentParser(description=)
+	parser.add_argument('-d', '--directory',
+						help=)
+	parser.add_argument('-o', '--output',
+						metavar='FILE',
+						help=)
+	parser.add_argument('-s', '--sender', required=True,
+						help='The value of the From: header (required)')
+	parser.add_argument('-r', '--recipient', required=True,
+						action='append', metavar='RECIPIENT',
+						default=[], dest='recipients',
+						help='A To: header value (at least one required)')
+	args = parser.parse_args()
+	directory = args.directory
+	if not directory:
+		directory = '.'
+	outer = MIMEMultipart()
+	outer['Subject'] = 'Contents of directory %s' % os.path.abspath(directory)
+	outer['To'] = COMMASPACE.join(args.recipients)
+	outer['From'] = args.sender
+	outer.preamble = 'You will not see this in a MIME-aware mail reader.\n'
+	for filename in os.listdir(directory):
+		path = os.path.join(directory, filename)
+		if not os.path.isfile(path):
+			continue
+		ctype, encoding = mimetypes.guess_type(path)
+		if ctype is None or encoding is not None:
+			ctype = 'application/octet-stream'
+		maintype, subtype = ctype.split('/', 1)
+		if maintype == 'text':
+			with open(path) as fp:
+				ms

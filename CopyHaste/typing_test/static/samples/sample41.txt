@@ -1,0 +1,25 @@
+time_format_CONST = '%H:%M'
+date_format_CONST = '%m/%d/%Y'
+divdb_type_CONST = 'DIVDB_TYPE'
+divcol_name_CONST = 'DIVCOL_NAME'
+fieldcol_name_CONST = 'FIELDCOL_NAME'
+config_status_CONST = 'CONFIG_STATUS'
+_List_Indexer = namedtuple('_List_Indexer', 'dict_list indexerGet')
+_List_Status = namedtuple('_List_Status', 'list config_status')
+class SchedDBInterface:
+	def __init__(self, mongoClient, userid_name, schedcol_name, sched_cat):
+		self.dbinterface = MongoDBInterface(mongoClient, userid_name,
+			collection_name=schedcol_name, sched_cat=sched_cat,
+			db_col_type=DB_Col_Type.GeneratedSchedule)
+		self.schedcol_name = schedcol_name
+	def setschedule_param(self, db_type, divcol_name, fieldcol_name,
+		prefcol_name=None, conflictcol_name=None):
+		doc = {divdb_type_CONST:db_type, divcol_name_CONST:divcol_name,
+			fieldcol_name_CONST:fieldcol_name, 'PREFCOL_NAME':prefcol_name,
+			'CONFLICTCOL_NAME':conflictcol_name, config_status_CONST:1}
+		docID = self.dbinterface.updateSchedType_doc(doc)
+	def getschedule_param(self):
+		doc = self.dbinterface.getSchedType_doc({'CONFIG_STATUS':1})
+		lc_doc = {k.lower():v for k,v in doc.items()}
+		return lc_doc
+	def insertGameData(self, age, gen, fieldday_id, gam

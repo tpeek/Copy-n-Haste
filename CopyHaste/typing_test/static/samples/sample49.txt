@@ -1,0 +1,26 @@
+class RouteLogic:
+	def __init__(self):
+		self.dbinterface_map_list = list();
+		self.dbindexerMatch = lambda x,y,z:[i for i,p in enumerate(
+			self.dbinterface_map_list) if p['userid_name']==x and p['db_type']==y
+				and p['sched_cat']==z]
+		self.schedmaster_map_list = list();
+		self.sindexerMatch = lambda x,y:[i for i,p in 
+			enumerate(self.schedmaster_map_list) if p['userid_name']==x and
+			p['sched_cat']==y]
+_routelogic_obj = RouteLogic()
+@route('/create_newdbcol/<userid_name>/<db_type>/<newcol_name>/<sched_cat>')
+def create_newdbcol(userid_name, db_type, newcol_name, sched_cat):
+	callback_name = request.query.callback
+	info_data = request.query.info_data
+	config_status = int(request.query.config_status)
+	dbInterface = select_db_interface(userid_name, db_type, newcol_name, sched_cat)
+	if db_type == 'rrdb':
+		oddnum_mode = int(request.query.oddnum_mode)
+		dbInterface.writeDB(info_data, config_status, oddnum_mode)
+	elif db_type == 'tourndb':
+		dbInterface.writeDB(info_data, config_status)
+	elif db_type in ['fielddb', 'prefdb', 'teamdb', 'conflictdb']:
+		divstr_colname = request.query.divstr_colname
+		divstr_db_type = request.query.divstr_db_type
+		dbInterface.writeDB(info_data, co

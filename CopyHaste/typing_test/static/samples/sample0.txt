@@ -1,0 +1,36 @@
+sys.path.append(os.path.abspath('tools/extensions'))
+extensions = ['sphinx.ext.coverage', 'sphinx.ext.doctest',
+			  'pyspecific', 'c_annotations']
+project = 'Python'
+copyright = '1990-%s, Python Software Foundation' % time.strftime('%Y')
+version, release = patchlevel.get_version_info()
+today = ''
+today_fmt = '%B %d, %Y'
+highlight_language = 'python3'
+needs_sphinx = '1.2'
+exclude_patterns = ['venv/*']
+html_theme = 'pydoctheme'
+html_theme_path = ['tools']
+html_theme_options = {'collapsiblesidebar': True}
+html_short_title = '%s Documentation' % release
+html_last_updated_fmt = '%b %d, %Y'
+templates_path = ['tools/templates']
+html_sidebars = {
+	'index': 'indexsidebar.html',
+}
+html_additional_pages = {
+	'download': 'download.html',
+	'index': 'indexcontent.html',
+}
+html_use_opensearch = 'https://docs.python.org/' + version
+html_static_path = ['tools/static']
+htmlhelp_basename = 'python' + release.replace('.', '')
+html_split_index = True
+latex_paper_size = 'a4'
+latex_font_size = '10pt'
+_stdauthor = r'Guido van Rossum\\and the Python development team'
+latex_documents = [
+	('c-api/index', 'c-api.tex',
+	 'The Python/C API', _stdauthor, 'manual'),
+	('distributing/index', 'distributing.tex',
+	

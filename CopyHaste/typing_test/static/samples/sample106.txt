@@ -1,0 +1,28 @@
+class SpeedProfileGraph(abstract_graphs.AbstractGraph):
+	def determine_pod_orientation(self):
+	def compute_comfort_rating_and_trip_time(self):
+	def __init__(self, abstract_graph, speeds_by_arc_length, arc_lengths)
+		abstract.AbstractGraph.__init__(self,
+										abstract_graph.start_id, 
+										abstract_graph.end_id,
+										abstract_graph.start_angle,
+										abstract_graph.end_angle
+										abstract_graph.abstract_coords)
+		self.speeds_by_arc_length = speeds_by_arc_length
+		self.arc_lengths = arc_lengths
+	@classmethod
+	def init_
+		abstract_edge = speed_profile_edge.to_abstract_edge()
+		abstract_graph = abstract_graphs.AbstractGraph.init__
+																  abstract_edge)
+		speeds_by_arc_length = speed_profile_edge.speeds_by_arc_length
+		arc_lengths = speed_profile_edge.arc_lengths
+		data = cls(abstract_graph, speeds_by_arc_lengths, arc_lengths)
+		return data
+	@classmethod
+	def merge_two_speed_profile_graphs(cls, speed_profile_graph_a,
+			speed_profile_graph_b, graph_interpolator, resolution):
+		abstract_graph_a = speed_profile_graph_a.to_abstract_graph()
+		abstract_graph_b = speed_profile_graph_b.to_abstract_graph()
+		merged_abstract_graph = \
+		  abstract_graphs.Abstra

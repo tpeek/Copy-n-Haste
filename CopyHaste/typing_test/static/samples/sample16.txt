@@ -1,0 +1,35 @@
+def gmail_updater(accounts_ids = []):
+	with session_scope() as db_session:
+		accounts = db_session.query(Account).filter(
+			Account.discriminator =='gmailaccount')
+	if accounts_ids != []:
+		accounts = accounts.filter(Account.id.in_(accounts_ids))
+	pool = Pool(10)
+	failed_accounts = []
+	for account in accounts:
+		print "Spawning for account: %d" % account.id
+		pool.spawn(account_updater, account, failed_accounts)
+	pool.join()
+	print "Failed accounts: %s" % failed_accounts
+def account_updater(account_id):
+	with session_scope() as db_session:
+		account = db_session.query(Account).filter(
+				Account.discriminator =='gmailaccount').get(account_id)
+		if account == None:
+			print "Invalid account"
+			sys.exit(-1)
+		folders = db_session.query(Folder).filter(
+			Folder.account_id == account.id)
+		for folder in folders:
+			pool = connection_pool(account.id)
+			greenlet = gevent.spawn(labels_updater, folder, pool)
+			greenlet.join()
+def labels_updater(folder, pool):
+	UIDS_CHUNK = 1000
+	try:
+		with session_scope() as db_session:
+			folder_uids = db_session.query(ImapUid).filter(
+				ImapUid.folder_id == folder.id, ImapUid.g_labels == [])
+			if folder_uids.count() == 0:
+				return
+			print "r

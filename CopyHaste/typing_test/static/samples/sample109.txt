@@ -1,0 +1,31 @@
+class TubePoint(object):
+	def compute_pylon_cost(self):
+		if self.is_underground:
+			pylon_cost = 0
+		else:
+			height_cost = (self.pylon_height * 
+						   parameters.PYLON_COST_PER_METER)
+			base_cost = parameters.PYLON_BASE_COST
+			pylon_cost = height_cost + base_cost
+		return pylon_cost
+	def build_pylon_at_tube_point(self):
+		pylon_at_tube_point = {"height": self.pylon_height,
+							   "cost": self.pylon_cost,
+							   "latlng": self.latlng}
+		return pylon_at_tube_point
+	def __init__(self, tube_elevation, land_elevation, latlng, geospatial):
+		self.latlng = latlng
+		self.geospatial = geospatial
+		self.tube_elevation = tube_elevation
+		self.land_elevation = land_elevation
+		self.pylon_height = tube_elevation - land_elevation		
+		self.is_underground = (self.pylon_height < 0)		
+		self.pylon_cost = self.compute_pylon_cost()
+class TubeEdge(object):
+	def compute_tunneling_cost(self, edge_length, tube_point_a, tube_point_b):
+		if tube_point_a.is_underground and tube_point_b.is_underground:
+			tunneling_cost = (edge_length * 
+							  parameters.TUNNELING_COST_PER_METER)
+		if tube_point_a.is_underground and not tube_point_b.is_underground:
+			tunneling_cost = (0.5 * edge_length * 
+			

@@ -1,0 +1,24 @@
+gameday_id_CONST = 'GAMEDAY_ID'
+start_time_CONST = 'START_TIME'
+_List_Status = namedtuple('_List_Status', 'list config_status')
+_List_Status_Mode = namedtuple('_List_Status_Mode',
+	'list config_status oddnum_mode')
+class RRDBInterface(BaseDBInterface):
+	def __init__(self, mongoClient, userid_name, newcol_name, sched_cat):
+		BaseDBInterface.__init__(self, mongoClient, userid_name, newcol_name,
+			sched_cat, DB_Col_Type.RoundRobin, 'DIV_ID')
+	def writeDB(self, divinfo_str, config_status, oddnum_mode):
+		divinfo_list = json.loads(divinfo_str)
+		document_list = [{k.upper():v for k,v in x.items()} for x in divinfo_list]
+		set_obj = {'CONFIG_STATUS':config_status, 'ODDNUM_MODE':oddnum_mode}
+		self.dbinterface.updateInfoDocument(document_list, set_obj, 'DIV_ID')
+	def updateDB(self, update_data_str):
+		update_data_list = json.loads(update_data_str)
+		for update_obj in update_data_list:
+			query_obj = {'DIV_ID':update_obj['div_id']}
+			operator_obj = {"DIVFIELD_LIST":update_obj['divfield_list'],
+				"FIELDCOL_NAME":update_obj['fieldcol_name']}
+			self.dbinterface.updatedoc(query_obj, "$set", operator_obj)
+	def readDB(self):
+		listresult_tuple = self.dbinterface.getInfoDocument('DIV_ID')
+		d

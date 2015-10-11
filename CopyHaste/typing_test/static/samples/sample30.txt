@@ -1,0 +1,29 @@
+write_csv, str_to_bool)
+__author__ = 'cmayes'
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('test_common')
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data')
+FES_OUT_DIR = 'fes_out'
+CALC_PKA_DIR = 'calc_pka'
+CSV_FILE = os.path.join(DATA_DIR, CALC_PKA_DIR, 'rad_PMFlast2ns3_1.txt')
+FES_BASE = os.path.join(DATA_DIR, FES_OUT_DIR)
+FRENG_TYPES = [float, str]
+ORIG_WHAM_FNAME = "PMFlast2ns3_1.txt"
+ORIG_WHAM_PATH = os.path.join(DATA_DIR, ORIG_WHAM_FNAME)
+SHORT_WHAM_PATH = os.path.join(DATA_DIR, ORIG_WHAM_FNAME)
+OUT_PFX = 'rad_'
+def expected_dir_data():
+	return {os.path.abspath(os.path.join(FES_BASE, "1.00")): ['fes.out'],
+			os.path.abspath(os.path.join(FES_BASE, "2.75")): ['fes.out', 'fes_cont.out'],
+			os.path.abspath(os.path.join(FES_BASE, "5.50")): ['fes.out', 'fes_cont.out'],
+			os.path.abspath(os.path.join(FES_BASE, "multi")): ['fes.out', 'fes_cont.out',
+															   'fes_cont2.out', 'fes_cont3.out'], }
+def csv_data():
+	rows = [{CORR_KEY: 123.42, COORD_KEY: "75", FREE_KEY: True},
+			{CORR_KEY: 999.43, COORD_KEY: "yellow", FREE_KEY: False}]
+	return rows
+def is_one_of_type(val, types):
+	val_type = type(val)
+	for tt in types:
+		if val_type is tt:
+	

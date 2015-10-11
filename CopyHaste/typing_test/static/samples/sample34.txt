@@ -1,0 +1,29 @@
+bipartiteMatch, getConnectedDivisionGroup, all_isless, find_le
+	 CodeLogicError, SchedulerConfigurationError
+home_CONST = 'HOME'
+away_CONST = 'AWAY'
+firstslot_CONST = 0
+verynegative_CONST = -1e6
+verypositive_CONST = 1e6
+balanceweight_CONST = 2
+time_iteration_max_CONST = 18
+time_format_CONST = '%H:%M'
+_List_Indexer = namedtuple('List_Indexer', 'dict_list indexerGet')
+class TimeBalancer(object):
+	def __init__(self, fstatus_tuple):
+		self.fieldstatus_list = fstatus_tuple.dict_list
+		self.fstatus_indexerGet = fstatus_tuple.indexerGet
+		self._current_earlylate_list = list()
+		self._target_earlylate_list = list()
+		self._cel_indexerGet = None
+		self._tel_indexerGet = None
+		self._cel_indexerGet = lambda x: dict((p['div_id'],i) for i,p in enumerate(self._current_earlylate_list)).get(x)
+		self._tel_indexerGet = lambda x: dict((p['div_id'],i) for i,p in enumerate(self._target_earlylate_list)).get(x)
+		self._EL_enum = enum(NORMAL=0x0, EARLY_DIVTOTAL_NOTMET=0x1,
+			LATE_DIVTOTAL_NOTMET=0x2, EARLY_TEAM_NOTMET=0x4, LATE_TEAM_NOTMET=0x8)
+	@property
+	def current_earlylate_list(self):
+		return self._current_earlylate_list
+	@property
+	def target_earlylate_list(self):
+		return self._target_earlylate

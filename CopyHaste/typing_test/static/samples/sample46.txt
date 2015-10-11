@@ -1,0 +1,26 @@
+_List_Indexer = namedtuple('_List_Indexer', 'dict_list indexerGet')
+_league_div = [
+{ 'div_id':1, 'div_age':'U06', 'div_gen':'B', 'totalteams':15,
+  'gameinterval':60, 'totalgamedays':10},
+{ 'div_id':2, 'div_age':'U06', 'div_gen':'G', 'totalteams':8,
+  'gameinterval':60, 'totalgamedays':10},
+{ 'div_id':3, 'div_age':'U08', 'div_gen':'B', 'totalteams':41,
+  'gameinterval':70, 'totalgamedays':10},
+{ 'div_id':4, 'div_age':'U08', 'div_gen':'G', 'totalteams':28,
+  'gameinterval':70, 'totalgamedays':10},
+{ 'div_id':5, 'div_age':'U10', 'div_gen':'B', 'totalteams':23,
+  'gameinterval':80, 'totalgamedays':10},
+{ 'div_id':6, 'div_age':'U10', 'div_gen':'G', 'totalteams':22,
+  'gameinterval':80, 'totalgamedays':10},
+{ 'div_id':7, 'div_age':'U12', 'div_gen':'B', 'totalteams':15,
+  'gameinterval':90, 'totalgamedays':10},
+{ 'div_id':8, 'div_age':'U12', 'div_gen':'G', 'totalteams':13,
+  'gameinterval':90, 'totalgamedays':10}
+]
+team_id_start = 1
+for div in _league_div:
+	next_team_id_start = team_id_start + div['totalteams']
+	div['team_id_range'] = (team_id_start, next_team_id_start-1)
+		team_id_start = next_team_id_start
+_field_info = [
+		{'field_id':1, 'primaryuse_list':[1,2], 'secondary':[3,4], 'n

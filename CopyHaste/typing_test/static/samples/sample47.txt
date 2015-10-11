@@ -1,0 +1,29 @@
+venue_CONST = 'VENUE'
+gameday_id_CONST = 'GAMEDAY_ID'
+start_time_CONST = 'START_TIME'
+home_CONST = 'HOME'
+away_CONST = 'AWAY'
+age_CONST = 'AGE'
+gen_CONST = 'GEN'
+match_id_CONST = 'MATCH_ID'
+gameday_data_CONST = 'GAMEDAY_DATA'
+comment_CONST = 'COMMENT'
+round_CONST = 'ROUND'
+_reftrust_level = [{'div_id':1, 'cr':2, 'ar':2, 'ment':3}, {'div_id':2, 'cr':2, 'ar':2, 'ment':3}, {'div_id':3, 'cr':3, 'ar':2, 'ment':4}, {'div_id':4, 'cr':3, 'ar':2, 'ment':4}, {'div_id':5, 'cr':4, 'ar':3, 'ment':5}, {'div_id':6, 'cr':3, 'ar':3, 'ment':5}]
+_rindexerGet = lambda x: dict((p['div_id'],i) for i,p in enumerate(_reftrust_level)).get(x)
+_offset = 32000
+class ScheduleExporter:
+	def __init__(self, dbinterface, divinfo_tuple=None,fieldtuple=None):
+		self.dbinterface = dbinterface
+		if divinfo_tuple is None:
+			divinfo_tuple = getLeagueDivInfo()
+		self.leaguedivinfo = divinfo_tuple.dict_list
+		self.lindexerGet = divinfo_tuple.indexerGet
+		if fieldtuple is None:
+			fieldtuple = getFieldInfo()
+		self.fieldinfo = fieldtuple.dict_list
+		self.findexerGet = fieldtuple.indexerGet
+	def exportDivTeamSchedules(self, div_id, age, gen, numteams, prefix=""):
+		headers = ['Gameday
+		datasheet_list = []
+		for team_id in

@@ -1,0 +1,35 @@
+class MergeTree(object):
+	def update_left_child(self, children_merger, data_updater):
+		is_left_updated = self.left.update_data(children_merger, data_updater)
+		if is_left_updated:
+			if not self.is_right_exhausted:
+				self.child_to_update = "right"
+			return True
+		else:
+			self.is_left_exhausted = True
+			if self.is_right_exhausted:
+				return False
+			else:
+				self.child_to_update = "right"
+				return self.update_children(children_merger, data_updater)
+	def update_right_child(self, children_merger, data_updater):
+		is_right_updated = self.right.update_data(children_merger, data_updater)
+		if is_right_updated:
+			if not self.is_left_exhausted:
+				self.child_to_update = "left"
+			return True
+		else:
+			self.is_right_exhausted = True
+			if self.is_left_exhausted:
+				return False
+			else:
+				self.child_to_update = "left"
+				return self.update_children(children_merger, data_updater)
+	def update_children(self, children_merger, data_updater):
+		if self.left == None or self.right == None:
+			return False
+		if self.left.data == None or self.right.data == None:
+			return False
+		if self.child_to_update == "left":
+			self.update_left_child(children_merger, data_updater)
+		if self.chi

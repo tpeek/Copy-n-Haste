@@ -4,55 +4,13 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from cnh_scores.models import Matches, UserScores
 import redis
-import urllib2
-import re
-import json
 from random import randint
 
 
-def get_code(language):
-    while True:
-        # Get the 100 most recently updated large repos and pick one randomly.
-        url = ('https://api.github.com/search/repositories?q=language:' +
-               language + '{}+sort:updated+size:>20000&per_page=100&page=3')
-        try:
-            data = json.load(urllib2.urlopen(url))
-            info = data['items'][randint(0, 99)]
-        except:
-            continue
-        repo = info['name']
-        user = info['owner']['login']
-        full_name = info['full_name']
-
-        # Get the files and pick one randomly.
-        repo_url = ('https://api.github.com/search/code?q=language:' +
-                    '{}+sort:size+repo:{}'.format(language, full_name))
-        try:
-            data = json.load(urllib2.urlopen(repo_url))
-            path = data['items'][randint(0, len(data['items'])-1)]['path']
-        except:
-            continue
-        # Get the raw text of the file.
-        code = urllib2.urlopen("https://raw.githubusercontent.com/{}/{}/master/{}"
-                               .format(user, repo, path)).read()
-        # Get rid of doc strings, comments, import statements, blank lines and
-        # convert multi spaces to tabs.
-
-        code = re.sub(r'[\s]*"{3}([\s\S]*?"{3})', '', code)
-        code = re.sub(r"[\s]*'{3}([\s\S]*?'{3})", '', code)
-        code = re.sub(r'[\s]*#([\w\W\s].*)', '', code)
-        code = re.sub(r'[\s]*from([\w\W\s].*)', '', code)
-        code = re.sub(r'[\s]*import([\w\W\s].*)', '', code)
-        code = re.sub(r'^[\s]*$', '', code)
-        code = re.sub(r'\n{2,}', '\n', code)
-        code = re.sub(r'[ ]{4}', '\t', code)
-        code = code.lstrip()
-        if len(code) > 750:
-            return code
-
-
 def play_view(request):
-    return render(request, 'typingtest3.html')
+    code = open("typing_test/static/samples/sample" +
+                str(randint(0, 100)) + ".txt", 'r').read()
+    return render(request, 'typingtest3.html', {'code': code})
 
 
 @csrf_exempt
@@ -81,7 +39,8 @@ def matchmaking_view(request):
         opponent = r.get('host')
         r.delete('host')
         r.set(request.user.username, '')
-    code = get_code('python')
+    code = open("typing_test/static/samples/sample" +
+                str(randint(0, 100)) + ".txt", 'r').read()
     return render(request, 'typingtest3.html',
                   {'opponent': opponent, 'role': role, 'code': code})
 
@@ -98,14 +57,16 @@ def get_content_view(request):
         return HttpResponse(code)
 
     if request.POST['role'] == 'guest':
-        code = get_code('python')
+        code = open("typing_test/static/samples/sample" +
+                    str(randint(0, 100)) + ".txt", 'r').read()
         r.set(request.user.username + "_sample", code)
         return HttpResponse(code)
 
 
 @csrf_exempt
 def get_content_view2(request):
-    return HttpResponse(get_code('python'))
+    return HttpResponse(open("typing_test/static/samples/sample" +
+                        str(randint(0, 100)) + ".txt", 'r').read())
 
 
 @csrf_exempt

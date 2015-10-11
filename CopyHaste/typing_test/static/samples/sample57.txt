@@ -1,0 +1,36 @@
+__all__ = [
+	'encode', 'decode', 'encodebytes', 'decodebytes',
+	'b64encode', 'b64decode', 'b32encode', 'b32decode',
+	'b16encode', 'b16decode',
+	'b85encode', 'b85decode', 'a85encode', 'a85decode',
+	'standard_b64encode', 'standard_b64decode',
+	'urlsafe_b64encode', 'urlsafe_b64decode',
+	]
+bytes_types = (bytes, bytearray)
+def _bytes_
+	if isinstance(s, str):
+		try:
+			return s.encode('ascii')
+		except UnicodeEncodeError:
+			raise ValueError('string argument should contain only ASCII characters')
+	if isinstance(s, bytes_types):
+		return s
+	try:
+		return memoryview(s).tobytes()
+	except TypeError:
+		raise TypeError("argument should be a bytes-like object or ASCII "
+						"string, not %r" % s.__class__.__name__)
+def b64encode(s, altchars=None):
+	encoded = binascii.b2a_base64(s)[:-1]
+	if altchars is not None:
+		assert len(altchars) == 2, repr(altchars)
+		return encoded.translate(bytes.maketrans(b'+/', altchars))
+	return encoded
+def b64decode(s, altchars=None, validate=False):
+	s = _bytes_
+	if altchars is not None:
+		altchars = _bytes_
+		assert len(altchars) == 2, repr(altchars)
+		s = s.translate(bytes.maketrans(altchars, b'+/'))
+	if validate and not re.match(b'^[A-Za-z0-9+/]*={0,2}$', s):
+		

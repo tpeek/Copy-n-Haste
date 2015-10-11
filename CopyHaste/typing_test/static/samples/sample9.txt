@@ -1,0 +1,39 @@
+class MonitorChecker:
+  def __init__(self):
+	self.msg_to = "9254084246@vtext.com"
+	self.sendmail_to = ["9254084246@vtext.com"]
+	self.errorFilename = "vitality.error"
+	self.logFilename = "vitality.log"
+	self.lastUpdateFilename = "last_update.dat"
+	self.lastUpdateBackupFilename = "last_update.dat.old"
+	self.updateFilename = "update.log"
+	self.ipFilename = "text"
+	self.projectName = "COSI"
+	self.monitorLogURL = "http://raw.githubusercontent.com/alowell/cosi_monitor/master/last_update.dat"
+	self.timeZoneDifference = 2
+	self.secsBetweenTextMessages = 630
+	self.secsBeforeAlarm = 330
+	self.secsBetweenRuns = 150
+	self.logFile = None
+	self.lastUpdateFile = None
+	self.errorFlagFile = None
+	self.scriptFail = False
+  def __del__(self):
+	if self.logFile != None:
+	  self.logFile.close()
+	if self.lastUpdateFile != None:
+	  self.lastUpdateFile.close()
+	if self.errorFlagFile != None:
+	  self.errorFlagFile.close()
+  def close(self):
+	if not self.scriptFail:
+	  self.updateFileWrite()
+	if self.logFile != None:
+	  self.logFile.close()
+	if self.lastUpdateFile != None:
+	  self.lastUpdateFile.close()
+	if self.errorFlagFile != None:
+	  self.errorFlagFile.close()
+	exit(0)
+  def getNowTimeString(self):
+	retu

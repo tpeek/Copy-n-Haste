@@ -1,0 +1,32 @@
+class SpeedPoint(abstract_lattice.AbstractPoint):
+	def __init__(self, point_id, abstract_x_coord, abstract_y_coord, 
+												  speed, arc_length):
+		physical_x_coord = arc_length
+		physical_y_coord = speed
+		abstract_lattice.AbstractPoint.__init__(self, point_id,
+							abstract_x_coord, abstract_y_coord,
+							physical_x_coord, physical_y_coord)
+class SpeedsSlice(abstract_lattice.AbstractSlice):
+	@staticmethod
+	def speeds_slice_points_builder(self, abstract_x_coord,
+							 speeds_slice_bounds, slice_start_id):
+		max_speed = speeds_slice_bounds["maxSpeed"]
+		min_speed = speeds_slice_bounds["minSpeed"]
+		arc_length = speeds_slice_bounds["arcLength"]
+		speed_step_size = speeds_slice_bounds["speedStepSize"]
+		speed_difference = max_speed - min_speed
+		speed_options = util.build_grid_1d(max_speed, min_speed,
+											   speed_step_size)
+		point_id = slice_start_id
+		abstract_y_coord = 0
+		speeds_slice_points = []
+		for speed in speed_options:
+			new_speed_point = SpeedPoint(point_id,
+										 abstract_x_coord,
+										 abstract_y_coord,
+										 speed,
+										 arc_length)
+			speeds_slice_points.append(new_speed_point)
+			point_id += 1
+			abstract_y_coord += 1		
+		retur

@@ -1,0 +1,27 @@
+AVG_KEY_CONV
+__author__ = 'cmayes'
+FILES = ['rad_PMF.02_01', 'rad_PMF.02_02', 'rad_PMF.01_02', 'rad_PMF.02_03', 'rad_PMF.01_01']
+BINNED_FILES = {'02': ['rad_PMF.02_01', 'rad_PMF.02_02', 'rad_PMF.02_03'], '01': ['rad_PMF.01_02', 'rad_PMF.01_01']}
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'test_data', 'post_rad_wham')
+INFILES = [os.path.join(DATA_DIR, radf) for radf in ['rad_PMF.02_01', 'rad_PMF.02_02', 'rad_PMF.02_03']]
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('test_calc_split_avg')
+class TestBinFileNames(unittest.TestCase):
+	def testMulti(self):
+		self.assertDictEqual(BINNED_FILES, bin_by_pattern(FILES))
+class TestDataProcess(unittest.TestCase):
+	def testAvgStdev(self):
+		results = calc_avg_stdev(INFILES)
+		for res_row in results:
+			self.assertEqual(3, len(res_row))
+			for field in res_row:
+				self.assertIsInstance(field, float)
+class TestWriteAvg(unittest.TestCase):
+	def testAvgStdev(self):
+		results = calc_avg_stdev(INFILES)
+		directory_name = None
+		try:
+			directory_name = tempfile.mkdtemp()
+			tgt_file = OUT_FNAME_FMT.format("02")
+			write_avg_stdev(results, tgt_file, basedir=directory_name)
+			csv_data = read_csv(os.path.join(directory_na

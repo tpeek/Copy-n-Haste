@@ -1,0 +1,25 @@
+class SpatialGraph(abstract_graphs.AbstractGraph):
+	def compute_min_time_and_total_cost(self, spatial_curvature_array,
+											  tube_curvature_array,
+											  arc_lengths):
+		max_allowed_vels_lateral = \
+			curvature.lateral_curvature_array_to_max_allowed_vels(
+											  spatial_curvature_array)
+		max_allowed_vels_vertical = \
+			curvature.vertical_curvature_array_to_max_allowed_vels(
+											  tube_curvature_array)
+		effective_max_allowed_speeds_by_arc_length = np.minimum(
+			max_allowed_vels_vertical, max_allowed_vels_lateral)
+		time_step_size = 1
+		speeds_by_time, time_elapsed = \
+			reparametrize_speed.constrain_and_reparametrize_speeds(
+					 effective_max_allowed_speeds_by_arc_length, arc_lengths,
+						   time_step_size, parameters.MAX_LONGITUDINAL_ACCEL)
+		self.min_time = time_elapsed
+		self.total_cost = (self.land_cost + self.pylon_cost + self.tube_cost +
+						   self.tunneling_cost)
+	def __init__(self, abstract_graph, land_cost, pylon_cost, tube_cost,
+							 tunneling_cost, latlngs, elevation_profile,
+				spatial_curvature_array=None, tube_curvature_array=None):
+		abstract_graphs.AbstractGraph.__init__(self, abstract_graph.start_id,
+											   abstract_

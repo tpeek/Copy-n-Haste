@@ -1,0 +1,40 @@
+__author__ = 'cmayes'
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('wham')
+DEF_TPL_DIR = os.path.join(os.getcwd(), 'tpl')
+DEF_BASE_SUBMIT_TPL = "submit_wham.tpl"
+DEF_LINE_SUBMIT_TPL = "submit_wham_line.tpl"
+DEF_PART_LINE_SUBMIT_TPL = "submit_wham_part_line.tpl"
+STEP_SUBMIT_FNAME = "submit_wham.{:02d}"
+LINES_KEY = "lines"
+DIR_KEY = "dir"
+LOC_KEY = "loc"
+CORR_KEY = 'corr'
+COORD_KEY = 'coord'
+FREE_KEY = 'free_energy'
+RAD_KEY_SEQ = [COORD_KEY, FREE_KEY, CORR_KEY]
+class TemplateNotReadableError(Exception):
+	pass
+def read_meta(meta_file):
+	meta = {LOC_KEY: meta_file, DIR_KEY: os.path.dirname(os.path.abspath(meta_file))}
+	lines = []
+	with open(meta_file) as mfile:
+		for mline in mfile:
+			lines.append(mline.strip().split())
+	meta[LINES_KEY] = lines
+	return meta
+def read_rmsd(fname):
+	rmsd_values = []
+	with open(fname) as rfile:
+		row_val = None
+		for rline in rfile:
+			try:
+				row_val = rline.split()[1]
+				rmsd_values.append(float(row_val))
+			except IndexError:
+				logger.warn("RMSD Line '%s' did not have two fields", rline)
+			except TypeError:
+				logger.warn("RMSD Value '%s' is not a float", row_val)
+	return rmsd_values
+def read_meta_rmsd(meta):
+	rmsd_data = {

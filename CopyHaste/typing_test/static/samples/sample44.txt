@@ -1,0 +1,25 @@
+_List_Indexer = namedtuple('List_Indexer', 'dict_list indexerGet')
+_ScheduleParam = namedtuple('SchedParam', 'field_id gameday_id slot_index')
+time_format_CONST = '%H:%M'
+MIN_SLOTGAP = 2
+_absolute_earliest_time = parser.parse('05:00')
+_min_timegap = timedelta(0,0,0,0,160)
+maxgameday_CONST = 8
+startgameday_CONST = 3
+_schedorder_gmap = [{'div_id':1, 'gmap':[3,3,4,-1,-1,-1,-1,-1,6]},
+	{'div_id':2, 'gmap':[3,3,4,-1,-1,-1,-1,-1,6]},
+	{'div_id':3, 'gmap':[1, 1,-1,-1,-1,-1,6,-1,-1]},
+	{'div_id':4, 'gmap':[1,-1,-1,-1,-1,-1,-1,-1,-1]},
+	{'div_id':5, 'gmap':[3, 3, 4, -1, -1,-1,-1,-1,-1,-1,-1]},
+	{'div_id':6, 'gmap':[3, 3, 4,-1,-1,-1,-1,-1,-1]}]
+_sindexerGet = lambda x: dict((p['div_id'],i) for i,p in enumerate(_schedorder_gmap)).get(x)
+class EliminationFieldTimeScheduler:
+	def __init__(self, tdbinterface, tfield_tuple, divinfo, dindexerGet):
+		self.tdbInterface = tdbinterface
+		self.tfieldinfo_list = tfield_tuple.dict_list
+		self.tfindexerGet = tfield_tuple.indexerGet
+		self.connected_div_components = getConnectedDivisionGroup(self.tfieldinfo_list)
+		self.divinfo_list = divinfo
+		self.dindexerGet = dindexerGet
+		tfstatus_tuple = self.getTournFieldSeasonStatus_list()
+		self.tfstatus_list = tf

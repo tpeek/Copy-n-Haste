@@ -1,0 +1,47 @@
+__author__ = 'cmayes'
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('fes_combo')
+DEF_FILE_PAT = 'fes*.out'
+DEF_TGT = 'all_fes.csv'
+def combine(tgt_files):
+	mapped_files = {}
+	for tgt_file in tgt_files:
+		fkey, fmap = map_fes(tgt_file)
+		if fkey is not None:
+			mapped_files[fkey] = fmap
+	combo_dict = {}
+	for key, cur_dict in sorted(mapped_files.items()):
+		logger.debug("Processing timestep '%s'", key)
+		combo_dict.update(cur_dict)
+	return combo_dict
+def map_fes(tgt_file):
+	fmap = {}
+	first_key = None
+	with open(tgt_file) as tf:
+		for tline in tf:
+			try:
+				tstep = int(tline.strip().split()[0].strip())
+				fmap[tstep] = tline
+				if first_key is None:
+					first_key = tstep
+			except Exception as e:
+				logger.debug("Error '%s' for line '%s'", e, tline)
+	return first_key, fmap
+def extract_header(tgt_file):
+	with open(tgt_file) as tf:
+		hlines = []
+		for tline in tf:
+			sline = tline.strip().split()
+			if len(sline) < 2:
+				hlines.append(tline)
+				continue
+			try:
+				int(sline[0])
+				break
+			except ValueError:
+				hlines.append(tline)
+		return hlines
+def write_combo(headers, combo, combo_file):
+	with open(combo_file, 'w') as f:
+		for hline in headers:
+			i

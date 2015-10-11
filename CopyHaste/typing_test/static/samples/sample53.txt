@@ -1,0 +1,40 @@
+__all__ = ["Hashable", "Iterable", "Iterator",
+		   "Sized", "Container", "Callable",
+		   "Set", "MutableSet",
+		   "Mapping", "MutableMapping",
+		   "MappingView", "KeysView", "ItemsView", "ValuesView",
+		   "Sequence", "MutableSequence",
+		   "ByteString",
+		   ]
+__name__ = "collections.abc"
+bytes_iterator = type(iter(b''))
+bytearray_iterator = type(iter(bytearray()))
+dict_keyiterator = type(iter({}.keys()))
+dict_valueiterator = type(iter({}.values()))
+dict_itemiterator = type(iter({}.items()))
+list_iterator = type(iter([]))
+list_reverseiterator = type(iter(reversed([])))
+range_iterator = type(iter(range(0)))
+set_iterator = type(iter(set()))
+str_iterator = type(iter(""))
+tuple_iterator = type(iter(()))
+zip_iterator = type(iter(zip()))
+dict_keys = type({}.keys())
+dict_values = type({}.values())
+dict_items = type({}.items())
+mappingproxy = type(type.__dict__)
+class Hashable(metaclass=ABCMeta):
+	__slots__ = ()
+	@abstractmethod
+	def __hash__(self):
+		return 0
+	@classmethod
+	def __subclasshook__(cls, C):
+		if cls is Hashable:
+			for B in C.__mro__:
+				if "__hash__" in B.__dict__:
+					if B.__dict__["__hash__"]:
+						return True
+					break
+		return NotImplemented
+class Iterable(meta
