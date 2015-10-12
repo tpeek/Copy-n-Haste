@@ -42,6 +42,11 @@ form {
   text-align: left;
 }
 
+nav a {
+  display: inline-block;
+  margin-top: 5px;
+}
+
 
 /* Links */
 a,
@@ -105,7 +110,7 @@ body {
 .btn-lg {
   padding: 5px 10px;
   font-weight: bold;
-  margin-top: 20px;
-  margin-bottom: 20px;
+/*  margin-top: 40px;
+  margin-bottom: 20px;*/
   font-size: 25px;
 }

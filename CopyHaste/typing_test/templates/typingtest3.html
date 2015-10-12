@@ -7,6 +7,7 @@
 
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 
+<textarea id="opponent" value="{{ opponent }}" hidden>{{ opponent }}</textarea>
 
 <table cellpadding="5" align="center" width="50%">
 <tbody>
@@ -32,8 +33,7 @@
 
 <div id='test'>
   <textarea id="type" value="{{ code }}" name="given" rows=40 disabled>{{ code }}</textarea>
-  <textarea onkeypress="doCheck();" onkeydown="//calcStat()" id="typed" name="typed" rows=40></textarea>
+  <textarea id="typed" name="typed" rows=40></textarea>
 </div>
-
 <script type="text/javascript" src="{% static 'typing_test.js' %}"></script>
 {% endblock %}

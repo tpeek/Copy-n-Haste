@@ -24,7 +24,7 @@
           rand = Math.random();
           plane.css('font-size', 70 * rand + 10);
           plane.css('z-index', 100);
-          plane.delay(8000 * Math.random()).animate({top: -200}, 2000 / (rand + .5) + 4000 - (score * 100), 'linear', function() { Fly(i) });
+          plane.delay(7000 * Math.random()).animate({top: -200}, 2000 / (rand + .5) + 4000 - (score * 100), 'linear', function() { Fly(i) });
         };
         for (i = 0; i < 50; i++) {
           Fly(i);

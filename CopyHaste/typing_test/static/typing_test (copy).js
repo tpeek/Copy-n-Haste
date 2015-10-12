@@ -1,9 +1,28 @@
-var opponent = $("#opponent").val();
+// the problem is that before, we were grabbing a response object.
+// now, we are sending the code sample in as a variable that django
+// deals with. but the multiline throws of the javascript. shit.
+
+// I should be able to just change up the typing test app to insert it directly.
+// maybe?
+
+// strToTest[0] = code;
+// strToTestType = code;
 var secs = 0;
-var toType = document.getElementById("type").value;
-var strToTest = $("type").val();
+var strToTest;
+
+
+
+
+var hasStarted = true;
+
+//strToTest is an array object that holds various strings to be used as the base typing test
+// - If you update the array, be sure to update the intToTestCnt
+//   with the number of ACTIVE testing strings
+var intToTestCnt = 1;
+var toType = document.getElementById("type").value
+strToTest = new Array(toType)
 var strToTestType = "";
-var done = false;
+
 var checkStatusInt;
 
 //General functions to allow for left and right trimming / selection of a string
@@ -30,6 +49,9 @@ var intervalID;
 //the timers to determine the WPM and Accuracy
 function beginTest()
 {
+ //We're starting the test, so set the variable to true
+ hasStarted = true;
+
  //Generate a date value for the current time as a baseline
  day = new Date();
 
@@ -44,30 +66,34 @@ function beginTest()
 
  calcStat();
 
- //Apply focus to the text box the user will type the test into
- $("#typed").focus();
+ //Initialize the testing objects by setting the values
+ //of the buttons, what to type, and what is typed
+ document.JobOp.given.value = strToTestType;
+ document.JobOp.typed.value = "";
 
-  if (opponent == "computer") {
-   intervalID = window.setInterval(function(){
-      var foe = document.getElementById("typed2");
-      foe.value += String($('#type').val()).charAt(secs);
-      secs += 1;
-   }, 500);
-  }
+ //Apply focus to the text box the user will type the test into
+ document.JobOp.typed.focus();
+ document.JobOp.typed.select();
 }
 beginTest();
 
+//User to deter from Copy and Paste, also acting as a testing protection system
+// Is fired when the user attempts to click or apply focus
+// to the text box containing what needs to be typed
+function deterCPProtect()
+{
+ document.JobOp.typed.focus();
+}
+
+//The final call to end the test -- used when the
+//user has completed their assignment
 // This function/sub is responsible for calculating
 // the accuracy, and setting post-test variables
 function endTest()
 {
-
   window.clearInterval(intervalID)
  //Clear the timer that tracks the progress of the test, since it's complete
  clearTimeout(checkStatusInt);
-
- //Disable the area where the user types the test input
- $("#typed").attr("disabled", "disabled");
 
  //Initialize an object with the current date/time
  //so we can calculate the difference
@@ -77,13 +103,28 @@ function endTest()
 
  //Calculate the typing speed by taking the number of valid words
  //typed by the total time taken and multiplying it by one minute in seconds (60)
- wpmType = Math.round((($("#typed").val().split(" ").length)/totalTime) * 60);
+ //***** 1A ********************************************************** 1A *****
+ //We also want to disregard if they used a double-space after
+ //a period, if we didn't then it would throw everything after the space off
+ //Since we are using the space as the seperator for words; it's the
+ //difference between "Hey. This is me.
+ //" versus "Hey. This is me." and
+ //Having the last three words reporting as wrong/errors due
+ //to the double space after the first period, see?
+ //****************************************************************************
+ wpmType = Math.round(((document.JobOp.typed.value.replace(/  /g,
+                  " ").split(" ").length)/totalTime) * 60)
+
 
  //Declare an array of valid words for what NEEDED to be typed and what WAS typed
  //Again, refer to the above statement on removing the double spaces globally (1A)
- var typedValues = $("#typed").val();
- var neededValues = Left($("#type").val(), typedValues.length).split(" ");
+ var typedValues = document.JobOp.typed.value.replace(/  /g, " ");
+ var neededValues = Left(document.JobOp.given.value,
+         typedValues.length).replace(/  /g, " ").split(" ");
  typedValues = typedValues.split(" ");
+
+ //Disable the area where the user types the test input
+ document.JobOp.typed.disabled=true;
 
  //Declare variable references to various statistical layers
  var tErr = document.getElementById("stat_errors");
@@ -91,15 +132,27 @@ function endTest()
  var tStat = document.getElementById("stat_wpm");
  var tTT = document.getElementById("stat_timeleft");
 
+ var tArea = document.getElementById("TypeArea");
+ var aArea = document.getElementById("AfterAction");
+ var eArea = document.getElementById("expectedArea");
+
  //Initialize the counting variables for the good valid words and the bad valid words
  var goodWords = 0;
  var badWords = 0;
 
- //Declare a variable to hold the error words we found
+ //Declare a variable to hold the error words
+ //we found and also a detailed after action report
  var errWords = "";
+ var aftReport = "<b>Detailed Summary:</b><br>" +
+                 "<font color=\"DarkGreen\">";
+
+ //Enable the printing button
+ document.getElementById("printB").disabled = false;
 
  //Loop through the valid words that were possible
  //(those in the test baseline of needing to be typed)
+ var str;
+ var i = 0;
  for (var i = 0; i < word; i++)
  {
   //If there is a word the user typed that is
@@ -116,27 +169,56 @@ function endTest()
     //They typed it incorrectly, so increment the bad words counter
     badWords = badWords + 1;
     errWords += typedWord + " = " + neededWord + "\n";
+    aftReport += "<font color=\"Red\"><u>" +
+                 neededWord + "</u></font> ";
    }
    else
    {
     //They typed it correctly, so increment the good words counter
     goodWords = goodWords + 1;
+    aftReport += neededWord + " ";
    }
   }
-  tscore.innerText = ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%";
+  else
+  {
+   //They didn't even type this word, so increment the bad words counter
+   //Update: We don't want to apply this penalty because they may have chosen to end the test
+   //    and we only want to track what they DID type and score off of it.
+   //badWords = badWords + 1;
+  }
  }
+
+ //Finalize the after action report variable with the typing summary
+ //at the beginning (now that we have the final good and bad word counts)
+ aftReport += "</font>";
+ aftReport = "<b>Typing Summary:</b><br>You typed " +
+            (document.JobOp.typed.value.replace(/  /g, " ").split(" ").length) +
+            " words in " + totalTime + " seconds, a speed of about " +
+            wpmType + " words per minute.\n\nYou also had " + badWords +
+            " errors, and " + goodWords + " correct words, giving scoring of " +
+            ((goodWords / (goodWords+badWords)) * 100).toFixed(2) +
+            "%.<br><br>" + aftReport;
 
  //Set the statistical label variables with what
  //we found (errors, words per minute, time taken, etc)
  tErr.innerText = badWords + " Errors";
- tStat.innerText = (wpmType-badWords) + " WPM / " + wpmType + " WPM";
+ tStat.innerText= (wpmType-badWords) + " WPM / " + wpmType + " WPM";
  tTT.innerText = totalTime.toFixed(2) + " sec. elapsed"
 
  //Calculate the accuracy score based on good words typed
  //versus total expected words -- and only show the percentage as ###.##
  tscore.innerText = ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%";
 
-if (done == false) {
+
+ //Notify the user of their testing status via a JavaScript Alert
+ //Update: There isn't any need in showing this popup now that
+ //we are hiding the typing area and showing a scoring area
+ //alert("You typed " + (document.JobOp.typed.value.split(" ").length) +
+ //        " words in " + totalTime + " seconds, a speed of about " +
+ //        wpmType + " words per minute.\n\nYou also had " + badWords +
+ //        " errors, and " + goodWords + " correct words, giving scoring of " +
+ //       ((goodWords / (goodWords+badWords)) * 100).toFixed(2) + "%.");
+
  $.ajax({
    method : "POST",
     url : "/play/report_results/",
@@ -144,13 +226,12 @@ if (done == false) {
             "wpm_net": wpmType-badWords,
             "mistakes": badWords,
             "opponent": opponent}
-  }).done(function(response){
-    done = true;
-    window.location.href = "http://" + window.location.host + response;
-  }).fail(function(){
-      alert("fail");
-  });
-}
+}).done(function(response){
+  window.location.href = redirect;
+}).fail(function(){
+    alert("fail");
+});
+
 }
 
 //calcStat is a function called as the user types
@@ -168,8 +249,15 @@ try {
  var tStat = document.getElementById("stat_wpm");
  var tTT = document.getElementById("stat_timeleft");
 
+ var tProg = document.getElementById("stProg");
+ var tProgt = document.getElementById("thisProg");
+
+ var tArea = document.getElementById("TypeArea");
+ var aArea = document.getElementById("AfterAction");
+ var eArea = document.getElementById("expectedArea");
+
  //Refer to 1A (above) for details on why we are removing the double space
- var thisTyped = $("#typed").val();
+ var thisTyped = document.JobOp.typed.value.replace(/  /g, " ");
 
  //Create a temp variable with the current time of day to calculate the WPM
  eDay = new Date();
@@ -181,7 +269,7 @@ try {
 
 
  //Set the words per minute variable on the statistical information block
- tStat.innerText = wpmType + " WPM";
+ tStat.innerText=wpmType + " WPM";
 
 
  //Calculate and show the time taken to reach this point
@@ -209,13 +297,43 @@ try {
   }
  }
 
- //Check the timer; stop the test if we are at or exceeded 60 seconds
- if (totalTime >= 6)
+ //Determine if the user has typed all of the words expected
+ if ((((thisTyped.split(" ").length)/word)*100).toFixed(2) >= 100)
+ {
+  tProg.width="100%";
+
+  tProgt.innerText = "100%";
+ }
+ else
+ {
+  //Set the progress bar with the exact percentage of the test completed
+  tProg.width=String((((thisTyped.split(" ").length)/word)*100).toFixed(2))+"%";
+
+  tProgt.innerText = tProg.width;
+ }
+
+ //Determine if the test is complete based on them
+ //having typed everything exactly as expected
+ if (thisTyped.value == document.JobOp.given.value)
  {
   endTest();
  }
+
+ //Determine if the test is complete based on whether or not they have
+ //typed exactly or exceeded the number of valid words (determined by a space)
+ if (word <= (thisTyped.split(" ").length) + 1)
+ {
+  endTest();
+ }
+
+ //Check the timer; stop the test if we are at or exceeded 60 seconds
+ if (totalTime >= 60)
+ {
+  endTest();
+ }
+
 //Our handy error handling
-} catch(e){alert(e)};
+} catch(e){};
 }
 
 
@@ -237,16 +355,15 @@ $(document).delegate('#typed', 'keydown', function(e) {
     $(this).get(0).selectionStart =
     $(this).get(0).selectionEnd = start + 1;
   }
-  if (opponent != 'computer') {
-    $.ajax({
-      method : "POST",
-      url : "/play/multi/",
-      data : {"user_input": $('#typed').val(),
-              "opponent": opponent}
-    }).done(function(response){
-      $('#typed2').val(response)
-    }).fail(function(){
-      alert("fail");
-    });
-  }
+
+  // $.ajax({
+  //    method : "POST",
+  //     url : "/play/multi/",
+  //     data : {"user_input": $('#typed').val(),
+  //             "opponent": opponent}
+  // }).done(function(response){
+  //   $('#typed2').val(response)
+  // }).fail(function(){
+  //     alert("fail");
+  // });
 });

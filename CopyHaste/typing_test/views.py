@@ -10,7 +10,7 @@ from random import randint
 def play_view(request):
     code = open("typing_test/static/samples/sample" +
                 str(randint(0, 100)) + ".txt", 'r').read()
-    return render(request, 'typingtest3.html', {'code': code})
+    return render(request, 'typingtest3.html', {'code': code, 'opponent': 'computer'})
 
 
 @csrf_exempt
@@ -71,6 +71,19 @@ def get_content_view2(request):
 
 @csrf_exempt
 def report_results_view(request):
+    print request.user
+    if str(request.user) == 'AnonymousUser':
+        return HttpResponse("/play/#")
+
+    if request.POST['opponent'] == 'computer':
+        user1 = UserScores()
+        user1.user = request.user
+        user1.wpm_gross = request.POST['wpm_gross']
+        user1.wpm_net = request.POST['wpm_net']
+        user1.mistakes = request.POST['mistakes']
+        user1.save()
+        return HttpResponse("/scores")
+
     r = redis.StrictRedis(host='localhost', port=6379, db=0)
     r.set(request.user.username + 'wpm_net', request.POST['wpm_net'])
     r.set(request.user.username + 'wpm_gross', request.POST['wpm_gross'])
@@ -111,4 +124,4 @@ def report_results_view(request):
     r.delete(request.POST['opponent'] + 'wpm_net')
     r.delete(request.POST['opponent'] + 'mistakes')
     r.delete(request.POST['opponent'])
-    return HttpResponse("nope")
+    return HttpResponse("/scores/match_score")
