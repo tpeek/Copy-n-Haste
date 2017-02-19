@@ -17,7 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = os.environ['SECRET_KEY']
 
-DEBUG = os.environ['DEBUG']
+DEBUG = True if os.environ.get('DEBUG') == 'True' else False
 
 TEMPLATE_DEBUG = False
 
