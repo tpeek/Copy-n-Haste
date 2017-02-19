@@ -120,7 +120,7 @@ class ScoresClientTests(TestCase):
         response = self.client.get('/scores/')
         self.assertTemplateUsed(response, 'scores.html')
 
-    # Test 11
+    # Test 10
     # Check that /scores/match_score page loads the correct template
     def test_match_template(self):
         response = self.client.get('/scores/match_score')
@@ -176,7 +176,7 @@ class ScoresWebTests(StaticLiveServerTestCase):
         self.browser.fill('password', password)
         self.browser.find_by_value('Log in').first.click()
 
-    # Test 12
+    # Test 11
     # Check anon get of /scores/
     def test_anon_get_scores(self):
         self.browser.visit('%s%s' % (self.live_server_url, '/scores/'))
@@ -185,7 +185,7 @@ class ScoresWebTests(StaticLiveServerTestCase):
             '%s%s' % (self.live_server_url, '/accounts/login/?next=/scores/')
         )
 
-    # Test 13
+    # Test 12
     # Check anon get of /scores/match_score
     def test_anon_get_match_score(self):
         self.browser.visit('%s%s' % (
@@ -200,25 +200,29 @@ class ScoresWebTests(StaticLiveServerTestCase):
             )
         )
 
-    # Test 14
+    # Test 13
     # Check scores for user
     def test_user_for_scores(self):
         self.login_helper(self.user1.username, 'abc')
         self.browser.visit('%s%s' % (self.live_server_url, '/scores/'))
         self.assertEqual(
-            self.browser.find_by_tag('li')[5].text,
-            'Username:' + self.user1.username + ', Net WPM:' + str(
+            self.browser.find_by_tag('strong')[2].text, self.user1.username
+        )
+        self.assertEqual(
+            self.browser.find_by_tag('strong')[3].text, str(
                 self.userscore1.wpm_net
             )
         )
         self.assertEqual(
-            self.browser.find_by_tag('li')[6].text,
-            'Username:' + self.user2.username + ', Net WPM:' + str(
+            self.browser.find_by_tag('strong')[4].text, self.user2.username
+        )
+        self.assertEqual(
+            self.browser.find_by_tag('strong')[5].text, str(
                 self.userscore2.wpm_net
             )
         )
 
-    # Test 15 - future consideration
+    # Test 14 - future consideration
     # Check matches for user
     # def test_user_for_matches(self):
     #     self.login_helper(self.user1.username, 'abc')
@@ -234,5 +238,3 @@ class ScoresWebTests(StaticLiveServerTestCase):
     #             self.user1.username
     #         ) + ', Loser:' + str(self.user2.username)
     #     )
-
-    # # Test for result page in typing_test.tests
