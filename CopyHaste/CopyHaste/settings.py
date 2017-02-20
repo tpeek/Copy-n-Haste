@@ -10,25 +10,21 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+import dj_database_url
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
+SECRET_KEY = os.environ['SECRET_KEY']
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2gm5y_$1-4yyvine*6(-vkav@-8vw79y75__n((butnkn-q&b$'
+DEBUG = True if os.environ.get('DEBUG') == 'True' else False
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+TEMPLATE_DEBUG = False
 
-TEMPLATE_DEBUG = True
-
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -36,6 +32,12 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'registration',
+    'cnh_profile',
+    'bootstrap3',
+    'cnh_scores',
+    'typing_test',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -48,24 +50,52 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [os.path.join(BASE_DIR, 'templates').replace('\\', '/')],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.media',
+            ],
+        },
+    },
+]
+
+
 ROOT_URLCONF = 'CopyHaste.urls'
 
 WSGI_APPLICATION = 'CopyHaste.wsgi.application'
+
+STATIC_URL = '/static2/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static2')
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
+# We used to use an aws rds instance, but to reduce costs,
+# the database is now local.
+# DATABASES = {
+#     'default': dj_database_url.config()
+# }
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'NAME': os.path.join(BASE_DIR, 'db.postgresql_psycopg2'),
-        'NAME': 'CopyHasteDB',
-        #was imager_databse
-        'USER': 'administrator',
-        'PASSWORD': 'password123',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
+        'NAME': 'copynhaste',
+        'USER': 'power_user',
+        'PASSWORD': os.environ['DB_PASSWORD'],
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -87,4 +117,21 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = '/static/'
+
+# Email
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+EMAIL_PORT = 587
+if os.environ.get('EMAIL_BACKEND', None):
+    EMAIL_BACKEND = os.environ['EMAIL_BACKEND']
+
+# For django-registration-redux
+ACCOUNT_ACTIVATION_DAYS = 7
+LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_URL = '/accounts/login/'
+
+
+SITE_ID = 2

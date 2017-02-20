@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style type="text/css">
+.inner {
+z-index: 10;
+}
+
+ul {
+list-style-type: none;
+}
+
+.scores li {
+    font-size: 16px;
+    background-color: #666;
+    opacity: .8;
+    z-index: -1;
+}
+
+strong {
+    padding-left: 60px;
+}
+
+</style>
+<body><br>
+<h1>Match Scores</h1>
+<div>
+<ul class='scores'>
+        <li><strong>The Date of the Match</strong> <strong>Winner</strong> <strong>Loser</strong></li>
+        {% for match in matches %}
+        <li><strong>{{match.match_date}}</strong> <strong>{{match.winner.user}}</strong> <strong>{{match.loser.user}}</strong></li>
+        {% endfor %}
+</ul>
+</div>
+</body>
+{% endblock %}
